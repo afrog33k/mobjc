@@ -43,32 +43,32 @@ public class InstanceTests
 
 		// If we use alloc the object will have a ref count of one.
 		NSObject instance = (NSObject) Native.Call("[[NSHashTable alloc] init]");
-		Assert.AreEqual(1L, instance.RetainCount());
+		Assert.AreEqual(1L, instance.retainCount());
 
 		// Classes always have a very high retain count (because they
 		// are not supposed to go away).
 		Class nsSignature = new Class("NSMethodSignature");
-		Assert.IsTrue(nsSignature.RetainCount() > 1000);
+		Assert.IsTrue(nsSignature.retainCount() > 1000);
 
 		// If alloc, new, or copy aren't used then the pool owns the object.
 		Class nsString = new Class("NSString");
 		NSObject str = (NSObject) nsString.Call("stringWithUTF8String:", "hello");
-		Assert.AreEqual(1L, str.RetainCount());
+		Assert.AreEqual(1L, str.retainCount());
 
 		// We can have two managed instances on the same native instance
 		// and the ref count doesn't change.
 		NSObject copy = new NSObject((IntPtr) instance);	
-		Assert.AreEqual(1L, copy.RetainCount());
+		Assert.AreEqual(1L, copy.retainCount());
 		
 		// If we send a message to an object its retain count doesn't change.
 		instance.Call("description");
-		Assert.AreEqual(1L, instance.RetainCount());
+		Assert.AreEqual(1L, instance.retainCount());
 				
-		pool.Release();
+		pool.release();
 		
 		// Verify our counts after we empty the release pool.
-		Assert.AreEqual(1L, instance.RetainCount());
-		Assert.AreEqual(1L, copy.RetainCount());
+		Assert.AreEqual(1L, instance.retainCount());
+		Assert.AreEqual(1L, copy.retainCount());
 	}
 
 	[Test]
@@ -78,22 +78,22 @@ public class InstanceTests
 
 		// No copy, new, or alloc so ref count is one and it's owned by the pool.
 		PrettyData direct = new PrettyData();
-		Assert.AreEqual(1L, direct.RetainCount());
+		Assert.AreEqual(1L, direct.retainCount());
 
 		// Alloc so pool has no ownership stake.
 		NSObject indirect = (NSObject) Native.Call("[[PrettyData alloc] init]");
-		Assert.AreEqual(1L, indirect.RetainCount());
+		Assert.AreEqual(1L, indirect.retainCount());
 
 		// If we send a message to an object its retain count doesn't change.
 		int value = (int) direct.Call("get33");
 		Assert.AreEqual(33, value);
-		Assert.AreEqual(1L, direct.RetainCount());
+		Assert.AreEqual(1L, direct.retainCount());
 
-		pool.Release();
+		pool.release();
 		
 		// Verify our counts after we empty the release pool.
 		Assert.IsTrue(direct.IsDeallocated());
-		Assert.AreEqual(1L, indirect.RetainCount());
+		Assert.AreEqual(1L, indirect.retainCount());
 	}
 
 	[Test]
@@ -103,15 +103,15 @@ public class InstanceTests
 
 		Class klass = new Class("NSHashTable");
 		NSObject instance1 = new NSObject(klass.Call("alloc").Call("init"));
-		Assert.AreEqual(1L, instance1.RetainCount());
+		Assert.AreEqual(1L, instance1.retainCount());
 		
 		NSObject instance2 = new NSObject(Native.Call("[[NSHashTable alloc] init]"));
-		Assert.AreEqual(1L, instance2.RetainCount());
+		Assert.AreEqual(1L, instance2.retainCount());
 		
-		pool.Release();
+		pool.release();
 		
-		Assert.AreEqual(1L, instance1.RetainCount());
-		Assert.AreEqual(1L, instance2.RetainCount());
+		Assert.AreEqual(1L, instance1.retainCount());
+		Assert.AreEqual(1L, instance2.retainCount());
 	}
 
 	[Test]
@@ -125,7 +125,7 @@ public class InstanceTests
 		Untyped result = str.Call("UTF8String");
 		Assert.AreEqual("chained!", result.Value);
 
-		pool.Release();
+		pool.release();
 	}
 
 	[Test]
@@ -155,7 +155,7 @@ public class InstanceTests
 		Assert.AreEqual(typeof(IntPtr), result.Value.GetType());
 		Assert.AreEqual(IntPtr.Zero, (IntPtr) result);
 
-		pool.Release();
+		pool.release();
 	}
 
 	[Test]
@@ -166,7 +166,7 @@ public class InstanceTests
 		bool threaded = (bool) Native.Call("[NSThread isMultiThreaded]");
 		Assert.IsTrue(threaded);
 
-		pool.Release();
+		pool.release();
 	}
 
 	[Test]
@@ -175,10 +175,10 @@ public class InstanceTests
 		NSObject pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
 
 		Subclass1 instance = new Subclass1((IntPtr) Native.Call("[[Subclass1 alloc] init]"));
-		Assert.AreEqual(1L, instance.RetainCount());
-		instance.Release();
+		Assert.AreEqual(1L, instance.retainCount());
+		instance.release();
 		Assert.IsTrue(instance.Dead);
 		
-		pool.Release();
+		pool.release();
 	}
 }

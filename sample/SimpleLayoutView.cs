@@ -42,7 +42,7 @@ internal sealed class SimpleLayoutView : NSView
 	{
 		NSObject box = DoNewBox();
 		AddSubView(box);
-		box.Release();
+		box.release();
 		
 		DoLayout();
 	}

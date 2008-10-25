@@ -40,7 +40,7 @@ public class ArgTests
 	{
 		if (m_pool != null)
 		{
-			m_pool.Release();
+			m_pool.release();
 			m_pool = null;
 		}
 	}
@@ -146,8 +146,8 @@ public class ArgTests
 		NSObject f = (NSObject) klass.Call("numberWithBool:", false);
 		NSObject t = (NSObject) klass.Call("numberWithBool:", true);
 		
-		Assert.AreEqual("0", f.Description());
-		Assert.AreEqual("1", t.Description());
+		Assert.AreEqual("0", f.description());
+		Assert.AreEqual("1", t.description());
 		
 		Untyped result = f.Call("boolValue");
 		Assert.IsFalse((bool) result);
@@ -162,7 +162,7 @@ public class ArgTests
 		Class klass = new Class("NSNumber");
 		NSObject f = (NSObject) klass.Call("numberWithUnsignedShort:", (ushort) 300);
 		
-		Assert.AreEqual("300", f.Description());
+		Assert.AreEqual("300", f.description());
 	}
 
 	[Test]
@@ -312,8 +312,16 @@ public class ArgTests
 	{
 		NSObject super = (NSObject) Native.Call("[[MyBase alloc] init]");
 		NSObject derived = (NSObject) Native.Call("[[MyDerived alloc] init]");
-				
-		derived.Call("TakeDerived", super);
+		
+		Managed.LogException = (e) => {};
+		try
+		{
+			derived.Call("TakeDerived", super);
+		}
+		finally
+		{
+			Managed.LogException = null;
+		}
 	}
 
 	[Test]

@@ -231,7 +231,7 @@ internal sealed class DebugController : NSObject
 			}
 		}
 		
-		pool.Release();
+		pool.release();
 	}
 #endif
 

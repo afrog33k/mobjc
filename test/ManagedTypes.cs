@@ -80,7 +80,7 @@ public class Subclass1 : NSObject
 		
 	public Subclass1(int v) : base(Native.Call("[[Subclass1 alloc] init]"))
 	{
-		AutoRelease();
+		autorelease();
 		m_value = v;
 		m_data = new IVar<NSString>(this, "myData");
 	}
@@ -223,7 +223,7 @@ public class PrettyData : NSObject
 {
 	public PrettyData() : base(Native.Call("[[PrettyData alloc] init]"))
 	{
-		AutoRelease();
+		autorelease();
 	}
 		
 	protected PrettyData(IntPtr instance) : base(instance)
@@ -237,7 +237,7 @@ public class PrettyData : NSObject
 	}
 	
 	[OverrideMethod]		
-	public NSObject description() 
+	public new NSObject description() 
 	{
 		Class nsString = new Class("NSMutableString");
 		NSObject str = (NSObject) nsString.Call("alloc");
@@ -270,7 +270,7 @@ public class MyBase : NSObject
 	}
 	
 	[OverrideMethod]		
-	public NSObject description() 
+	public new NSObject description() 
 	{
 		Class nsString = new Class("NSMutableString");
 		NSObject str = (NSObject) nsString.Call("alloc");

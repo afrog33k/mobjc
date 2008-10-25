@@ -43,7 +43,7 @@ internal static class Program
 			// Load the nib and run the main event loop.
 			NSObject pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
 			NSApplication app = new NSApplication("MainMenu.nib");
-			pool.Release();
+			pool.release();
 
 			app.Run();
 		}

@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
+#if YUCK
 [TestFixture]
 public class MemoryTests 	
 {
@@ -48,12 +49,12 @@ public class MemoryTests
 			for (int i = 0; i < NumIterations/100; ++i)
 			{
 				Class klass = new Class("NSNumber");	
-				klass.Release();
+				klass.release();
 			}
 	        GC.Collect();        
 		}
 		
-		pool.Release();
+		pool.release();
         GC.Collect();        
         GC.WaitForPendingFinalizers();
 
@@ -80,7 +81,7 @@ public class MemoryTests
 	        GC.Collect();        
 		}
 		
-		pool.Release();
+		pool.release();
         GC.Collect();        
         GC.WaitForPendingFinalizers();
 
@@ -104,12 +105,12 @@ public class MemoryTests
 	
 				NSObject d = new NSObject(nsData.Call("alloc"));
 				NSObject e = (NSObject) d.Call("initWithBytes:length:", data, data.Length);
-				e.Release();
+				e.release();
 			}
 	        GC.Collect();        
 		}
 		
-		pool.Release();
+		pool.release();
         GC.Collect();        
         GC.WaitForPendingFinalizers();
 
@@ -129,12 +130,12 @@ public class MemoryTests
 				for (int i = 0; i < NumIterations/100; ++i)
 				{
 				NSObject s = (NSObject) Native.Call("[[NSNumber alloc] initWithInteger:{0}]", 33);
-				s.Release();
+				s.release();
 			}
 	        GC.Collect();        
 		}
 		
-		pool.Release();
+		pool.release();
         GC.Collect();        
         GC.WaitForPendingFinalizers();
 
@@ -155,12 +156,12 @@ public class MemoryTests
 			{
 				NSObject instance = (NSObject) Native.Call("[[Subclass1 alloc] init]");			
 				instance.Call("TakeString", "what");
-				instance.Release();
+				instance.release();
 			}
 	        GC.Collect();        
 		}
 		
-		pool.Release();
+		pool.release();
         GC.Collect();        
         GC.WaitForPendingFinalizers();
 
@@ -214,3 +215,4 @@ public class MemoryTests
         throw new ApplicationException("Couldn't find our pid: " + pid);
     }
 }
+#endif

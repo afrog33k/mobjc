@@ -39,7 +39,7 @@ public class NativeCallTests
 	{
 		if (m_pool != null)
 		{
-			m_pool.Release();
+			m_pool.release();
 			m_pool = null;
 		}
 	}

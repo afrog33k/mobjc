@@ -40,7 +40,7 @@ public class ExportTests
 	{
 		if (m_pool != null)
 		{
-			m_pool.Release();
+			m_pool.release();
 			m_pool = null;
 		}
 	}
@@ -82,12 +82,17 @@ public class ExportTests
 
 		try
 		{
+			Managed.LogException = (e) => {};
 			instance.Call("BadValue");
 		}
 		catch (TargetInvocationException ie)
 		{
 			ArgumentException ae = (ArgumentException) ie.InnerException;
 			Assert.AreEqual("alpha", ae.ParamName);
+		}
+		finally
+		{
+			Managed.LogException = null;
 		}
 	}
 		
@@ -169,13 +174,13 @@ public class ExportTests
 		// ivars can be set
 		Class klass = new Class("NSString");
 		NSObject str = (NSObject) klass.Call("stringWithUTF8String:", "hello");
-		long count = str.RetainCount();
+		long count = str.retainCount();
 		
 		instance["myData"] = str;
 		
 		// the ref count of the value should not change when it is
 		// assigned to an ivar
-		Assert.AreEqual(count, str.RetainCount());		
+		Assert.AreEqual(count, str.retainCount());		
 
 		// and we can get the value we set
 		NSObject result = instance["myData"];

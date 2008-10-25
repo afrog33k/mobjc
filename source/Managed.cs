@@ -28,9 +28,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace MObjc
 {	
-	internal sealed class Managed
+	public sealed class Managed
 	{
-		public Managed(MethodInfo info, string encoding)
+		internal Managed(MethodInfo info, string encoding)
 		{
 			DBC.Pre(info != null, "info is null");
 			DBC.Pre(!string.IsNullOrEmpty(encoding), "encoding is null or empty");
@@ -39,7 +39,12 @@ namespace MObjc
 			m_signature = new MethodSignature(encoding);
 		}
 		
-		public IntPtr Call(IntPtr dummy, IntPtr resultBuffer, IntPtr argBuffers)	// thread safe
+		// We default to logging exceptions thrown by managed code to stderr before
+		// we convert them into a native exception. If you want to do something else
+		// you can set this.
+		public static Action<Exception> LogException {get; set;}
+		
+		internal IntPtr Call(IntPtr dummy, IntPtr resultBuffer, IntPtr argBuffers)	// thread safe
 		{
 			IntPtr exception = IntPtr.Zero;
 	
@@ -104,12 +109,18 @@ namespace MObjc
 			}
 			catch (TargetInvocationException ie)
 			{
-				DoLogException(ie);
+				if (LogException != null)
+					LogException(ie);
+				else
+					DoLogException(ie);
 				exception = DoCreateNativeException(ie.InnerException);
 			}
 			catch (Exception e)
 			{
-				DoLogException(e);
+				if (LogException != null)
+					LogException(e);
+				else
+					DoLogException(e);
 				exception = DoCreateNativeException(e);
 			}
 			
@@ -123,17 +134,16 @@ namespace MObjc
 		{
 			Console.Error.WriteLine("Exception was thrown from managed code:");
 			
-			if (e.InnerException != null)
+			Exception ee = e;
+			while (ee != null)
 			{
-				Console.Error.WriteLine("-------- Inner Exception --------");
-				Console.Error.WriteLine(e.InnerException.Message);
-				Console.Error.WriteLine(e.InnerException.StackTrace);
-				Console.Error.WriteLine("-------- Outer Exception --------");
-			}
+				if (e.InnerException != null)
+					Console.Error.WriteLine("-------- {0} Exception --------{1}", ee == e ? "Outer" : "Inner", Environment.NewLine);
+				Console.Error.WriteLine("{0}", ee.Message + Environment.NewLine);
+				Console.Error.WriteLine("{0}", ee.StackTrace + Environment.NewLine);
 
-			Console.Error.WriteLine(e.Message);
-			Console.Error.WriteLine(e.StackTrace);
-			Console.Error.Flush();
+				ee = ee.InnerException;
+			}
 		}
 		
 		private static NSObject DoCreateNativeException(Exception e)

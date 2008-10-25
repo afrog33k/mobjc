@@ -47,7 +47,7 @@ internal sealed class NSApplication : NSObject
 		// be done without an NSAutoreleasePool.
 		m_run = new Native(this, new Selector("run"));
 		
-		dict.Release();
+		dict.release();
 	}
 		
 	public void Run()
