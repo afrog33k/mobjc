@@ -164,15 +164,25 @@ namespace MObjc
 		{
 			DBC.Pre(name != null, "name is null");
 			DBC.Assert(!m_deallocated, "ref count is zero");
-				
+			
 			Untyped result = new Untyped(IntPtr.Zero);
 
 			if (m_instance != IntPtr.Zero)
 			{
-				using (Native native = new Native(m_instance, new Selector(name)))
+				if (name == "alloc" && args.Length == 0)	// need this so we can create an auto release pool without leaking NSMethodSignature
 				{
-					native.SetArgs(args);			
-					result = native.Invoke();
+					IntPtr exception = IntPtr.Zero;
+					result = new Untyped(DirectCalls.Callp(m_instance, salloc, ref exception));
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+				}
+				else
+				{					
+					using (Native native = new Native(m_instance, new Selector(name)))
+					{
+						native.SetArgs(args);			
+						result = native.Invoke();
+					}
 				}
 			}
 			
@@ -270,6 +280,13 @@ namespace MObjc
 			
 			if ((object) lhs == null || (object) rhs == null)
 				return false;
+				
+			if (lhs.IsDeallocated() && rhs.IsDeallocated())
+				return object.ReferenceEquals(lhs, rhs);
+			else if (lhs.IsDeallocated())
+				return false;
+			else if (rhs.IsDeallocated())
+				return false;
 			
 			return (bool) lhs.Call("isEqual:", rhs);
 		}
@@ -285,7 +302,10 @@ namespace MObjc
 			
 			unchecked
 			{
-				hash += 23 * (int) Call("hash");
+				if (IsDeallocated())
+					hash += base.GetHashCode();
+				else
+					hash += 23 * (int) Call("hash");
 			}
 			
 			return hash;
@@ -368,11 +388,12 @@ namespace MObjc
 		private static WeakList<NSObject> ms_refs = new WeakList<NSObject>(64);
 #endif
 
-		private static readonly Selector sretain = new Selector("retain");
-		private static readonly Selector srelease = new Selector("release");
+		private static readonly Selector salloc = new Selector("alloc");
 		private static readonly Selector sclass = new Selector("class");
-		private static readonly Selector ssuperclass = new Selector("superclass");
+		private static readonly Selector srelease = new Selector("release");
+		private static readonly Selector sretain = new Selector("retain");
 		private static readonly Selector sretainCount = new Selector("retainCount");
+		private static readonly Selector ssuperclass = new Selector("superclass");
 		#endregion
 	}
 }

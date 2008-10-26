@@ -40,7 +40,10 @@ namespace MObjc
 				
 		public static NSObject alloc()
 		{
-			return new NSObject(Native.Call("[NSObject alloc]"));
+			if (ms_class == null)
+				ms_class = new Class("NSObject");
+				
+			return (NSObject) ms_class.Call("alloc");
 		}
 
 		public NSObject init()
@@ -240,5 +243,7 @@ namespace MObjc
 			}
 		}
 		#endregion
+
+		private static Class ms_class;
 	}
 }

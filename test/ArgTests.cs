@@ -32,7 +32,7 @@ public class ArgTests
 	public void Init()
 	{
 		Registrar.CanInit = true;
-		m_pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
+		m_pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 	}
 	
 	[TestFixtureTearDown]
@@ -237,7 +237,7 @@ public class ArgTests
 	[Test]
 	public void UInt16Test2() 
 	{
-		NSObject instance = (NSObject) Native.Call("[[Subclass1 alloc] init]");
+		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
 				
 		int result = (int) instance.Call("TakeUInt16", (UInt16) 200);
 		Assert.AreEqual(200, result);
@@ -249,7 +249,7 @@ public class ArgTests
 	[Test]
 	public void CharTest2() 
 	{
-		NSObject instance = (NSObject) Native.Call("[[Subclass1 alloc] init]");
+		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
 				
 		int result = (int) instance.Call("TakeChar", (char) 'x');
 		Assert.AreEqual((int) 'x', result);
@@ -261,7 +261,7 @@ public class ArgTests
 	[Test]
 	public void StringTest2() 
 	{
-		NSObject instance = (NSObject) Native.Call("[[Subclass1 alloc] init]");
+		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
 				
 		string result = (string) instance.Call("TakeString", "what");
 		Assert.AreEqual("whatwhat", result);
@@ -270,7 +270,7 @@ public class ArgTests
 	[Test]
 	public void BaseTest() 
 	{
-		NSObject instance = (NSObject) Native.Call("[[Subclass1 alloc] init]");
+		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
 		instance.Call("initValue");
 				
 		int result = (int) instance.Call("TakeBase", instance);
@@ -280,7 +280,7 @@ public class ArgTests
 	[Test]
 	public void DerivedTest() 
 	{
-		NSObject instance = (NSObject) Native.Call("[[Subclass1 alloc] init]");
+		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
 		instance.Call("initValue");
 				
 		int result = (int) instance.Call("TakeDerived", instance);
@@ -290,8 +290,8 @@ public class ArgTests
 	[Test]
 	public void DerivedTest2() 
 	{
-		NSObject super = (NSObject) Native.Call("[[MyBase alloc] init]");
-		NSObject derived = (NSObject) Native.Call("[[MyDerived alloc] init]");
+		NSObject super = (NSObject) new Class("MyBase").Call("alloc").Call("init");
+		NSObject derived = (NSObject) new Class("MyDerived").Call("alloc").Call("init");
 				
 		NSObject iresult = (NSObject) derived.Call("TakeBase", super);
 		string result = (string) iresult.Call("UTF8String");
@@ -310,8 +310,8 @@ public class ArgTests
 	[ExpectedException(typeof(TargetInvocationException))]
 	public void DerivedTest3() 
 	{
-		NSObject super = (NSObject) Native.Call("[[MyBase alloc] init]");
-		NSObject derived = (NSObject) Native.Call("[[MyDerived alloc] init]");
+		NSObject super = (NSObject) new Class("MyBase").Call("alloc").Call("init");
+		NSObject derived = (NSObject) new Class("MyDerived").Call("alloc").Call("init");
 		
 		Managed.LogException = (e) => {};
 		try
@@ -327,7 +327,7 @@ public class ArgTests
 	[Test]
 	public void RegisteredClass() 
 	{
-		NSObject instance = (NSObject) Native.Call("[[Subclass1 alloc] init]");
+		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
 		
 		NSString s1 = new NSString("hey ");
 		NSString s2 = new NSString("there");		

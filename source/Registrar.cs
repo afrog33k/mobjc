@@ -40,7 +40,7 @@ namespace MObjc
 				if (!ms_canInit)
 					throw new InvalidOperationException("mobjc was used, but CanInit is false");
 					
-				NSObject pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
+				NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 				
 				DoInit();
 		
@@ -49,7 +49,7 @@ namespace MObjc
 				// threads (the main thread and the finalizer thread) so we'll switch
 				// to multithreading mode here.
 				Selector selector = new Selector("foo");
-				NSObject thread = (NSObject) Native.Call("[[NSThread alloc] initWithTarget:nil selector:{0} object:nil]", selector);
+				NSObject thread = (NSObject) new Class("NSThread").Call("alloc").Call("initWithTarget:selector:object:", null, selector, null);
 				Ignore.Value = thread.Call("start");
 		
 				ms_inited = true;

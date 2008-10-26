@@ -22,6 +22,7 @@
 using System;
 using System.Collections.Generic;
 
+#if OLD
 namespace MObjc
 {
 	[DisableRule("C1026", "NoStaticRemove")]
@@ -361,3 +362,4 @@ namespace MObjc
 		#endregion
 	}
 }
+#endif

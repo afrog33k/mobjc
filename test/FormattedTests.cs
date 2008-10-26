@@ -24,6 +24,7 @@ using MObjc;
 using System;
 using System.Runtime.InteropServices;
 
+#if OLD
 [TestFixture]
 public class FormattedTests 	
 {
@@ -31,7 +32,7 @@ public class FormattedTests
 	public void Init()
 	{
 		Registrar.CanInit = true;
-		m_pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
+		m_pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 	}
 	
 	[TestFixtureTearDown]
@@ -71,7 +72,7 @@ public class FormattedTests
 	[Test]
 	public void ExprTarget() 
 	{
-		NSObject o = (NSObject) Native.Call("[[NSString alloc] init]");
+		NSObject o = (NSObject) new Class("NSString").Call("alloc").Call("init");
 		
 		Assert.AreEqual(0, (int) o.Call("length"));
 	}
@@ -261,3 +262,4 @@ public class FormattedTests
 
 	private NSObject m_pool;
 }
+#endif

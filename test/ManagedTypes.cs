@@ -60,7 +60,11 @@ public class NSString : NSObject
 	{
 	}
 	
-	public NSString(string str) : base(Native.Call("[NSString stringWithUTF8String:{0}]", str))
+	public NSString(Untyped instance) : base(instance)
+	{
+	}
+
+	public NSString(string str) : base(new Class("NSString").Call("stringWithUTF8String:", str))
 	{
 	}
 	
@@ -78,7 +82,7 @@ public class Subclass1 : NSObject
 		m_data = new IVar<NSString>(this, "myData");
 	}
 		
-	public Subclass1(int v) : base(Native.Call("[[Subclass1 alloc] init]"))
+	public Subclass1(int v) : base(new Class("Subclass1").Call("alloc").Call("init"))
 	{
 		autorelease();
 		m_value = v;
@@ -142,7 +146,7 @@ public class Subclass1 : NSObject
 	[NewMethod]		
 	public NSObject MungeRect(NSRect r) 
 	{
-		NSObject str = (NSObject) Native.Call("[[NSMutableString alloc] init]");
+		NSObject str = (NSObject) new Class("NSMutableString").Call("alloc").Call("init");
 
 		str.Call("appendString:", DoCreateStr(((int) r.origin.x).ToString()));
 		str.Call("appendString:", DoCreateStr(((int) r.origin.y).ToString()));
@@ -221,7 +225,7 @@ public class Subclass1 : NSObject
 [ExportClass("PrettyData", "NSConcreteData")]
 public class PrettyData : NSObject
 {
-	public PrettyData() : base(Native.Call("[[PrettyData alloc] init]"))
+	public PrettyData() : base(new Class("PrettyData").Call("alloc").Call("init"))
 	{
 		autorelease();
 	}

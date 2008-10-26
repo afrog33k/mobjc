@@ -127,6 +127,7 @@ namespace MObjc
 			return exception;
 		}
 		
+		#region Private Methods -----------------------------------------------
 		// Cocoa has a tendency to eat exceptions so in debug, at least, we'll write any 
 		// exceptions thrown from managed code to stderr.
 		[Conditional("DEBUG")]
@@ -149,20 +150,20 @@ namespace MObjc
 		private static NSObject DoCreateNativeException(Exception e)
 		{
 			// Create the name, reason, and userInfo objects.
-			NSObject name = (NSObject) Native.Call("[[NSString alloc] initWithUTF8String:{0}]", e.GetType().ToString());
-			NSObject reason = (NSObject) Native.Call("[[NSString alloc] initWithUTF8String:{0}]", e.Message);			
-			NSObject userInfo = (NSObject) Native.Call("[[NSMutableDictionary alloc] init]");
+			NSObject name = (NSObject) new Class("NSString").Call("alloc").Call("initWithUTF8String:", e.GetType().ToString());
+			NSObject reason = (NSObject) new Class("NSString").Call("alloc").Call("initWithUTF8String:", e.Message);			
+			NSObject userInfo = (NSObject) new Class("NSMutableDictionary").Call("alloc").Call("init");
 			
 			// Add the original System.Exception to userInfo.
-			NSObject key = (NSObject) Native.Call("[[NSString alloc] initWithUTF8String:\".NET exception\"]");
+			NSObject key = (NSObject) new Class("NSString").Call("alloc").Call("initWithUTF8String:", ".NET exception");
 			try
 			{
 				MemoryStream stream = new MemoryStream();
 				BinaryFormatter formatter = new BinaryFormatter();
 				formatter.Serialize(stream, e);
 			
-				NSObject buffer = (NSObject) Native.Call("[NSData dataWithBytes:{0} length:{1}]", stream.ToArray(), (int) stream.Length);
-				Ignore.Value = Native.Call("[{0} setObject:{1} forKey:{2}]", userInfo, buffer, key);
+				NSObject buffer = (NSObject) new Class("NSData").Call("dataWithBytes:length:", stream.ToArray(), (int) stream.Length);
+				Ignore.Value = userInfo.Call("setObject:forKey:", buffer, key);
 			}
 			catch (Exception ee)
 			{
@@ -173,12 +174,13 @@ namespace MObjc
 			}
 
 			// Create the NSException.
-			NSObject native = (NSObject) Native.Call("[NSException exceptionWithName:{0} reason:{1} userInfo:{2}]", name, reason, userInfo);
+			NSObject native = (NSObject) new Class("NSException").Call("exceptionWithName:reason:userInfo:", name, reason, userInfo);
 				
 			return native;
 		}
+		#endregion
 		
-		#region Fields			
+		#region Fields --------------------------------------------------------
 		private MethodInfo m_info;
 		private MethodSignature m_signature;
 		

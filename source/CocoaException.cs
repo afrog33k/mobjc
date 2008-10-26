@@ -71,7 +71,7 @@ namespace MObjc
 
 				if (userInfo != null && (IntPtr) userInfo != IntPtr.Zero)
 				{
-					NSObject key = (NSObject) Native.Call("[[NSString alloc] initWithUTF8String:\".NET exception\"]");
+					NSObject key = (NSObject) new Class("NSString").Call("alloc").Call("initWithUTF8String:", ".NET exception");					
 					NSObject data = (NSObject) userInfo.Call("objectForKey:", key);
 					if (data != null && !data.IsNil())
 					{

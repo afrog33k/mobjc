@@ -83,32 +83,6 @@ namespace MObjc
 			}
 		}
 		
-		// This is a formatted version of a native call. It looks similar to
-		// normal Objective-C syntax: 
-		//    Native.Call("[[NSBox alloc] initWithFrame:{0}]", frame).
-		//
-		// Note that these are fairly efficient: the first time the expr string
-		// is encountered it is compiled into an object and cached so a particular
-		// string is parsed at most once.
-		//
-		// The EBNF is:
-		//    Expr := '[' Target (Name | Operand+) ']'		name is a method name (with no colons)
-		//    Target := Arg | Name | Expr					name must be be a class name
-		//    Operand := Name ':' (Arg | Literal | Expr)	name is part of a method name (e.g. "length:")
-		//
-		//    Literal := nil | NULL | 'YES' | 'NO' | Number | String
-		//    Arg := '{' Number '}'
-		//    Name := [a-zA-Z_] [a-zA-Z0-9_]*
-		//    Number := [0-9]+
-		//    String := '"' [^"]* '"'
-		public static Untyped Call(string expr, params object[] args)	// thread safe
-		{
-			DBC.Pre(!string.IsNullOrEmpty(expr), "expr is null or empty");
-			
-			CompiledExpr compiled = Compiler.Lookup(expr);	
-			return compiled.Eval(args);
-		}
-	
 		public void SetArgs(params object[] args)
 		{	
 			if (m_disposed)        
@@ -162,6 +136,7 @@ namespace MObjc
 			return m_sig.ToString();
 		}
 
+		#region Private Methods -----------------------------------------------
 		private void DoDispose(bool disposing)
 		{
 			Unused.Arg(disposing);
@@ -225,8 +200,9 @@ namespace MObjc
 
 			return imp;
 		}
+		#endregion
 				
-		#region P/Invokes
+		#region P/Invokes -----------------------------------------------------
 		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr class_getInstanceMethod(IntPtr klass, IntPtr selector);
 
@@ -240,7 +216,7 @@ namespace MObjc
 		private extern static IntPtr object_getClass(IntPtr obj);
 		#endregion
 
-		#region Fields
+		#region Fields --------------------------------------------------------
 		private IntPtr m_target;
 		private Selector m_selector;
 		private MethodSignature m_sig;

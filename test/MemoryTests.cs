@@ -41,7 +41,7 @@ public class MemoryTests
 	[Test]					
 	public void Released() 
 	{
-		NSObject pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
+		NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 		long bytes = DoGetMemory();
 		
 		for (int j = 1; j < 100; ++j)
@@ -66,7 +66,7 @@ public class MemoryTests
 	[Test]
 	public void IntArg() 
 	{
-		NSObject pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");		
+		NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");		
 		long bytes = DoGetMemory();
 
 		Class nsString = new Class("NSString");
@@ -93,7 +93,7 @@ public class MemoryTests
 	[Test]
 	public void ArrayArg() 
 	{
-		NSObject pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");		
+		NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");		
 		Class nsData = new Class("NSData");	
 		long bytes = DoGetMemory();
 
@@ -122,7 +122,7 @@ public class MemoryTests
 	[Test]
 	public void Formatted() 
 	{
-		NSObject pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");		
+		NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");		
 		long bytes = DoGetMemory();
 
 		for (int j = 1; j < 100; ++j)
@@ -147,14 +147,14 @@ public class MemoryTests
 	[Test]
 	public void Managed() 
 	{
-		NSObject pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");		
+		NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");		
 		long bytes = DoGetMemory();
 
 		for (int j = 1; j < 100; ++j)
 		{
 			for (int i = 0; i < NumIterations/100; ++i)
 			{
-				NSObject instance = (NSObject) Native.Call("[[Subclass1 alloc] init]");			
+				NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");			
 				instance.Call("TakeString", "what");
 				instance.release();
 			}

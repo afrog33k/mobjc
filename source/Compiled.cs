@@ -22,6 +22,7 @@
 using System;
 using System.Collections.Generic;
 
+#if OLD
 namespace MObjc
 {
 	internal abstract class CompiledExpr
@@ -231,3 +232,4 @@ namespace MObjc
 		private static readonly Selector init = new Selector("init");
 	}
 }
+#endif

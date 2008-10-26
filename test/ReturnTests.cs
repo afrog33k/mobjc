@@ -31,7 +31,7 @@ public class ReturnTests
 	public void Init()
 	{
 		Registrar.CanInit = true;
-		m_pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
+		m_pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 	}
 	
 	[TestFixtureTearDown]
@@ -66,9 +66,9 @@ public class ReturnTests
 	[Test]
 	public void UInt32Test() 
 	{
-		NSObject table = (NSObject) Native.Call("[[NSHashTable alloc] init]");
-		NSObject value1 = (NSObject) Native.Call("[[NSString alloc] init]");
-		NSObject value2 = (NSObject) Native.Call("[[NSDate alloc] init]");
+		NSObject table = (NSObject) new Class("NSHashTable").Call("alloc").Call("init");
+		NSObject value1 = (NSObject) new Class("NSString").Call("alloc").Call("init");
+		NSObject value2 = (NSObject) new Class("NSDate").Call("alloc").Call("init");
 	
 		Untyped result = table.Call("addObject:", value1);
 		Assert.IsTrue(result.IsNull);
@@ -83,8 +83,8 @@ public class ReturnTests
 	[Test]
 	public void VoidTest() 
 	{
-		NSObject table = (NSObject) Native.Call("[[NSHashTable alloc] init]");
-		NSObject value = (NSObject) Native.Call("[[NSString alloc] init]");
+		NSObject table = (NSObject) new Class("NSHashTable").Call("alloc").Call("init");
+		NSObject value = (NSObject) new Class("NSString").Call("alloc").Call("init");
 	
 		Untyped result = table.Call("addObject:", value);
 
@@ -106,7 +106,7 @@ public class ReturnTests
 	[Test]
 	public void ObjectTest() 
 	{
-		NSObject table = (NSObject) Native.Call("[[NSHashTable alloc] init]");
+		NSObject table = (NSObject) new Class("NSHashTable").Call("alloc").Call("init");
 		Untyped result = table.Call("copy");
 
 		Assert.AreEqual(typeof(IntPtr), result.Value.GetType());
@@ -116,7 +116,7 @@ public class ReturnTests
 	[Test]
 	public void ClassTest() 
 	{
-		NSObject table = (NSObject) Native.Call("[[NSHashTable alloc] init]");
+		NSObject table = (NSObject) new Class("NSHashTable").Call("alloc").Call("init");
 		Untyped result = table.Call("class");
 
 		Assert.AreEqual(typeof(Class), result.Value.GetType());
@@ -126,7 +126,7 @@ public class ReturnTests
 	[Test]
 	public void SelectorTest() 
 	{
-		NSObject table = (NSObject) Native.Call("[[NSHashTable alloc] init]");
+		NSObject table = (NSObject) new Class("NSHashTable").Call("alloc").Call("init");
 		Selector selector = new Selector("addObject:");
 		NSObject sig = (NSObject) table.Call("methodSignatureForSelector:", selector);
 		
@@ -220,9 +220,9 @@ public class ReturnTests
 	[Test]
 	public void LooseTest() 
 	{
-		NSObject table = (NSObject) Native.Call("[[NSHashTable alloc] init]");
-		NSObject value1 = (NSObject) Native.Call("[[NSString alloc] init]");
-		NSObject value2 = (NSObject) Native.Call("[[NSDate alloc] init]");
+		NSObject table = (NSObject) new Class("NSHashTable").Call("alloc").Call("init");
+		NSObject value1 = (NSObject) new Class("NSString").Call("alloc").Call("init");
+		NSObject value2 = (NSObject) new Class("NSDate").Call("alloc").Call("init");
 	
 		table.Call("addObject:", value1);
 		table.Call("addObject:", value2);		

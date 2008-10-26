@@ -80,10 +80,10 @@ internal sealed class DebugController : NSObject
 			}
 			else
 			{				
-				NSObject app = (NSObject) Native.Call("[NSApplication sharedApplication]");
-				NSObject window = (NSObject) Native.Call("[{0} mainWindow]", app);
-				NSObject content = (NSObject) Native.Call("[{0} contentView]", window);
-				NSObject view = (NSObject) Native.Call("[{0} viewWithTag:33]", content);
+				NSObject app = (NSObject) new Class("NSApplication").Call("sharedApplication");
+				NSObject window = (NSObject) app.Call("mainWindow");
+				NSObject content = (NSObject) window.Call("contentView");
+				NSObject view = (NSObject) content.Call("viewWithTag:", 33);
 
 				if (!view.IsNil())
 				{
@@ -113,9 +113,9 @@ internal sealed class DebugController : NSObject
 			lock (m_lock)
 			{
 				if (m_checkingMemory)
-					text = (NSObject) Native.Call("[NSString stringWithUTF8String:\"Stop Memory Test\"]");
+					text = (NSObject) new Class("NSString").Call("stringWithUTF8String:", "Stop Memory Test");
 				else
-					text = (NSObject) Native.Call("[NSString stringWithUTF8String:\"Start Memory Test\"]");
+					text = (NSObject) new Class("NSString").Call("stringWithUTF8String:", "Start Memory Test");
 			}
 			
 			menuItem.Call("setTitle:", text);
@@ -182,7 +182,7 @@ internal sealed class DebugController : NSObject
 	private void DoDumpStatsThread(object instance)
 	{		
 		TimeSpan interval = TimeSpan.FromMinutes(60);
-		Ignore.Value = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
+		Ignore.Value = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 
 		lock (m_lock)
 		{
@@ -201,7 +201,7 @@ internal sealed class DebugController : NSObject
 		TimeSpan interval = TimeSpan.FromSeconds(5);
 		Random rand = new Random(1);
 
-		NSObject pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
+		NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 
 		lock (m_lock)
 		{
@@ -225,8 +225,7 @@ internal sealed class DebugController : NSObject
 						--count;
 					}
 						
-					Native.Call("[{0} performSelectorOnMainThread:{1} withObject:nil waitUntilDone:NO]", 
-						view, selector);
+					view.Call("performSelectorOnMainThread:withObject:waitUntilDone:", selector, null, false);
 				}
 			}
 		}

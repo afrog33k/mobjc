@@ -39,10 +39,10 @@ public class InstanceTests
 	[Test]
 	public void RefCount1Test()	
 	{
-		NSObject pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
+		NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 
 		// If we use alloc the object will have a ref count of one.
-		NSObject instance = (NSObject) Native.Call("[[NSHashTable alloc] init]");
+		NSObject instance = (NSObject) new Class("NSHashTable").Call("alloc").Call("init");
 		Assert.AreEqual(1L, instance.retainCount());
 
 		// Classes always have a very high retain count (because they
@@ -74,14 +74,14 @@ public class InstanceTests
 	[Test]
 	public void RefCount2Test()
 	{
-		NSObject pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
+		NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 
 		// No copy, new, or alloc so ref count is one and it's owned by the pool.
 		PrettyData direct = new PrettyData();
 		Assert.AreEqual(1L, direct.retainCount());
 
 		// Alloc so pool has no ownership stake.
-		NSObject indirect = (NSObject) Native.Call("[[PrettyData alloc] init]");
+		NSObject indirect = (NSObject) new Class("PrettyData").Call("alloc").Call("init");
 		Assert.AreEqual(1L, indirect.retainCount());
 
 		// If we send a message to an object its retain count doesn't change.
@@ -99,13 +99,13 @@ public class InstanceTests
 	[Test]
 	public void RefCount3Test()	
 	{
-		NSObject pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
+		NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 
 		Class klass = new Class("NSHashTable");
 		NSObject instance1 = new NSObject(klass.Call("alloc").Call("init"));
 		Assert.AreEqual(1L, instance1.retainCount());
 		
-		NSObject instance2 = new NSObject(Native.Call("[[NSHashTable alloc] init]"));
+		NSObject instance2 = new NSObject(new Class("NSHashTable").Call("alloc").Call("init"));
 		Assert.AreEqual(1L, instance2.retainCount());
 		
 		pool.release();
@@ -117,7 +117,7 @@ public class InstanceTests
 	[Test]
 	public void ChainedCallTest()
 	{
-		NSObject pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
+		NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 
 		Class nsString = new Class("NSMutableString");
 		NSObject str = (NSObject) nsString.Call("alloc").Call("initWithUTF8String:", "chained!");
@@ -131,7 +131,7 @@ public class InstanceTests
 	[Test]
 	public void NilCallTest()
 	{
-		NSObject pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
+		NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 
 		NSObject nil = new NSObject(IntPtr.Zero);
 		
@@ -161,9 +161,9 @@ public class InstanceTests
 	[Test]
 	public void ThreadedTest()
 	{
-		NSObject pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
+		NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 
-		bool threaded = (bool) Native.Call("[NSThread isMultiThreaded]");
+		bool threaded = (bool) new Class("NSThread").Call("isMultiThreaded");
 		Assert.IsTrue(threaded);
 
 		pool.release();
@@ -172,9 +172,9 @@ public class InstanceTests
 	[Test]
 	public void DeallocTest()
 	{
-		NSObject pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
+		NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 
-		Subclass1 instance = new Subclass1((IntPtr) Native.Call("[[Subclass1 alloc] init]"));
+		Subclass1 instance = new Subclass1((IntPtr) new Class("Subclass1").Call("alloc").Call("init"));
 		Assert.AreEqual(1L, instance.retainCount());
 		instance.release();
 		Assert.IsTrue(instance.Dead);

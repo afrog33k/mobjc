@@ -32,7 +32,7 @@ public class ExportTests
 	public void Init()
 	{
 		Registrar.CanInit = true;
-		m_pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
+		m_pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 	}
 	
 	[TestFixtureTearDown]
@@ -67,7 +67,7 @@ public class ExportTests
 	[Test]
 	public void CreateTest() 
 	{	
-		NSObject instance = (NSObject) Native.Call("[[Subclass1 alloc] init]");
+		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
 
 		instance.Call("initValue");
 
@@ -78,7 +78,7 @@ public class ExportTests
 	[Test]
 	public void ManagedExceptionTest() 
 	{	
-		NSObject instance = (NSObject) Native.Call("[[Subclass1 alloc] init]");
+		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
 
 		try
 		{
@@ -99,7 +99,7 @@ public class ExportTests
 	[Test]
 	public void OverrideTest() 
 	{		
-		NSObject data = (NSObject) Native.Call("[[PrettyData alloc] init]");
+		NSObject data = (NSObject) new Class("PrettyData").Call("alloc").Call("init");
 
 		int value = (int) data.Call("get33");
 		Assert.AreEqual(33, value);
@@ -113,7 +113,7 @@ public class ExportTests
 	[ExpectedException(typeof(InvalidCallException))]
 	public void BadSelector() 
 	{
-		NSObject data = (NSObject) Native.Call("[[PrettyData alloc] init]");
+		NSObject data = (NSObject) new Class("PrettyData").Call("alloc").Call("init");
 
 		data.Call("initWithUTF8String::", "hey");
 	}
@@ -121,7 +121,7 @@ public class ExportTests
 	[Test]
 	public void BaseTest() 
 	{
-		NSObject str = (NSObject) Native.Call("[[MyBase alloc] init]");
+		NSObject str = (NSObject) new Class("MyBase").Call("alloc").Call("init");
 
 		// can call NSString methods
 		bool b = (bool) str.Call("boolValue");
@@ -139,7 +139,7 @@ public class ExportTests
 	[Test]
 	public void MyDerived() 
 	{
-		NSObject str = (NSObject) Native.Call("[[MyDerived alloc] init]");
+		NSObject str = (NSObject) new Class("MyDerived").Call("alloc").Call("init");
 
 		// can call NSString methods
 		bool b = (bool) str.Call("boolValue");
@@ -165,7 +165,7 @@ public class ExportTests
 	[Test]
 	public void IVarTest() 
 	{	
-		NSObject instance = (NSObject) Native.Call("[[Subclass1 alloc] init]");
+		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
 
 		// ivars start out null
 		NSObject data = instance["myData"];
@@ -191,7 +191,7 @@ public class ExportTests
 	[ExpectedException(typeof(ArgumentException))]
 	public void BadIVarGetTest() 
 	{	
-		NSObject instance = (NSObject) Native.Call("[[Subclass1 alloc] init]");
+		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
 
 		NSObject data = instance["xxx"];
 		Assert.IsTrue(data != null);
@@ -201,7 +201,7 @@ public class ExportTests
 	[ExpectedException(typeof(ArgumentException))]
 	public void BadIVarSetTest() 
 	{	
-		NSObject instance = (NSObject) Native.Call("[[Subclass1 alloc] init]");
+		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
 
 		instance["xxx"] = instance;
 	}
@@ -209,7 +209,7 @@ public class ExportTests
 	[Test]
 	public void StructTest() 
 	{	
-		NSObject instance = (NSObject) Native.Call("[[Subclass1 alloc] init]");
+		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
 		
 		NSRange range = new NSRange();
 		range.location = 5;
@@ -222,7 +222,7 @@ public class ExportTests
 	[Test]
 	public void NestedStructTest1() 
 	{	
-		NSObject instance = (NSObject) Native.Call("[[Subclass1 alloc] init]");
+		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
 		
 		NSRect r = instance.Call("GetRect").To<NSRect>();
 		Assert.AreEqual(1.0f, r.origin.x);		
@@ -234,7 +234,7 @@ public class ExportTests
 	[Test]
 	public void NestedStructTest2() 
 	{	
-		NSObject instance = (NSObject) Native.Call("[[Subclass1 alloc] init]");
+		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
 		
 		NSRect r = new NSRect();
 		r.origin.x = 1.0f;

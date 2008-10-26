@@ -31,7 +31,7 @@ public class NativeCallTests
 	public void Init()
 	{
 		Registrar.CanInit = true;
-		m_pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
+		m_pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 	}
 	
 	[TestFixtureTearDown]
@@ -54,8 +54,8 @@ public class NativeCallTests
 	[Test]
 	public void ExceptionTest() 
 	{
-		NSObject array = (NSObject) Native.Call("[[NSMutableArray alloc] init]");
-		NSObject str = (NSObject) Native.Call("[[NSString alloc] init]");
+		NSObject array = (NSObject) new Class("NSMutableArray").Call("alloc").Call("init");
+		NSObject str = (NSObject) new Class("NSString").Call("alloc").Call("init");
 
 		array.Call("addObject:", str);
 
@@ -77,8 +77,8 @@ public class NativeCallTests
 	[ExpectedException(typeof(InvalidCallException))]
 	public void TooManyArgs() 
 	{
-		NSObject array = (NSObject) Native.Call("[[NSMutableArray alloc] init]");
-		NSObject str = (NSObject) Native.Call("[[NSString alloc] init]");
+		NSObject array = (NSObject) new Class("NSMutableArray").Call("alloc").Call("init");
+		NSObject str = (NSObject) new Class("NSString").Call("alloc").Call("init");
 
 		array.Call("addObject:", str, str);
 	}
@@ -87,7 +87,7 @@ public class NativeCallTests
 	[ExpectedException(typeof(InvalidCallException))]
 	public void TooFewArgs() 
 	{
-		NSObject array = (NSObject) Native.Call("[[NSMutableArray alloc] init]");
+		NSObject array = (NSObject) new Class("NSMutableArray").Call("alloc").Call("init");
 
 		array.Call("addObject:");
 	}
@@ -96,7 +96,7 @@ public class NativeCallTests
 	[ExpectedException(typeof(InvalidCallException))]
 	public void BadSelector1() 
 	{
-		NSObject array = (NSObject) Native.Call("[[NSMutableArray alloc] init]");
+		NSObject array = (NSObject) new Class("NSMutableArray").Call("alloc").Call("init");
 
 		array.Call("initWithUTF8String::", "hey");
 	}
@@ -105,7 +105,7 @@ public class NativeCallTests
 	[ExpectedException(typeof(InvalidCallException))]
 	public void BadSelector2() 
 	{
-		NSObject array = (NSObject) Native.Call("[[NSMutableArray alloc] init]");
+		NSObject array = (NSObject) new Class("NSMutableArray").Call("alloc").Call("init");
 
 		array.Call("xxx:", 3);
 	}
@@ -114,7 +114,7 @@ public class NativeCallTests
 	[ExpectedException(typeof(InvalidCallException))]
 	public void BadSelector3() 
 	{
-		NSObject array = (NSObject) Native.Call("[[NSMutableArray alloc] init]");
+		NSObject array = (NSObject) new Class("NSMutableArray").Call("alloc").Call("init");
 
 		array.Call("initWithUTF8String::", "hey", 2, 3, 4);
 	}
@@ -123,7 +123,7 @@ public class NativeCallTests
 	[ExpectedException(typeof(InvalidCallException))]
 	public void BadArg() 
 	{
-		NSObject array = (NSObject) Native.Call("[[NSMutableArray alloc] init]");
+		NSObject array = (NSObject) new Class("NSMutableArray").Call("alloc").Call("init");
 
 		array.Call("addObject:", 3);
 	}
@@ -132,8 +132,8 @@ public class NativeCallTests
 	[ExpectedException(typeof(InvalidCallException))]
 	public void SlowTooManyArgs() 
 	{
-		NSObject array = (NSObject) Native.Call("[[NSMutableArray alloc] init]");
-		NSObject str = (NSObject) Native.Call("[[NSString alloc] init]");
+		NSObject array = (NSObject) new Class("NSMutableArray").Call("alloc").Call("init");
+		NSObject str = (NSObject) new Class("NSString").Call("alloc").Call("init");
 
 		array.Call("addObject:", str, str, str, str);
 	}

@@ -25,19 +25,19 @@ using System;
 // http://developer.apple.com/documentation/Cocoa/Reference/ApplicationKit/Classes/NSApplication_Class/Reference/Reference.html
 internal sealed class NSApplication : NSObject 
 {
-	public NSApplication(string nibName) : base((IntPtr) Native.Call("[NSApplication sharedApplication]"))
+	public NSApplication(string nibName) : base((IntPtr) new Class("NSApplication").Call("sharedApplication"))
 	{
 		// Load our nib. This will instantiate all of the native objects and wire them together.
 		// The C# SimpleLayoutView will be created the first time Objective-C calls one of the
 		// methods SimpleLayoutView added or overrode.
-		NSObject dict = (NSObject) Native.Call("[[NSMutableDictionary alloc] init]");
-		NSObject key = (NSObject) Native.Call("[NSString stringWithUTF8String:\"NSOwner\"]");
-		Native.Call("[{0} setObject:{1} forKey:{2}]", dict, this, key);
+		NSObject dict = (NSObject) new Class("NSMutableDictionary").Call("alloc").Call("init");
+		NSObject key = (NSObject) new Class("NSString").Call("stringWithUTF8String:", "NSOwner");
+		dict.Call("setObject:forKey:", this, key);
 
-		NSObject bundle = (NSObject) Native.Call("[NSBundle mainBundle]");
+		NSObject bundle = (NSObject) new Class("NSBundle").Call("mainBundle");
 
-		NSObject nib = (NSObject) Native.Call("[NSString stringWithUTF8String:{0}]", nibName);
-		bool loaded = (bool) Native.Call("[{0} loadNibFile:{1} externalNameTable:{2} withZone:nil]", bundle, nib, dict);
+		NSObject nib = (NSObject) new Class("NSString").Call("stringWithUTF8String:", nibName);
+		bool loaded = (bool) bundle.Call("loadNibFile:externalNameTable:withZone:", nib, dict, null);
 		if (!loaded)
 			throw new InvalidOperationException("Couldn't load the nib file");
 		

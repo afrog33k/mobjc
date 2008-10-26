@@ -63,12 +63,25 @@ namespace MObjc
 	
 		public Untyped Call(Selector selector, params object[] args)
 		{			
-			Untyped result;
+			Untyped result = new Untyped(IntPtr.Zero);;
 			
-			using (Native invoke = new Native((IntPtr) this, selector))
+			if ((IntPtr) this != IntPtr.Zero)
 			{
-				invoke.SetArgs(args);			
-				result = invoke.Invoke();
+				if (selector.Name == "init" && args.Length == 0)
+				{
+					IntPtr exception = IntPtr.Zero;
+					result = new Untyped(DirectCalls.Callp((IntPtr) this, sinit, ref exception));
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+				}
+				else
+				{
+					using (Native invoke = new Native((IntPtr) this, selector))
+					{
+						invoke.SetArgs(args);			
+						result = invoke.Invoke();
+					}
+				}
 			}
 			
 			return result;
@@ -460,7 +473,7 @@ namespace MObjc
 		public T To<T>() 			// can't have generic conversion operator...
 		{
 			// If the value is null then return some form of null.
-			if (m_value == null)
+			if (m_value == null || m_value.Equals(IntPtr.Zero))
 				if (typeof(T).IsValueType)
 					throw new InvalidCastException("Value is null");
 
@@ -468,7 +481,7 @@ namespace MObjc
 					return (T) (object) new NSObject(IntPtr.Zero);
 
 				else if (typeof(NSObject).IsAssignableFrom(typeof(T)))
-					return (T) Activator.CreateInstance(typeof(T), BindingFlags.Instance | BindingFlags.NonPublic, null, 
+					return (T) Activator.CreateInstance(typeof(T), BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, 
 						new object[]{IntPtr.Zero}, null);
 
 				else
@@ -574,5 +587,6 @@ namespace MObjc
 		}
                 
 		private object m_value;
+		private static readonly Selector sinit = new Selector("init");
 	}
 }

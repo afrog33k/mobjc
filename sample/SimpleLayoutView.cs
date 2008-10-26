@@ -30,7 +30,7 @@ internal sealed class SimpleLayoutView : NSView
 	private SimpleLayoutView(IntPtr instance) : base(instance)
 	{
 		// By default NSColorPanel does not show an alpha (opacity) slider so enable it.
-		Native.Call("[[NSColorPanel sharedColorPanel] setShowsAlpha:YES]");
+		new Class("NSColorPanel").Call("sharedColorPanel").Call("setShowsAlpha:", true);
 	}
 		
 	#region Action Methods
@@ -87,7 +87,7 @@ internal sealed class SimpleLayoutView : NSView
 	private NSObject DoNewBox()
 	{
 		NSRect frame = new NSRect(0.0f, 0.0f, BoxWidth, BoxHeight);
-		NSObject box = (NSObject) Native.Call("[[NSBox alloc] initWithFrame:{0}]", frame);
+		NSObject box = (NSObject) new Class("NSBox").Call("alloc").Call("initWithFrame:", frame);
 
 		box.Call("setBoxType:", 4);
 		box.Call("setBorderType:", 1);
@@ -100,7 +100,7 @@ internal sealed class SimpleLayoutView : NSView
 	private void DoAnimate(IntPtr subview, NSRect frame)
 	{		
 		NSObject view = new NSObject(subview);
-		Native.Call("[[{0} animator] setFrame:{1}]", view, frame);
+		view.Call("animator").Call("setFrame:", frame);
 	}
 	
 	// This method simply computes the new layout, and calls setFrame: on all subview 

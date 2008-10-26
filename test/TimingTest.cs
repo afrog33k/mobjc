@@ -23,8 +23,6 @@ using NUnit.Framework;
 using MObjc;
 using System;
 using System.Diagnostics;
-//using System.Reflection;
-//using System.Runtime.InteropServices;
 
 [TestFixture]
 public class TimingTest 	
@@ -33,7 +31,7 @@ public class TimingTest
 	public void Init()
 	{
 		Registrar.CanInit = true;
-		m_pool = (NSObject) Native.Call("[[NSAutoreleasePool alloc] init]");
+		m_pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 	}
 	
 	[TestFixtureTearDown]
@@ -46,7 +44,7 @@ public class TimingTest
 		}
 	}
 	
-	[Test]
+//	[Test]
 	public void Time()	 
 	{
 		Class klass = new Class("NSString");
