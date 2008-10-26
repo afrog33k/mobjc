@@ -1,4 +1,4 @@
-# natty-ignore: install uninstall keys help
+# natty-ignore: install uninstall keys help tar
 # natty-default: libs
 
 # ------------------
@@ -49,7 +49,7 @@ check: bin/tests.dll bin/mobjc-glue.dylib
 	cd bin && "$(NUNIT)" tests.dll -nologo
 
 check1: bin/tests.dll bin/mobjc-glue.dylib
-	cd bin && "$(NUNIT)" tests.dll -fixture=ReturnTests -nologo
+	cd bin && "$(NUNIT)" tests.dll -fixture=TimingTest -nologo
 
 app: libs
 	cd sample && make app
@@ -151,5 +151,5 @@ uninstall:
 	-rm $(pc_file)
 	
 tar:
-	tar --create --compress --file=mobjc-$(version).tar.gz cocoa-pack CHANGES CHANGE_LOG MIT.X11 Makefile README gen_version.sh get_version.sh glue sample source test 
+	tar --create --compress --exclude \*/.svn --exclude \*/.svn/\* --file=mobjc-$(version).tar.gz cocoa-pack CHANGES CHANGE_LOG MIT.X11 Makefile README gen_version.sh get_version.sh glue sample source test 
 

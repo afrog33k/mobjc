@@ -36,7 +36,7 @@ namespace MObjc
 		
 		public T Value
 		{
-			get {NSObject o = m_owner[m_name]; return o.IsNil() ? null : (T) o;}
+			get {NSObject o = m_owner[m_name]; return NSObject.IsNullOrNil(o) ? null : (T) o;}
 			set {m_owner[m_name] = value;}
 		}
 		

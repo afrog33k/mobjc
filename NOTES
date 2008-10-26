@@ -1,6 +1,12 @@
 set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-console.exe -fixture=BaseClassTests -nologo bin/tests.dll
 
-* Use tar --exclude \*/.svn --exclude \*/.svn/\*
+make check		29.813007 seconds		without timing test
+
+bool (NSString): 	0.8 secs
+int (): 			0.7 secs
+NSString (): 		2.5 secs
+ToUpper control: 	0.0 secs
+
 * When we switch to generating wrappers it's not clear that we should continue using
   the current relatively fat bridge because almost all calls will be through the
   wrapper code (but note that clients will need to make bridge calls if they only
@@ -11,7 +17,7 @@ set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-cons
 	- get rid of untyped
 * Might want to remove the method attributes: could simply register all methods
   that are lower case.
-* Make sure inner inner exceptions work.
+* Do some timing tests.
 * Should be able to marshal Objc3.NSObject[] to ^r@ (NSArray ctor)
 * Smoke target has a bad prereq on sample.exe
 * Should there be a formatted version of SuperCall?

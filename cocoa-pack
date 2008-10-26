@@ -108,12 +108,12 @@ else:
 	script = """\
 #!/bin/sh
 APP_PATH=`echo \x240 | awk '{split(\x240,patharr,\"/\"); idx=1; while(patharr[idx+3] != \"\") { if (patharr[idx] != \"/\") {printf(\"%s/\", patharr[idx]); idx++ }} }'`
-cd ${APP_PATH}/Contents/Resources
+cd ${APP_PATH}/Contents/MacOS
 
 if [ -f mono ]; then rm -f mono ; fi
 ln -s \x60which mono\x60 mono
 
-./mono $(mono-flags) $(exe-name).exe $@
+./mono $(mono-flags) ../Resources/$(exe-name).exe $@
 """
 	script = script.replace("$(app-name)", appName)
 	script = script.replace("$(mono-flags)", options.mono_flags)
