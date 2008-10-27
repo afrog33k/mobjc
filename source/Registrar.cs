@@ -141,13 +141,13 @@ namespace MObjc
 
 			foreach (MethodInfo info in type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)) 
 			{
-				MethodAttribute attr = Attribute.GetCustomAttribute(info, typeof(MethodAttribute)) as MethodAttribute;
+				RegisterAttribute attr = Attribute.GetCustomAttribute(info, typeof(RegisterAttribute)) as RegisterAttribute;
 				if (attr != null) 
-					DoAddMethod(name, info, attr.Name ?? info.Name, klass, superClass, attr.IsOverride);
+					DoAddMethod(name, info, attr.Name ?? info.Name, klass, superClass);
 			}
 
 			MethodInfo info2 = typeof(NSObject).GetMethod("OnDealloc", BindingFlags.Instance | BindingFlags.NonPublic);
-			DoAddMethod(name, info2, "dealloc", klass, superClass, true);
+			DoAddMethod(name, info2, "dealloc", klass, superClass);
 
 			RegisterClass(klass, ref exception);
 			if (exception != IntPtr.Zero)
@@ -155,7 +155,7 @@ namespace MObjc
 		}
 		
 		[DisableRule("D1047", "TooManyArgs")]
-		private static void DoAddMethod(string name, MethodInfo info, string selName, IntPtr klass, Class superClass, bool isOverride)
+		private static void DoAddMethod(string name, MethodInfo info, string selName, IntPtr klass, Class superClass)
 		{
 			string encoding = DoGetEncoding(info);
 			Managed method = new Managed(info, encoding);
@@ -164,7 +164,7 @@ namespace MObjc
 			Selector selector = new Selector(selName);
 			
 			IntPtr cif = DoCreateCif(info);
-			int result = AddMethod(superClass, klass, (IntPtr) selector, encoding, mimp, cif, isOverride);
+			int result = AddMethod(superClass, klass, (IntPtr) selector, encoding, mimp, cif);
 			
 			if (result != 0)
 				if (result == 0xADDF)
@@ -243,7 +243,7 @@ namespace MObjc
 		private static void DoValidateMethod(Type type, MethodInfo info)
 		{
 			ExportClassAttribute klassAttr = Attribute.GetCustomAttribute(type, typeof(ExportClassAttribute)) as ExportClassAttribute;
-			MethodAttribute methodAttr = Attribute.GetCustomAttribute(info, typeof(MethodAttribute)) as MethodAttribute;
+			RegisterAttribute methodAttr = Attribute.GetCustomAttribute(info, typeof(RegisterAttribute)) as RegisterAttribute;
 
 			if (klassAttr != null)
 			{
@@ -252,7 +252,7 @@ namespace MObjc
 			{
 				if (methodAttr != null) 
 				{					
-					throw new ArgumentException(string.Format("{0} uses MethodAttribute, but not ExportClassAttribute.", type));
+					throw new ArgumentException(string.Format("{0} uses RegisterAttribute, but not ExportClassAttribute.", type));
 				}
 			}
 		}
@@ -333,7 +333,7 @@ namespace MObjc
 		private extern static void RegisterClass(IntPtr klass, ref IntPtr exception);
 		
 		[DllImport("mobjc-glue.dylib")] 
-		private extern static int AddMethod(IntPtr superClass, IntPtr klass, IntPtr selector, string sig, ManagedImp imp, IntPtr cif, [MarshalAs(UnmanagedType.U1)] bool isOverride);
+		private extern static int AddMethod(IntPtr superClass, IntPtr klass, IntPtr selector, string sig, ManagedImp imp, IntPtr cif);
 		
 		[DllImport("/usr/lib/libobjc.dylib")]		// use IntPtr for size because size_t has the same size as a pointer
 		private extern static byte class_addIvar(IntPtr cls, string name, IntPtr size, byte alignment, string encoding);

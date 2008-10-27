@@ -42,7 +42,7 @@ internal sealed class NSArray : NSObject
 	{
 		get
 		{				
-			return (NSObject) Call("objectAtIndex:", (uint) index);
+			return Call("objectAtIndex:", (uint) index).To<NSObject>();
 		}
 	}
  

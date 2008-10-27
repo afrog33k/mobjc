@@ -21,6 +21,7 @@
 
 using System;
 
+#if OLD
 namespace MObjc
 {	
 	// Use this to associate a .NET method with a new Objective-C
@@ -41,3 +42,4 @@ namespace MObjc
 		}
 	}
 }
+#endif

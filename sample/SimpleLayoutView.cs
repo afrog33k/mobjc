@@ -37,7 +37,7 @@ internal sealed class SimpleLayoutView : NSView
 	// Action methods to add/remove boxes, giving us something to animate. Note that we 
 	// cause a relayout here; a better design is to relayout in the view automatically on 
 	// addition/removal of subviews.
-	[NewMethod("addABox:")]		
+	[Register("addABox:")]		
 	public void AddABox(NSObject sender)
 	{
 		NSObject box = DoNewBox();
@@ -47,17 +47,17 @@ internal sealed class SimpleLayoutView : NSView
 		DoLayout();
 	}
 	
-	[NewMethod("removeLastBox:")]		
+	[Register("removeLastBox:")]		
 	public void RemoveLastBox(NSObject sender)
 	{
-		NSObject last = new NSObject(Subviews.LastObject());
+		NSObject last = Subviews.LastObject().To<NSObject>();
 		last.Call("removeFromSuperview");
 
 		DoLayout();
 	}
 	
 	// Action method to change layout style.
-	[NewMethod("changeLayout:")]		
+	[Register("changeLayout:")]		
 	public void ChangeLayout(NSObject sender)
 	{
 		m_layout = (Layout) (int) sender.Call("selectedTag");
@@ -66,14 +66,14 @@ internal sealed class SimpleLayoutView : NSView
 	#endregion
 	
 	#region Overrides
-	[OverrideMethod("tag")]		
+	[Register("tag")]		
 	public int Tag()
 	{
 		return 33;
 	}
 
 	// Changing frame (which is what happens when the window is resized) should cause relayout.
-	[OverrideMethod("setFrameSize:")]		
+	[Register("setFrameSize:")]		
 	public void SetFrameSize(NSSize size)
 	{
 		SuperCall("setFrameSize:", size);

@@ -33,14 +33,14 @@ internal sealed class DebugController : NSObject
 	}
 
 #if DEBUG	
-	[NewMethod("collectGarbage:")]		
+	[Register("collectGarbage:")]		
 	public void CollectGarbage(NSObject sender)
 	{
 		GC.Collect();
 		GC.WaitForPendingFinalizers();
 	}
 		
-	[NewMethod("dumpObjects:")]		
+	[Register("dumpObjects:")]		
 	public void DumpObjects(NSObject sender)
 	{
 		List<string> lines = new List<string>();
@@ -59,13 +59,13 @@ internal sealed class DebugController : NSObject
 		Console.WriteLine(" ");
 	}
 		
-	[NewMethod("dumpMemory:")]		
+	[Register("dumpMemory:")]		
 	public void DumpMemory(NSObject sender)
 	{
 		DoPrintMemory();		
 	}
 		
-	[NewMethod("memoryTest:")]		
+	[Register("memoryTest:")]		
 	public void MemoryTest(NSObject sender)	
 	{
 		lock (m_lock)
@@ -102,7 +102,7 @@ internal sealed class DebugController : NSObject
 	}
 #endif
 
-	[NewMethod("validateMenuItem:")]		
+	[Register("validateMenuItem:")]		
 	public bool ValidateMenuItem(NSObject menuItem)
 	{
 		Selector selector = (Selector) menuItem.Call("action");

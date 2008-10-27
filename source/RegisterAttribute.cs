@@ -23,9 +23,11 @@ using System;
 
 namespace MObjc
 {
-	// Used to mark structs that need to be marshaled to and from native code or
-	// classes which may be used as managed method argument types.
-	[AttributeUsage(AttributeTargets.Struct | AttributeTargets.Class, AllowMultiple = false)]
+	// Used to mark:
+	// 1) methods which may be called from native code
+	// 2) structs which may be marshaled to and from native code 
+	// 3) classes which may be used as managed method argument types
+	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Struct | AttributeTargets.Class, AllowMultiple = false)]
 	public sealed class RegisterAttribute : Attribute
 	{		
 		public RegisterAttribute()
@@ -37,16 +39,11 @@ namespace MObjc
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentException("name is null or empty");
 								
-			m_name = name;
+			Name = name;
 		}
-		
-		// The name of the Objective-C type, e.g. _NSRange or NSString.
-		// Maybe be null in which case the .NET type name is used.
-		public string Name
-		{
-			get {return m_name;}
-		}
-	
-		private string m_name;
+				
+		// Optional name to be used by the native code. If it is null the
+		// native code will use the managed method/struct/class name.
+		public string Name {get; private set;}
 	}
 }

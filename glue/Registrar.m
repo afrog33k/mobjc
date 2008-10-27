@@ -58,7 +58,7 @@ static void Thunk(ffi_cif* cif, void* ret, void** args, void* userData)
 	}
 }
 
-int AddMethod(Class superClass, Class klass, SEL selector, const char* sig, ManagedImp mimp, ffi_cif* cif, BOOL isOverride)
+int AddMethod(Class superClass, Class klass, SEL selector, const char* sig, ManagedImp mimp, ffi_cif* cif)
 {	
 	int status = 0;			
 	

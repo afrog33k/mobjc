@@ -10,8 +10,18 @@ NSString (): 		2.5 secs	2.6
 native NSString ():             1.6
 ToUpper control: 	0.0 secs	0.1
 
+* Merge NewMethod and OverrideMethod?
+* Remove OverrideMethodAttribute.cs, NewMethodAttribute.cs, and MethodAttribute.cs
 * Might want to remove the method attributes: could simply register all methods
   that are lower case.
+	no args
+		leave name unchanged
+		
+	one arg
+		append a colon
+		
+	more than one arg
+		require attribute
 * Do some timing tests.
 * Smoke the library.
 * Should mark public methods as [ThreadSafe].

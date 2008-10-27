@@ -21,6 +21,7 @@
 
 using System;
 
+#if OLD
 namespace MObjc
 {	
 	// Base class for NewMethodAttribute and OverrideMethodAttribute.
@@ -57,3 +58,4 @@ namespace MObjc
 		private bool m_override;
 	}
 }
+#endif

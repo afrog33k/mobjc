@@ -96,38 +96,38 @@ public class Subclass1 : NSObject
 		m_data = new IVar<NSString>(this, "myData");
 	}
 		
-	[NewMethod]		
+	[Register]		
 	public NSString concat(NSString lhs, NSString rhs) 
 	{
 		return NSString.stringWithString(lhs.ToString() + rhs.ToString());
 	}
 	
-	[NewMethod]		
+	[Register]		
 	public Subclass1 initValue() 
 	{
 		m_value = 100;
 		return this;
 	}
 	
-	[NewMethod("getValue")]		
+	[Register("getValue")]		
 	public int GetValue() 
 	{
 		return m_value;
 	}
 		
-	[NewMethod]		
+	[Register]		
 	public void BadValue() 
 	{
 		throw new ArgumentException("my error", "alpha");
 	}
 		
-	[NewMethod]		
+	[Register]		
 	public int DiffRange(NSRange range) 
 	{
 		return range.location - range.length;
 	}
 		
-	[NewMethod]		
+	[Register]		
 	public NSRect GetRect() 
 	{
 		NSRect result = new NSRect();
@@ -139,13 +139,13 @@ public class Subclass1 : NSObject
 		return result;
 	}
 		
-	[NewMethod]		
+	[Register]		
 	public Subclass1 Clone()
 	{
 		return Subclass1.make(m_value);
 	}
 		
-	[NewMethod]		
+	[Register]		
 	public NSObject MungeRect(NSRect r) 
 	{
 		NSObject str = (NSObject) new Class("NSMutableString").Call("alloc").Call("init");
@@ -158,38 +158,38 @@ public class Subclass1 : NSObject
 		return str;
 	}
 	
-	[NewMethod]		
+	[Register]		
 	public int TakeUInt16(UInt16 value) 
 	{
 		return value;
 	}
 		
-	[NewMethod]		
+	[Register]		
 	public UInt16 TakeUInt162(UInt16 value) 
 	{
 		return (UInt16) (value + 10);
 	}
 		
-	[NewMethod]		
+	[Register]		
 	public int TakeChar(char value) 
 	{
 		return (int) value;
 	}
 		
-	[NewMethod]		
+	[Register]		
 	public string TakeString(string s) 
 	{
 		return s + s;
 	}
 		
-	[NewMethod]		
+	[Register]		
 	public int TakeBase(NSObject s) 
 	{
 		int r = (int) s.Call("getValue");
 		return 3 * r;
 	}
 		
-	[NewMethod]		
+	[Register]		
 	public int TakeDerived(Subclass1 s) 
 	{
 		return 3 * s.GetValue();
@@ -238,13 +238,13 @@ public class PrettyData : NSObject
 	{
 	}
 		
-	[NewMethod]		
+	[Register]		
 	public int get33() 
 	{
 		return 33;
 	}
 	
-	[OverrideMethod]		
+	[Register]		
 	public new NSObject description() 
 	{
 		Class nsString = new Class("NSMutableString");
@@ -265,19 +265,19 @@ public class MyBase : NSObject
 	{
 	}
 		
-	[NewMethod]		
+	[Register]		
 	public int get33() 				// new method
 	{
 		return 33;
 	}
 	
-	[OverrideMethod]		
+	[Register]		
 	public int integerValue() 		// NSString override
 	{
 		return 43;
 	}
 	
-	[OverrideMethod]		
+	[Register]		
 	public new NSObject description() 
 	{
 		Class nsString = new Class("NSMutableString");
@@ -295,25 +295,25 @@ public class MyDerived : MyBase
 	{
 	}
 		
-	[NewMethod]		
+	[Register]		
 	public int get63() 				// new method
 	{
 		return 63;
 	}
 	
-	[OverrideMethod]		
+	[Register]		
 	public int intValue() 			// NSString override
 	{
 		return 73;
 	}
 	
-	[OverrideMethod]			
+	[Register]			
 	new public int integerValue()	// MyBase override 	
 	{
 		return 74;
 	}
 	
-	[OverrideMethod]		
+	[Register]		
 	public new NSObject description() 
 	{
 		Class nsString = new Class("NSMutableString");
@@ -323,13 +323,13 @@ public class MyDerived : MyBase
 		return str;
 	}
 		
-	[NewMethod]		
+	[Register]		
 	public NSObject TakeBase(MyBase s) 
 	{
 		return (NSObject) s.Call("description");
 	}
 		
-	[NewMethod]		
+	[Register]		
 	public NSObject TakeDerived(MyDerived s) 
 	{
 		return (NSObject) s.Call("description");
