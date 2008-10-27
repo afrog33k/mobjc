@@ -46,6 +46,8 @@ namespace MObjc
 		
 		internal IntPtr Call(IntPtr dummy, IntPtr resultBuffer, IntPtr argBuffers)	// thread safe
 		{
+			Unused.Value = dummy;
+			
 			IntPtr exception = IntPtr.Zero;
 	
 			try

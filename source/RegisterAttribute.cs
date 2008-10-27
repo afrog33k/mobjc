@@ -32,6 +32,7 @@ namespace MObjc
 	// automatically if RegisterAttribute is not present. The native method 
 	// name will be the managed name except that if the method is unary a colon 
 	// is appended.
+	[Serializable]
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Struct | AttributeTargets.Class, AllowMultiple = false)]
 	public sealed class RegisterAttribute : Attribute
 	{		

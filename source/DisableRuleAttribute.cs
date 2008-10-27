@@ -24,6 +24,7 @@ using System;
 namespace MObjc
 {
 	/// <summary>Used to disable Smokey rules.</summary>
+	[Serializable]
 	[AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | 
 		AttributeTargets.Constructor | AttributeTargets.Enum | AttributeTargets.Interface | 
 		AttributeTargets.Method | AttributeTargets.Struct, AllowMultiple = true)]

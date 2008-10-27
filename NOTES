@@ -1,28 +1,5 @@
 set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-console.exe -fixture=BaseClassTests -nologo bin/tests.dll
 
-make check		29.813007 seconds		without timing test
-				26.232849 seconds		with timing test but no compiled exprs
-
-								no compiled
-bool (NSString): 	0.8 secs	0.7
-int (): 			0.7 secs	0.7
-NSString (): 		2.5 secs	2.6
-native NSString ():             1.6
-ToUpper control: 	0.0 secs	0.1
-
-* Merge NewMethod and OverrideMethod?
-* Remove OverrideMethodAttribute.cs, NewMethodAttribute.cs, and MethodAttribute.cs
-* Might want to remove the method attributes: could simply register all methods
-  that are lower case.
-	no args
-		leave name unchanged
-		
-	one arg
-		append a colon
-		
-	more than one arg
-		require attribute
-* Do some timing tests.
 * Smoke the library.
 * Should mark public methods as [ThreadSafe].
 * Should be able to marshal Objc3.NSObject[] to ^r@ (NSArray ctor)

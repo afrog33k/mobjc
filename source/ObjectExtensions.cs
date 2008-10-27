@@ -34,6 +34,8 @@ namespace MObjc
 	
 		public static object Call(this object instance, Selector selector, params object[] args)
 		{			
+			DBC.Pre(selector != null, "selector is null");
+			
 			object result = new NSObject(IntPtr.Zero);
 			
 			if (instance != null)

@@ -28,6 +28,7 @@ namespace MObjc
 {
 	[DisableRuleAttribute("S1003", "KeepAlive")]
 	[DisableRuleAttribute("D1041", "CircularReference")]
+	[DisableRuleAttribute("D1067", "PreferSafeHandle")]
 	public sealed class Native : IDisposable
 	{
 		~Native()        
@@ -131,6 +132,9 @@ namespace MObjc
 		
 		public override string ToString()
 		{
+			if (m_disposed)        
+            	throw new ObjectDisposedException(GetType().Name);
+
 			return m_sig.ToString();
 		}
 
