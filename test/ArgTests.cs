@@ -49,180 +49,213 @@ public class ArgTests
 	public void Setup()
 	{
 		GC.Collect(); 				
-		System.Threading.Thread.Sleep(200);	// give the finalizer enough time to run
+		GC.WaitForPendingFinalizers();
 	}
 	
 	[Test]
-	public void IntTest()	 
+	public void SChar1()	 
 	{
-		Class klass = new Class("NSString");
-		NSObject str1 = (NSObject) klass.Call("stringWithUTF8String:", "hello world");
-
-		NSObject str2 = (NSObject) str1.Call("substringFromIndex:", 3);
-
-		Untyped result = str2.Call("UTF8String");
-		Assert.AreEqual(typeof(string), result.Value.GetType());		
-		Assert.AreEqual("lo world", result.Value);
+		NSObject n = new Class("NSNumber").Call("numberWithChar:", (sbyte) 17).To<NSObject>();
+		Assert.AreEqual("17", n.description());
 	}
 
 	[Test]
-	public void UIntTest()	 
+	public void SChar2()	 
 	{
-		Class klass = new Class("NSString");
-		NSObject str1 = (NSObject) klass.Call("stringWithUTF8String:", "hello world");
-
-		NSObject str2 = (NSObject) str1.Call("substringFromIndex:", (uint) 3);
-
-		Untyped result = str2.Call("UTF8String");
-		Assert.AreEqual(typeof(string), result.Value.GetType());		
-		Assert.AreEqual("lo world", result.Value);
-	}
-	
-	[Test]
-	public void IntanceTest()	 
-	{
-		Class klass = new Class("NSString");
-		NSObject str1 = (NSObject) klass.Call("stringWithUTF8String:", "hello");
-		NSObject str2 = (NSObject) klass.Call("stringWithUTF8String:", "goodbye");
-
-		Untyped result = str1.Call("isEqual:", str2);
-		Assert.AreEqual(typeof(bool), result.Value.GetType());		
-		Assert.IsFalse((bool) result);
-
-		result = str1.Call("isEqual:", str1);
-		Assert.AreEqual(typeof(bool), result.Value.GetType());		
-		Assert.IsTrue((bool) result);
-	}
-	
-	[Test]
-	public void IntPtrTest1()	 
-	{
-		Class klass = new Class("NSString");
-		NSObject str = (NSObject) klass.Call("stringWithUTF8String:", "hello");
-		
-		int len = (int) str.Call("length");
-
-		IntPtr buffer = Marshal.AllocCoTaskMem(2 * len);
-		str.Call("getCharacters:", buffer);
-		string text = Marshal.PtrToStringUni(buffer, len);
-
-		Assert.AreEqual("hello", text);
-		Marshal.FreeCoTaskMem(buffer);
-	}
-	
-	[Test]
-	public void IntPtrTest2()	 
-	{
-		Class klass = new Class("NSData");
-		
-		byte[] bytes = new byte[]{1, 3, 7};
-		NSObject data = (NSObject) klass.Call("dataWithBytes:length:", bytes, bytes.Length);
-		
-		int len = (int) data.Call("length");
-		Assert.AreEqual(3, len);
-
-		byte[] result = new byte[3];
-		data.Call("getBytes:", result);
-
-		Assert.AreEqual(1, result[0]);
-		Assert.AreEqual(3, result[1]);
-		Assert.AreEqual(7, result[2]);
-	}
-	
-	[Test]
-	public void StringTest()	 
-	{
-		Class klass = new Class("NSString");
-		NSObject str = (NSObject) klass.Call("stringWithUTF8String:", "hello");
-
-		string result = (string) str.Call("UTF8String");
-		Assert.AreEqual("hello", result);
-	}
-	
-	[Test]
-	public void BoolTest()	 
-	{
-		Class klass = new Class("NSNumber");
-		NSObject f = (NSObject) klass.Call("numberWithBool:", false);
-		NSObject t = (NSObject) klass.Call("numberWithBool:", true);
-		
-		Assert.AreEqual("0", f.description());
-		Assert.AreEqual("1", t.description());
-		
-		Untyped result = f.Call("boolValue");
-		Assert.IsFalse((bool) result);
-
-		result = t.Call("boolValue");
-		Assert.IsTrue((bool) result);
+		NSObject n = new Class("NSNumber").Call("numberWithChar:", true).To<NSObject>();
+		Assert.AreEqual("1", n.description());
 	}
 
 	[Test]
-	public void UInt16Test()	 
+	public void UChar()	 
 	{
-		Class klass = new Class("NSNumber");
-		NSObject f = (NSObject) klass.Call("numberWithUnsignedShort:", (ushort) 300);
-		
-		Assert.AreEqual("300", f.description());
+		NSObject n = new Class("NSNumber").Call("numberWithUnsignedChar:", (byte) 17).To<NSObject>();
+		Assert.AreEqual("17", n.description());
 	}
 
 	[Test]
-	public void ByteTest() 
+	public void Short()	 
 	{
-		Class klass = new Class("NSNumber");
-		
-		NSObject num = (NSObject) klass.Call("alloc");
-		num = (NSObject) num.Call("initWithUnsignedChar:", (byte) 13);
-		byte result = (byte) num.Call("unsignedCharValue");
-		Assert.AreEqual(13, result);
+		NSObject n = new Class("NSNumber").Call("numberWithShort:", (short) 17).To<NSObject>();
+		Assert.AreEqual("17", n.description());
 	}
 
 	[Test]
-	public void CharTest() 
+	public void Int()	 
 	{
-		Class klass = new Class("NSNumber");
-		
-		NSObject num = (NSObject) klass.Call("alloc");
-		num = (NSObject) num.Call("initWithUnsignedShort:", (char) 'x');
+		NSObject n = new Class("NSNumber").Call("numberWithInt:", 17).To<NSObject>();
+		Assert.AreEqual("17", n.description());
+	}
 
-		UInt16 result1 = (UInt16) num.Call("unsignedShortValue");
-		Assert.AreEqual((UInt16) 'x', result1);
+	[Test]
+	public void Long()	 
+	{
+		NSObject n = new Class("NSNumber").Call("numberWithLong:", 17).To<NSObject>();
+		Assert.AreEqual("17", n.description());
+	}
 
-		char result = (char) num.Call("unsignedShortValue");
-		Assert.AreEqual('x', result);
+	[Test]
+	public void LongLong()	 
+	{
+		NSObject n = new Class("NSNumber").Call("numberWithLongLong:", 17L).To<NSObject>();
+		Assert.AreEqual("17", n.description());
+	}
+
+	[Test]
+	public void UShort1()	 
+	{
+		NSObject n = new Class("NSNumber").Call("numberWithUnsignedShort:", (ushort) 17).To<NSObject>();
+		Assert.AreEqual("17", n.description());
+	}
+
+	[Test]
+	public void UShort2()	 
+	{
+		NSObject n = new Class("NSNumber").Call("numberWithUnsignedShort:", 'x').To<NSObject>();
+		Assert.AreEqual("120", n.description());
+	}
+
+	[Test]
+	public void UInt()	 
+	{
+		NSObject n = new Class("NSNumber").Call("numberWithUnsignedInt:", 17U).To<NSObject>();
+		Assert.AreEqual("17", n.description());
+	}
+
+	[Test]
+	public void ULong()	 
+	{
+		NSObject n = new Class("NSNumber").Call("numberWithUnsignedLong:", 17U).To<NSObject>();
+		Assert.AreEqual("17", n.description());
+	}
+
+	[Test]
+	public void ULongLong()	 
+	{
+		NSObject n = new Class("NSNumber").Call("numberWithUnsignedLongLong:", 17UL).To<NSObject>();
+		Assert.AreEqual("17", n.description());
+	}
+
+	[Test]
+	public void Float()	 
+	{
+		NSObject n = new Class("NSNumber").Call("numberWithFloat:", 1.2f).To<NSObject>();
+		float x = (float) n.Call("floatValue");
+		Assert.IsTrue(Math.Abs(1.2 - x) < 0.001);
+	}
+
+	[Test]
+	public void Double1()	 
+	{
+		NSObject n = new Class("NSNumber").Call("numberWithDouble:", 1.2).To<NSObject>();
+		double x = (double) n.Call("doubleValue");
+		Assert.IsTrue(Math.Abs(1.2 - x) < 0.001);
+	}
+
+	[Test]
+	public void Double2()	 
+	{
+		NSObject n = new Class("NSNumber").Call("numberWithDouble:", 1.2f).To<NSObject>();
+		double x = (double) n.Call("doubleValue");
+		Assert.IsTrue(Math.Abs(1.2 - x) < 0.001);
+	}
+
+	[Test]
+	public void CString()	 
+	{
+		NSObject s = new Class("NSString").Call("stringWithUTF8String:", "hello").To<NSObject>();
+		Assert.AreEqual("hello", s.description());
 	}
 	
 	[Test]
-	public void ConstUTF32String() 
+	public void UnicharString()	 
 	{
-		Class nsString = new Class("NSString");
-		
-		NSObject str = (NSObject) nsString.Call("alloc").Call("initWithCharacters:length:", "hi there", 8);
-		
-		string result = (string) str.Call("UTF8String");
-		Assert.AreEqual("hi there", result);
+		NSObject s = new Class("NSString").Call("stringWithCharacters:length:", "hello", (uint) "hello".Length).To<NSObject>();
+		Assert.AreEqual("hello", s.description());
 	}
-		
+	
 	[Test]
-	public void FloatTest() 
+	public void Object1()	 
 	{
-		Class klass = new Class("NSNumber");
-		
-		NSObject num = (NSObject) klass.Call("alloc");
-		num = (NSObject) num.Call("initWithFloat:", 3.14f);
-		float result = (float) num.Call("floatValue");
-		Assert.IsTrue(Math.Abs(3.14 - result) < 0.01);
-		
-		num = (NSObject) klass.Call("alloc");
-		num = (NSObject) num.Call("initWithFloat:", 100);
-		result = (float) num.Call("floatValue");
-		Assert.IsTrue(Math.Abs(100.0 - result) < 0.01);
+		NSObject s = new Class("NSString").Call("stringWithUTF8String:", "hello").To<NSObject>();
+		NSObject t = new Class("NSString").Call("stringWithString:", s).To<NSObject>();
+		Assert.AreEqual("hello", t.description());
 	}
+	
+	[Test]
+	public void Object2()	 
+	{
+		NSObject s = new Class("NSString").Call("stringWithUTF8String:", "hello").To<NSObject>();
+		NSObject t = new Class("NSString").Call("stringWithString:", (IntPtr) s).To<NSObject>();
+		Assert.AreEqual("hello", t.description());
+	}
+	
+	[Test]
+	public void Class1()	 
+	{
+		Class objClass = new Class("NSObject");
+		Class strClass = new Class("NSString");
+		Class numClass = new Class("NSNumber");
 
+		NSObject s = strClass.Call("stringWithUTF8String:", "hello").To<NSObject>();
+
+		sbyte b = (sbyte) s.Call("isKindOfClass:", strClass);
+		Assert.AreEqual(1, b);
+
+		b = (sbyte) s.Call("isKindOfClass:", objClass);
+		Assert.AreEqual(1, b);
+
+		b = (sbyte) s.Call("isKindOfClass:", numClass);
+		Assert.AreEqual(0, b);
+	}
+	
 	[Test]
-	public void StructTest() 
+	public void Class2()	 
 	{
-		Class klass = new Class("NSString");
-		NSObject str = (NSObject) klass.Call("stringWithUTF8String:", "the quick brown fox");
+		Class objClass = new Class("NSObject");
+		Class strClass = new Class("NSString");
+		Class numClass = new Class("NSNumber");
+
+		NSObject s = strClass.Call("stringWithUTF8String:", "hello").To<NSObject>();
+
+		sbyte b = (sbyte) s.Call("isKindOfClass:", (IntPtr) strClass);
+		Assert.AreEqual(1, b);
+
+		b = (sbyte) s.Call("isKindOfClass:", (IntPtr) objClass);
+		Assert.AreEqual(1, b);
+
+		b = (sbyte) s.Call("isKindOfClass:", (IntPtr) numClass);
+		Assert.AreEqual(0, b);
+	}
+	
+	[Test]
+	public void Selector1()	 
+	{
+		NSObject s = new Class("NSString").Call("stringWithUTF8String:", "hello").To<NSObject>();
+
+		sbyte b = (sbyte) s.Call("respondsToSelector:", new Selector("getCharacters:"));
+		Assert.AreEqual(1, b);
+
+		b = (sbyte) s.Call("respondsToSelector:", new Selector("xxx:"));
+		Assert.AreEqual(0, b);
+	}
+	
+	[Test]
+	public void Selector2()	 
+	{
+		NSObject s = new Class("NSString").Call("stringWithUTF8String:", "hello").To<NSObject>();
+
+		sbyte b = (sbyte) s.Call("respondsToSelector:", (IntPtr) new Selector("getCharacters:"));
+		Assert.AreEqual(1, b);
+
+		b = (sbyte) s.Call("respondsToSelector:", (IntPtr) new Selector("xxx:"));
+		Assert.AreEqual(0, b);
+	}
+	
+	[Test]
+	public void Struct() 
+	{
+		NSObject str = new Class("NSString").Call("stringWithUTF8String:", "the quick brown fox").To<NSObject>();
 		
 		NSRange range = new NSRange();
 		range.location = 4;
@@ -234,106 +267,12 @@ public class ArgTests
 		Assert.AreEqual("quick", sresult);
 	}
 
-	[Test]
-	public void UInt16Test2() 
-	{
-		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
-				
-		int result = (int) instance.Call("TakeUInt16", (UInt16) 200);
-		Assert.AreEqual(200, result);
-
-		UInt16 result2 = (UInt16) instance.Call("TakeUInt162", (UInt16) 5000);
-		Assert.AreEqual(5010, result2);
-	}
 
 	[Test]
-	public void CharTest2() 
+	[ExpectedException(typeof(InvalidCallException))]
+	public void BadInt()	 
 	{
-		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
-				
-		int result = (int) instance.Call("TakeChar", (char) 'x');
-		Assert.AreEqual((int) 'x', result);
-
-		result = (int) instance.Call("TakeChar", (UInt16) 'x');
-		Assert.AreEqual((int) 'x', result);
-	}
-
-	[Test]
-	public void StringTest2() 
-	{
-		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
-				
-		string result = (string) instance.Call("TakeString", "what");
-		Assert.AreEqual("whatwhat", result);
-	}
-
-	[Test]
-	public void BaseTest() 
-	{
-		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
-		instance.Call("initValue");
-				
-		int result = (int) instance.Call("TakeBase", instance);
-		Assert.AreEqual(300, result);
-	}
-
-	[Test]
-	public void DerivedTest() 
-	{
-		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
-		instance.Call("initValue");
-				
-		int result = (int) instance.Call("TakeDerived", instance);
-		Assert.AreEqual(300, result);
-	}
-
-	[Test]
-	public void DerivedTest2() 
-	{
-		NSObject super = (NSObject) new Class("MyBase").Call("alloc").Call("init");
-		NSObject derived = (NSObject) new Class("MyDerived").Call("alloc").Call("init");
-				
-		NSObject iresult = (NSObject) derived.Call("TakeBase", super);
-		string result = (string) iresult.Call("UTF8String");
-		Assert.AreEqual("base", result);
-
-		iresult = (NSObject) derived.Call("TakeBase", derived);
-		result = (string) iresult.Call("UTF8String");
-		Assert.AreEqual("derived", result);
-
-		iresult = (NSObject) derived.Call("TakeDerived", derived);
-		result = (string) iresult.Call("UTF8String");
-		Assert.AreEqual("derived", result);
-	}
-
-	[Test]
-	[ExpectedException(typeof(TargetInvocationException))]
-	public void DerivedTest3() 
-	{
-		NSObject super = (NSObject) new Class("MyBase").Call("alloc").Call("init");
-		NSObject derived = (NSObject) new Class("MyDerived").Call("alloc").Call("init");
-		
-		Managed.LogException = (e) => {};
-		try
-		{
-			derived.Call("TakeDerived", super);
-		}
-		finally
-		{
-			Managed.LogException = null;
-		}
-	}
-
-	[Test]
-	public void RegisteredClass() 
-	{
-		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
-		
-		NSString s1 = new NSString("hey ");
-		NSString s2 = new NSString("there");		
-				
-		NSString result = new NSString((IntPtr) instance.Call("concat", s1, s2));
-		Assert.AreEqual("hey there", result.ToString());
+		new Class("NSNumber").Call("numberWithInt:", (short) 17).To<NSObject>();
 	}
 
 	private NSObject m_pool;

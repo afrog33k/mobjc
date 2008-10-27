@@ -23,29 +23,31 @@ using MObjc;
 using System;
 
 // http://developer.apple.com/documentation/Cocoa/Reference/ApplicationKit/Classes/NSApplication_Class/Reference/Reference.html
-internal sealed class NSApplication : NSObject 
+internal sealed class App 
 {
-	public NSApplication(string nibName) : base((IntPtr) new Class("NSApplication").Call("sharedApplication"))
-	{
+	public App(string nibName)
+	{		
+		NSObject app = (NSObject) new Class("NSApplication").Call("sharedApplication");
+
 		// Load our nib. This will instantiate all of the native objects and wire them together.
 		// The C# SimpleLayoutView will be created the first time Objective-C calls one of the
 		// methods SimpleLayoutView added or overrode.
-		NSObject dict = (NSObject) new Class("NSMutableDictionary").Call("alloc").Call("init");
-		NSObject key = (NSObject) new Class("NSString").Call("stringWithUTF8String:", "NSOwner");
-		dict.Call("setObject:forKey:", this, key);
+		NSObject dict = new Class("NSMutableDictionary").Call("alloc").Call("init").To<NSObject>();
+		NSObject key = new Class("NSString").Call("stringWithUTF8String:", "NSOwner").To<NSObject>();
+		dict.Call("setObject:forKey:", app, key);
 
-		NSObject bundle = (NSObject) new Class("NSBundle").Call("mainBundle");
+		NSObject bundle = new Class("NSBundle").Call("mainBundle").To<NSObject>();
 
-		NSObject nib = (NSObject) new Class("NSString").Call("stringWithUTF8String:", nibName);
-		bool loaded = (bool) bundle.Call("loadNibFile:externalNameTable:withZone:", nib, dict, null);
-		if (!loaded)
+		NSObject nib = new Class("NSString").Call("stringWithUTF8String:", nibName).To<NSObject>();
+		sbyte loaded = (sbyte) bundle.Call("loadNibFile:externalNameTable:withZone:", nib, dict, null);
+		if (loaded != 1)
 			throw new InvalidOperationException("Couldn't load the nib file");
 		
 		// We need an NSAutoreleasePool to do Native.Call, but we don't want to have one
 		// hanging around while we're in the main event loop because that may hide bugs.
 		// So, we'll instantiate a Native instance here and call Invoke later which can
 		// be done without an NSAutoreleasePool.
-		m_run = new Native(this, new Selector("run"));
+		m_run = new Native(app, new Selector("run"));
 		
 		dict.release();
 	}

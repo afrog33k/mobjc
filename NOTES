@@ -6,20 +6,15 @@ make check		29.813007 seconds		without timing test
 								no compiled
 bool (NSString): 	0.8 secs	0.7
 int (): 			0.7 secs	0.7
-NSString (): 		2.5 secs	2.1
+NSString (): 		2.5 secs	2.6
+native NSString ():             1.6
 ToUpper control: 	0.0 secs	0.1
 
-Compiled
-Compiler
-FormattedTests
 
-* Trim some fat:
-	- add a cached native timing test
-	- require arguments to match native types
-	- get rid of untyped
 * Might want to remove the method attributes: could simply register all methods
   that are lower case.
 * Do some timing tests.
+* Smoke the library.
 * Should mark public methods as [ThreadSafe].
 * Should be able to marshal Objc3.NSObject[] to ^r@ (NSArray ctor)
 * Smoke target has a bad prereq on sample.exe

@@ -173,7 +173,7 @@ public class MemoryTests
     private static long DoGetMemory()
     {
         GC.Collect();                 
-        System.Threading.Thread.Sleep(200);        // sleep a bit to ensure the finalizer thread kicks in
+		GC.WaitForPendingFinalizers();
         
         // Get the result of running top.
         ProcessStartInfo info = new ProcessStartInfo();

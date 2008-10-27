@@ -77,11 +77,11 @@ namespace MObjc
 					{
 						// If it does then get the serialized exception bytes,
 						IntPtr ptr = (IntPtr) data.Call("bytes");
-						int bytes = (int) data.Call("length");
+						uint bytes = (uint) data.Call("length");
 						
 						// copy them into a managed buffer,
 						byte[] buffer = new byte[bytes];
-						Marshal.Copy(ptr, buffer, 0, bytes);
+						Marshal.Copy(ptr, buffer, 0, (int) bytes);
 	
 						// and raise the original exception.
 						MemoryStream stream = new MemoryStream(buffer);

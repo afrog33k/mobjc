@@ -52,11 +52,7 @@ namespace MObjc
 			{			
 				// Get the this pointer for the method we're calling.
 				PtrArray argArray = new PtrArray(argBuffers, m_signature.GetNumArgs() + 2);
-				IntPtr target = (IntPtr) Ffi.DrainBuffer(argArray[0], "@");
-				
-				NSObject instance = NSObject.Lookup(target);
-				if (instance == null)
-					throw new ArgumentException("Couldn't find the C# object for " + target);	// shouldn't happen
+				NSObject instance = (NSObject) Ffi.DrainBuffer(argArray[0], "@");
 				
 				// Get the selector for the method that was called.
 				// Get the method arguments.
@@ -66,7 +62,7 @@ namespace MObjc
 				{
 					encoding = m_signature.GetArgEncoding(i + 2);
 					if (encoding == "@")
-						args[i] = new NSObject((IntPtr) Ffi.DrainBuffer(argArray[i + 2], encoding));
+						args[i] = (NSObject) Ffi.DrainBuffer(argArray[i + 2], encoding);
 					else
 						args[i] = Ffi.DrainBuffer(argArray[i + 2], encoding);
 						
@@ -74,15 +70,12 @@ namespace MObjc
 					// so we need to fix things up here.
 					Type ptype = m_info.GetParameters()[i].ParameterType;
 					if (ptype == typeof(char))
+					{
 						args[i] = (char) (UInt16) args[i];
-						
+					}	
 					else if (ptype != typeof(NSObject) && typeof(NSObject).IsAssignableFrom(ptype))
 					{
-						IntPtr ip;
-						if (args[i].GetType() == typeof(NSObject))
-							ip = (IntPtr) (NSObject) args[i];
-						else
-							ip = (IntPtr) args[i];
+						IntPtr ip = (IntPtr) (NSObject) args[i];
 
 						args[i] = NSObject.Lookup(ip);
 						if (args[i] == null && ip != IntPtr.Zero)
@@ -99,7 +92,15 @@ namespace MObjc
 				
 				// and marshal the result.
 				encoding = m_signature.GetReturnEncoding();
-				if (encoding != "v" && encoding != "Vv")
+				if (encoding == "c" || encoding == "C" || encoding == "s" || encoding == "S")	// per 'man ffi_call' small results must be stuffed into "storage that is sizeof(long) or larger"
+				{
+					if (ms_buffer != IntPtr.Zero)
+						Marshal.FreeHGlobal(ms_buffer);
+					
+					int r = Convert.ToInt32(value);
+					ms_buffer = Ffi.FillBuffer(resultBuffer, r, "l", null);
+				}
+				else if (encoding != "v" && encoding != "Vv")
 				{
 					if (ms_buffer != IntPtr.Zero)
 						Marshal.FreeHGlobal(ms_buffer);
@@ -162,7 +163,9 @@ namespace MObjc
 				BinaryFormatter formatter = new BinaryFormatter();
 				formatter.Serialize(stream, e);
 			
-				NSObject buffer = (NSObject) new Class("NSData").Call("dataWithBytes:length:", stream.ToArray(), (int) stream.Length);
+				byte[] data = stream.ToArray();
+				GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
+				NSObject buffer = (NSObject) new Class("NSData").Call("dataWithBytes:length:", handle.AddrOfPinnedObject(), (uint) stream.Length);
 				Ignore.Value = userInfo.Call("setObject:forKey:", buffer, key);
 			}
 			catch (Exception ee)

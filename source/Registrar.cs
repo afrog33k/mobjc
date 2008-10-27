@@ -40,7 +40,7 @@ namespace MObjc
 				if (!ms_canInit)
 					throw new InvalidOperationException("mobjc was used, but CanInit is false");
 					
-				NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
+				NSObject pool = new Class("NSAutoreleasePool").Call("alloc").Call("init").To<NSObject>();
 				
 				DoInit();
 		
@@ -49,7 +49,7 @@ namespace MObjc
 				// threads (the main thread and the finalizer thread) so we'll switch
 				// to multithreading mode here.
 				Selector selector = new Selector("foo");
-				NSObject thread = (NSObject) new Class("NSThread").Call("alloc").Call("initWithTarget:selector:object:", null, selector, null);
+				NSObject thread = new Class("NSThread").Call("alloc").Call("initWithTarget:selector:object:", null, selector, null).To<NSObject>();
 				Ignore.Value = thread.Call("start");
 		
 				ms_inited = true;
@@ -201,7 +201,7 @@ namespace MObjc
 		{
 			StringBuilder sig = new StringBuilder();
 			
-			string s = TypeEncoder.EncodeReturn(info.ReturnType);
+			string s = TypeEncoder.Encode(info.ReturnType);
 			sig.Append(s);
 			sig.Append("@:");
 			
@@ -210,7 +210,7 @@ namespace MObjc
 				s = TypeEncoder.Encode(param.ParameterType);
 				sig.Append(s);
 			}
-			
+						
 			return sig.ToString();
 		}
 		

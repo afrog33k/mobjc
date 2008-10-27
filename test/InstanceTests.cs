@@ -33,7 +33,7 @@ public class InstanceTests
 	{
 		Registrar.CanInit = true;
 		GC.Collect(); 				
-		System.Threading.Thread.Sleep(200);	// give the finalizer enough time to run
+		GC.WaitForPendingFinalizers();
 	}
 	
 	[Test]
@@ -77,7 +77,7 @@ public class InstanceTests
 		NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 
 		// No copy, new, or alloc so ref count is one and it's owned by the pool.
-		PrettyData direct = new PrettyData();
+		PrettyData direct = PrettyData.makeDefault();
 		Assert.AreEqual(1L, direct.retainCount());
 
 		// Alloc so pool has no ownership stake.
@@ -102,10 +102,10 @@ public class InstanceTests
 		NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 
 		Class klass = new Class("NSHashTable");
-		NSObject instance1 = new NSObject(klass.Call("alloc").Call("init"));
+		NSObject instance1 = (NSObject) klass.Call("alloc").Call("init");
 		Assert.AreEqual(1L, instance1.retainCount());
 		
-		NSObject instance2 = new NSObject(new Class("NSHashTable").Call("alloc").Call("init"));
+		NSObject instance2 = (NSObject) new Class("NSHashTable").Call("alloc").Call("init");
 		Assert.AreEqual(1L, instance2.retainCount());
 		
 		pool.release();
@@ -122,8 +122,8 @@ public class InstanceTests
 		Class nsString = new Class("NSMutableString");
 		NSObject str = (NSObject) nsString.Call("alloc").Call("initWithUTF8String:", "chained!");
 
-		Untyped result = str.Call("UTF8String");
-		Assert.AreEqual("chained!", result.Value);
+		string result = (string) str.Call("UTF8String");
+		Assert.AreEqual("chained!", result);
 
 		pool.release();
 	}
@@ -136,24 +136,20 @@ public class InstanceTests
 		NSObject nil = new NSObject(IntPtr.Zero);
 		
 		// Calling an NSObject method on nil does nothing and returns nil.
-		Untyped result = nil.Call("hash");
-		Assert.AreEqual(typeof(IntPtr), result.Value.GetType());
-		Assert.AreEqual(IntPtr.Zero, (IntPtr) result);
+		NSObject result = (NSObject) nil.Call("hash");
+		Assert.IsTrue(result.IsNil());
 
 		// Calling a unknown method on nil does nothing and returns nil.
-		result = nil.Call("foo");
-		Assert.AreEqual(typeof(IntPtr), result.Value.GetType());
-		Assert.AreEqual(IntPtr.Zero, (IntPtr) result);
+		result = (NSObject) nil.Call("foo");
+		Assert.IsTrue(result.IsNil());
 
 		// Can chain calls to nil.
-		result = nil.Call("foo").Call("bar");
-		Assert.AreEqual(typeof(IntPtr), result.Value.GetType());
-		Assert.AreEqual(IntPtr.Zero, (IntPtr) result);
+		result = (NSObject) nil.Call("foo").Call("bar");
+		Assert.IsTrue(result.IsNil());
 
 		// Can use Native with null.
-		result = nil.Call("foo");
-		Assert.AreEqual(typeof(IntPtr), result.Value.GetType());
-		Assert.AreEqual(IntPtr.Zero, (IntPtr) result);
+		result = (NSObject) nil.Call("foo");
+		Assert.IsTrue(result.IsNil());
 
 		pool.release();
 	}
@@ -163,8 +159,8 @@ public class InstanceTests
 	{
 		NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 
-		bool threaded = (bool) new Class("NSThread").Call("isMultiThreaded");
-		Assert.IsTrue(threaded);
+		sbyte threaded = (sbyte) new Class("NSThread").Call("isMultiThreaded");
+		Assert.AreEqual(1, threaded);
 
 		pool.release();
 	}
@@ -174,7 +170,7 @@ public class InstanceTests
 	{
 		NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 
-		Subclass1 instance = new Subclass1((IntPtr) new Class("Subclass1").Call("alloc").Call("init"));
+		Subclass1 instance = (Subclass1) new Class("Subclass1").Call("alloc").Call("init");
 		Assert.AreEqual(1L, instance.retainCount());
 		instance.release();
 		Assert.IsTrue(instance.Dead);

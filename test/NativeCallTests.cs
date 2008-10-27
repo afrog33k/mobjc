@@ -48,7 +48,7 @@ public class NativeCallTests
 	public void Setup()
 	{
 		GC.Collect(); 				
-		System.Threading.Thread.Sleep(200);	// give the finalizer enough time to run
+		GC.WaitForPendingFinalizers();
 	}
 	
 	[Test]
@@ -59,12 +59,12 @@ public class NativeCallTests
 
 		array.Call("addObject:", str);
 
-		Untyped result = array.Call("objectAtIndex:", 0);
-		Assert.IsTrue(!result.IsNull);
+		NSObject result = (NSObject) array.Call("objectAtIndex:", 0U);
+		Assert.IsTrue(!NSObject.IsNullOrNil(result));
 
 		try
 		{
-			array.Call("objectAtIndex:", 1);
+			array.Call("objectAtIndex:", 1U);
 		}
 		catch (CocoaException e)
 		{

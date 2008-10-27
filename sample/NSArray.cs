@@ -23,9 +23,10 @@ using MObjc;
 using System;
 
 // http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Classes/NSArray_Class/Reference/Reference.html
+[Register]
 internal sealed class NSArray : NSObject
 {
-	public NSArray(Untyped value) : base(value)
+	public NSArray(IntPtr value) : base(value)
 	{
 	}
 	
@@ -33,20 +34,20 @@ internal sealed class NSArray : NSObject
 	{
 		get
 		{
-			return (int) Call("count");
+			return (int) (uint) Call("count");
 		}
 	}
 	
-	public IntPtr this[int index]
+	public NSObject this[int index]
 	{
 		get
 		{				
-			return (IntPtr) Call("objectAtIndex:", index);
+			return (NSObject) Call("objectAtIndex:", (uint) index);
 		}
 	}
  
- 	public IntPtr LastObject()
+ 	public NSObject LastObject()
  	{
- 		return (IntPtr) Call("lastObject");
+ 		return (NSObject) Call("lastObject");
  	}
 }

@@ -44,7 +44,7 @@ public class TimingTest
 		}
 	}
 	
-//	[Test]
+	[Test]
 	public void Time()	 
 	{
 		Class klass = new Class("NSString");
@@ -69,9 +69,17 @@ public class TimingTest
 		timer = Stopwatch.StartNew();
 		for (int i = 0; i < 10000; ++i)
 		{
-			str1.Call("uppercaseString").To<NSString>();
+			str1.Call("uppercaseString");
 		}
 		Console.WriteLine("NSString (): {0:0.0} secs", timer.ElapsedMilliseconds/1000.0);
+		
+		Native native = new Native(str1, new Selector("uppercaseString"));
+		timer = Stopwatch.StartNew();
+		for (int i = 0; i < 10000; ++i)
+		{
+			native.Invoke();
+		}
+		Console.WriteLine("native NSString (): {0:0.0} secs", timer.ElapsedMilliseconds/1000.0);
 
 		string s = "hello world";
 		timer = Stopwatch.StartNew();

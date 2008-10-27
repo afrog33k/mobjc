@@ -60,12 +60,9 @@ public class NSString : NSObject
 	{
 	}
 	
-	public NSString(Untyped instance) : base(instance)
+	public static NSString stringWithString(string str)
 	{
-	}
-
-	public NSString(string str) : base(new Class("NSString").Call("stringWithUTF8String:", str))
-	{
+		return (NSString) new Class("NSString").Call("stringWithUTF8String:", str);
 	}
 	
 	public override string ToString()
@@ -77,16 +74,21 @@ public class NSString : NSObject
 [ExportClass("Subclass1", "NSObject", IVars = "myData")]
 public class Subclass1 : NSObject
 {
-	public Subclass1() : this(0)
+	public static Subclass1 makeDefault()
 	{
-		m_data = new IVar<NSString>(this, "myData");
+		Subclass1 result = Subclass1.make(0);
+		result.m_data = new IVar<NSString>(result, "myData");
+		return result;
 	}
 		
-	public Subclass1(int v) : base(new Class("Subclass1").Call("alloc").Call("init"))
+	public static Subclass1 make(int v) 
 	{
-		autorelease();
-		m_value = v;
-		m_data = new IVar<NSString>(this, "myData");
+		Subclass1 result = (Subclass1) new Class("Subclass1").Call("alloc").Call("init");
+		result.autorelease();
+		result.m_value = v;
+		result.m_data = new IVar<NSString>(result, "myData");
+		
+		return result;
 	}
 		
 	public Subclass1(IntPtr instance) : base(instance)
@@ -97,7 +99,7 @@ public class Subclass1 : NSObject
 	[NewMethod]		
 	public NSString concat(NSString lhs, NSString rhs) 
 	{
-		return new NSString(lhs.ToString() + rhs.ToString());
+		return NSString.stringWithString(lhs.ToString() + rhs.ToString());
 	}
 	
 	[NewMethod]		
@@ -140,7 +142,7 @@ public class Subclass1 : NSObject
 	[NewMethod]		
 	public Subclass1 Clone()
 	{
-		return new Subclass1(m_value);
+		return Subclass1.make(m_value);
 	}
 		
 	[NewMethod]		
@@ -201,7 +203,7 @@ public class Subclass1 : NSObject
 	public string Data
 	{
 		get {return m_data.Value.ToString();}
-		set {m_data.Value = new NSString(value);}
+		set {m_data.Value = NSString.stringWithString(value);}
 	}
 		
 	protected override void OnDealloc()
@@ -225,9 +227,11 @@ public class Subclass1 : NSObject
 [ExportClass("PrettyData", "NSConcreteData")]
 public class PrettyData : NSObject
 {
-	public PrettyData() : base(new Class("PrettyData").Call("alloc").Call("init"))
+	public static PrettyData makeDefault() 
 	{
-		autorelease();
+		PrettyData result = (PrettyData) new Class("PrettyData").Call("alloc").Call("init");
+		result.autorelease();
+		return result;
 	}
 		
 	protected PrettyData(IntPtr instance) : base(instance)

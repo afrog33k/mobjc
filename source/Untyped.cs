@@ -22,6 +22,7 @@
 using System;
 using System.Reflection;
 
+#if OLD
 namespace MObjc
 {
 	// Loosely typed value retrieved from Objective-C. Note that this also
@@ -590,3 +591,4 @@ namespace MObjc
 		private static readonly Selector sinit = new Selector("init");
 	}
 }
+#endif

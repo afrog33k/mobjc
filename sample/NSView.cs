@@ -23,6 +23,7 @@ using MObjc;
 using System;
 
 // http://developer.apple.com/documentation/Cocoa/Reference/ApplicationKit/Classes/NSView_Class/Reference/NSView.html
+[Register]
 internal class NSView : NSObject
 {
 	public NSView(IntPtr instance) : base(instance)
@@ -49,7 +50,7 @@ internal class NSView : NSObject
 	
 	public NSArray Subviews
 	{
-		get {return new NSArray(Call("subviews"));}
+		get {return Call("subviews").To<NSArray>();}
 	}
 	
 	public void AddSubView(NSObject view)

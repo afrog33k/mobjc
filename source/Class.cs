@@ -51,7 +51,7 @@ namespace MObjc
 							
 		public NSObject Alloc()
 		{
-			return new NSObject(Call("alloc"));
+			return (NSObject) Call("alloc");
 		}
 
 		public string Name

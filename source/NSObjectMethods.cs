@@ -48,7 +48,7 @@ namespace MObjc
 
 		public NSObject init()
 		{
-			return new NSObject(Call("init"));
+			return (NSObject) Call("init");
 		}
 
 		public bool conformsToProtocol(IntPtr protocol)
@@ -57,7 +57,7 @@ namespace MObjc
 			DBC.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
-				return (bool) Call("conformsToProtocol:", protocol);
+				return (sbyte) Call("conformsToProtocol:", protocol) != 0;
 			else
 				return false;
 		}
@@ -90,7 +90,7 @@ namespace MObjc
 			DBC.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
-				return (bool) Call("isEqual:", rhs);
+				return (sbyte) Call("isEqual:", rhs) != 0;
 			else
 				return (IntPtr) rhs == IntPtr.Zero;
 		}
@@ -101,7 +101,7 @@ namespace MObjc
 			DBC.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
-				return (bool) Call("isKindOfClass:", rhs);
+				return (sbyte) Call("isKindOfClass:", rhs) != 0;
 			else
 				return false;
 		}
@@ -112,7 +112,7 @@ namespace MObjc
 			DBC.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
-				return (bool) Call("isMemberOfClass:", klass);
+				return (sbyte) Call("isMemberOfClass:", klass) != 0;
 			else
 				return false;
 		}
@@ -122,7 +122,7 @@ namespace MObjc
 			DBC.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
-				return (bool) Call("isProxy");
+				return (sbyte) Call("isProxy") != 0;
 			else
 				return false;
 		}
@@ -158,7 +158,7 @@ namespace MObjc
 			DBC.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
-				return (bool) Call("respondsToSelector:", selector);
+				return (sbyte) Call("respondsToSelector:", selector) != 0;
 			else
 				return false;
 		}

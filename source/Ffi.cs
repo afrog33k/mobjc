@@ -157,7 +157,6 @@ namespace MObjc
 					result = null;
 					break;
 					
-//				case "*":
 				case "r*":
 					IntPtr s = Marshal.ReadIntPtr(buffer);
 					result = Marshal.PtrToStringAnsi(s);
@@ -169,7 +168,8 @@ namespace MObjc
 					break;
 					
 				case "@":
-					result = Marshal.ReadIntPtr(buffer);	// we don't reurn an NSObject because we don't want to do a retain (which is bad if the instance hasn't been inited yet)
+					IntPtr ip = Marshal.ReadIntPtr(buffer);
+					result = NSObject.Lookup(ip);
 					break;
 
 				case "#":
@@ -236,8 +236,7 @@ namespace MObjc
 			switch (encoding)
 			{
 				case "c":
-					byte b = unchecked((byte) Marshal.ReadInt32(buffer));
-					result = b == 0 ? false : true;
+					result = unchecked((sbyte) Marshal.ReadInt32(buffer));
 					break;
 										
 				case "s":
@@ -304,266 +303,83 @@ namespace MObjc
 				case "c":
 					if (type == typeof(bool))				
 						Marshal.WriteByte(buffer, ((bool) value) ? (byte) 1 : (byte) 0);
-
 					else if (type == typeof(sbyte))				
 						Marshal.WriteByte(buffer, unchecked((byte) (sbyte) value));
-
-					else if (type == typeof(byte))
-						Marshal.WriteByte(buffer, (byte) (sbyte) (byte) value);	// 'c' is signed so make sure value can be converted to a signed byte
-
-					else if (type == typeof(Untyped))				
-						Marshal.WriteByte(buffer, (unchecked((bool) (Untyped) value) ? (byte) 1 : (byte) 0));
-
 					else
-						throw new InvalidCallException(string.Format("Expected a Boolean or [S]Byte but got a {0}.", type));
+						throw new InvalidCallException(string.Format("Expected a Boolean or SByte but got a {0}.", type));
 					break;
 					
 				case "C":
-					if (type == typeof(sbyte))				
-						Marshal.WriteByte(buffer, (byte) (sbyte) value);
-
-					else if (type == typeof(byte))
+					if (type == typeof(byte))
 						Marshal.WriteByte(buffer, (byte) value);
-
-					else if (type == typeof(Untyped))				
-						Marshal.WriteByte(buffer, (byte) (Untyped) value);
-
 					else
-						throw new InvalidCallException(string.Format("Expected a [S]Byte but got a {0}.", type));
+						throw new InvalidCallException(string.Format("Expected a Byte but got a {0}.", type));
 					break;
 					
 				case "s":
-					if (type == typeof(sbyte))				
-						Marshal.WriteInt16(buffer, (Int16) (sbyte) value);
-
-					else if (type == typeof(byte))
-						Marshal.WriteInt16(buffer, (Int16) (byte) value);
-
-					else if (type == typeof(Int16))				
+					if (type == typeof(Int16))				
 						Marshal.WriteInt16(buffer, (Int16) value);
-
-					else if (type == typeof(UInt16))
-						Marshal.WriteInt16(buffer, (Int16) (UInt16) value);
-
-					else if (type == typeof(Untyped))				
-						Marshal.WriteInt16(buffer, (Int16) (Untyped) value);
-
 					else
-						throw new InvalidCallException(string.Format("Expected a [S]Byte or [U]Int16 but got a {0}.", type));
+						throw new InvalidCallException(string.Format("Expected an Int16 but got a {0}.", type));
 					break;
 					
 				case "S":
-					if (type == typeof(sbyte))				
-						Marshal.WriteInt16(buffer, (Int16) (UInt16) (sbyte) value);
-
-					else if (type == typeof(byte))
-						Marshal.WriteInt16(buffer, (Int16) (byte) value);
-
-					else if (type == typeof(char))
-						Marshal.WriteInt16(buffer, unchecked((Int16) (char) value));
-
-					else if (type == typeof(Int16))				
-						Marshal.WriteInt16(buffer, (Int16) (UInt16) (Int16) value);
-
-					else if (type == typeof(UInt16))
+					if (type == typeof(UInt16))
 						Marshal.WriteInt16(buffer, unchecked((Int16) (UInt16) value));
-					else if (type == typeof(Untyped))				
-						Marshal.WriteInt16(buffer, unchecked((Int16) (UInt16) (Untyped) value));
-
+					else if (type == typeof(Char))
+						Marshal.WriteInt16(buffer, unchecked((Int16) (Char) value));
 					else
-						throw new InvalidCallException(string.Format("Expected a [S]Byte, Char, or [U]Int16 but got a {0}.", type));
+						throw new InvalidCallException(string.Format("Expected a UInt16 or Char but got a {0}.", type));
 					break;
 					
 				case "i":
 				case "l":
-					if (type == typeof(sbyte))				
-						Marshal.WriteInt32(buffer, (Int32) (sbyte) value);
-
-					else if (type == typeof(byte))
-						Marshal.WriteInt32(buffer, (Int32) (byte) value);
-
-					else if (type == typeof(Int16))				
-						Marshal.WriteInt32(buffer, (Int32) (Int16) value);
-
-					else if (type == typeof(UInt16))
-						Marshal.WriteInt32(buffer, (Int32) (UInt16) value);
-
-					else if (type == typeof(Int32))				
+					if (type == typeof(Int32))				
 						Marshal.WriteInt32(buffer, (Int32) value);
-
-					else if (type == typeof(UInt32))
-						Marshal.WriteInt32(buffer, (Int32) (UInt32) value);
-
-					else if (type == typeof(Untyped))				
-						Marshal.WriteInt32(buffer, (Int32) (Untyped) value);
-
 					else
-						throw new InvalidCallException(string.Format("Expected a [S]Byte or [U]Int(16|32) but got a {0}.", type));
+						throw new InvalidCallException(string.Format("Expected an Int32 but got a {0}.", type));
 					break;
 					
 				case "I":
 				case "L":
-					if (type == typeof(Boolean))				
-						Marshal.WriteInt32(buffer, ((Boolean) value) ? 1 : 0);
-
-					else if (type == typeof(sbyte))				
-						Marshal.WriteInt32(buffer, (Int32) (UInt32) (sbyte) value);
-
-					else if (type == typeof(byte))
-						Marshal.WriteInt32(buffer, (Int32) (byte) value);
-
-					else if (type == typeof(Int16))				
-						Marshal.WriteInt32(buffer, (Int32) (UInt32) (Int16) value);
-
-					else if (type == typeof(UInt16))
-						Marshal.WriteInt32(buffer, unchecked((Int32) (UInt16) value));
-
-					else if (type == typeof(Int32))				
-						Marshal.WriteInt32(buffer, (Int32) (UInt32) (Int32) value);
-
-					else if (type == typeof(UInt32))
+					if (type == typeof(UInt32))
 						Marshal.WriteInt32(buffer, unchecked((Int32) (UInt32) value));
-
-					else if (type == typeof(Untyped))				
-						Marshal.WriteInt32(buffer, unchecked((Int32) (UInt32) (Untyped) value));
-
 					else
-						throw new InvalidCallException(string.Format("Expected a [S]Byte or [U]Int(16|32) but got a {0}.", type));
+						throw new InvalidCallException(string.Format("Expected a UInt32 but got a {0}.", type));
 					break;
 										
 				case "q":
-					if (type == typeof(sbyte))				
-						Marshal.WriteInt64(buffer, (Int64) (sbyte) value);
-
-					else if (type == typeof(byte))
-						Marshal.WriteInt64(buffer, (Int64) (byte) value);
-
-					else if (type == typeof(Int16))				
-						Marshal.WriteInt64(buffer, (Int64) (Int16) value);
-
-					else if (type == typeof(UInt16))
-						Marshal.WriteInt64(buffer, (Int64) (UInt16) value);
-
-					else if (type == typeof(Int32))				
-						Marshal.WriteInt64(buffer, (Int64) (Int32) value);
-
-					else if (type == typeof(UInt32))
-						Marshal.WriteInt64(buffer, (Int64) (UInt32) value);
-
-					else if (type == typeof(Int64))				
+					if (type == typeof(Int64))
 						Marshal.WriteInt64(buffer, (Int64) value);
-
-					else if (type == typeof(UInt64))
-						Marshal.WriteInt64(buffer, (Int64) (UInt64) value);
-
-					else if (type == typeof(Untyped))				
-						Marshal.WriteInt64(buffer, (Int64) (Untyped) value);
-
 					else
-						throw new InvalidCallException(string.Format("Expected a [S]Byte or [U]Int(16|32|64) but got a {0}.", type));
+						throw new InvalidCallException(string.Format("Expected an Int64 but got a {0}.", type));
 					break;
 					
 				case "Q":
-					if (type == typeof(sbyte))				
-						Marshal.WriteInt64(buffer, (Int64) (UInt64) (sbyte) value);
-
-					else if (type == typeof(byte))
-						Marshal.WriteInt64(buffer, (Int64) (byte) value);
-
-					else if (type == typeof(Int16))				
-						Marshal.WriteInt64(buffer, (Int64) (UInt64) (Int16) value);
-
-					else if (type == typeof(UInt16))
-						Marshal.WriteInt64(buffer, unchecked((Int64) (UInt16) value));
-
-					else if (type == typeof(Int32))				
-						Marshal.WriteInt64(buffer, (Int64) (UInt64) (Int32) value);
-
-					else if (type == typeof(UInt32))
-						Marshal.WriteInt64(buffer, unchecked((Int64) (UInt32) value));
-
-					else if (type == typeof(Int64))				
-						Marshal.WriteInt64(buffer, (Int64) (UInt64) (Int64) value);
-
-					else if (type == typeof(UInt64))
+					if (type == typeof(UInt64))				
 						Marshal.WriteInt64(buffer, unchecked((Int64) (UInt64) value));
-
-					else if (type == typeof(Untyped))				
-						Marshal.WriteInt64(buffer, unchecked((Int64) (UInt64) (Untyped) value));
-
 					else
-						throw new InvalidCallException(string.Format("Expected a [S]Byte or [U]Int(16|32|64) but got a {0}.", type));
+						throw new InvalidCallException(string.Format("Expected a UInt64 but got a {0}.", type));
 					break;
 										
 				case "f":
 					float f = 0.0f;
-					if (type == typeof(sbyte))				
-						f = (float) (sbyte) value;
-
-					else if (type == typeof(byte))
-						f = (float) (byte) value;
-
-					else if (type == typeof(Int16))				
-						f = (float) (Int16) value;
-
-					else if (type == typeof(UInt16))
-						f = (float) (UInt16) value;
-
-					else if (type == typeof(Int32))				
-						f = (float) (Int32) value;
-
-					else if (type == typeof(UInt32))
-						f = (float) (UInt32) value;
-
-					else if (type == typeof(float))
+					if (type == typeof(float))
 						f = (float) value;
-				
-					else if (type == typeof(Untyped))				
-						f = (float) (Untyped) value;
-
 					else
-						throw new InvalidCallException(string.Format("Expected a [S]Byte, [U]Int(16|32), or float but got a {0}.", type));
+						throw new InvalidCallException(string.Format("Expected a float but got a {0}.", type));
 
 					Marshal.StructureToPtr(f, buffer, false);
 					break;
 					
 				case "d":
 					double d = 0.0;
-					if (type == typeof(sbyte))				
-						d = (double) (sbyte) value;
-
-					else if (type == typeof(byte))
-						d = (double) (byte) value;
-
-					else if (type == typeof(Int16))				
-						d = (double) (Int16) value;
-
-					else if (type == typeof(UInt16))
-						d = (double) (UInt16) value;
-
-					else if (type == typeof(Int32))				
-						d = (double) (Int32) value;
-
-					else if (type == typeof(UInt32))
-						d = (double) (UInt32) value;
-
-					else if (type == typeof(Int64))				
-						d = (double) value;
-
-					else if (type == typeof(UInt64))
-						d = (double) (UInt64) value;
-
-					else if (type == typeof(float))
-						d = (double) value;
-				
+					if (type == typeof(float))
+						d = (double) (float) value;
 					else if (type == typeof(double))
 						d = (double) value;
-				
-					else if (type == typeof(Untyped))				
-						d = (double) (Untyped) value;
-
 					else
-						throw new InvalidCallException(string.Format("Expected a [S]Byte, [U]Int(16|32|64), float, or double but got a {0}.", type));
+						throw new InvalidCallException(string.Format("Expected a float or double but got a {0}.", type));
 
 					Marshal.StructureToPtr(d, buffer, false);
 					break;
@@ -573,11 +389,6 @@ namespace MObjc
 					if (s != null)
 					{
 						buffer2 = Marshal.StringToHGlobalAuto(s);
-						Marshal.WriteIntPtr(buffer, buffer2);
-					}
-					else if (type == typeof(Untyped))				
-					{
-						buffer2 = Marshal.StringToHGlobalAuto((string) (Untyped) value);
 						Marshal.WriteIntPtr(buffer, buffer2);
 					}
 					else if (value == null)
@@ -593,11 +404,6 @@ namespace MObjc
 					{
 						Marshal.WriteIntPtr(buffer, IntPtr.Zero);
 					}
-					else if (type == typeof(Untyped))				
-					{
-						IntPtr i = (IntPtr) (Untyped) value;
-						Marshal.WriteIntPtr(buffer, i);
-					}
 					else
 					{
 						NSObject i = value as NSObject;
@@ -612,20 +418,15 @@ namespace MObjc
 					break;
 					
 				case "#":
-					NSObject k = value as NSObject;
+					Class k = value as Class;
 					if (k != null)
 						Marshal.WriteIntPtr(buffer, (IntPtr) k);
 					else if (value == null)
 						Marshal.WriteIntPtr(buffer, IntPtr.Zero);
 					else if (value.GetType() == typeof(IntPtr))
 						Marshal.WriteIntPtr(buffer, (IntPtr) value);
-					else if (type == typeof(Untyped))				
-					{
-						IntPtr i = (IntPtr) (Untyped) value;
-						Marshal.WriteIntPtr(buffer, i);
-					}
 					else
-						throw new InvalidCallException(string.Format("Expected an NSObject but got a {0}.", type));
+						throw new InvalidCallException(string.Format("Expected a Class but got a {0}.", type));
 					break;
 					
 				case ":":
@@ -636,11 +437,6 @@ namespace MObjc
 						Marshal.WriteIntPtr(buffer, IntPtr.Zero);
 					else if (value.GetType() == typeof(IntPtr))
 						Marshal.WriteIntPtr(buffer, (IntPtr) value);
-					else if (type == typeof(Untyped))				
-					{
-						IntPtr i = (IntPtr) (Untyped) value;
-						Marshal.WriteIntPtr(buffer, i);
-					}
 					else
 						throw new InvalidCallException(string.Format("Expected a Selector but got a {0}.", type));
 					break;
@@ -700,14 +496,6 @@ namespace MObjc
 				else if (value.GetType() == typeof(IntPtr))
 				{
 					Marshal.WriteIntPtr(buffer, (IntPtr) value);
-				}
-				else if (value.GetType() == typeof(byte[]))
-				{
-					byte[] values = (byte[]) value;	
-					
-					GCHandle handle = GCHandle.Alloc(values, GCHandleType.Pinned);
-					handles.Add(handle);
-					Marshal.WriteIntPtr(buffer, handle.AddrOfPinnedObject());
 				}
 				else
 					throw new InvalidCallException("Don't know how to marshal " + value.GetType() + " to " + encoding + ".");

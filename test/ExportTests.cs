@@ -49,18 +49,17 @@ public class ExportTests
 	public void Setup()
 	{
 		GC.Collect(); 				
-		System.Threading.Thread.Sleep(200);	// give the finalizer enough time to run
+		GC.WaitForPendingFinalizers();
 	}
 	
 	[Test]
 	public void NewTest() 
 	{
-		Subclass1 instance = new Subclass1();
+		Subclass1 instance = Subclass1.makeDefault();
 	
 		instance.Call("initValue");
 
-		Untyped o = instance.Call("getValue");
-		int value = (int) o;
+		int value = (int) instance.Call("getValue");
 		Assert.AreEqual(100, value);
 	}
 
@@ -78,7 +77,7 @@ public class ExportTests
 	[Test]
 	public void ManagedExceptionTest() 
 	{	
-		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
+		NSObject instance = new Class("Subclass1").Call("alloc").Call("init").To<NSObject>();
 
 		try
 		{
@@ -124,8 +123,8 @@ public class ExportTests
 		NSObject str = (NSObject) new Class("MyBase").Call("alloc").Call("init");
 
 		// can call NSString methods
-		bool b = (bool) str.Call("boolValue");
-		Assert.IsFalse(b);
+		sbyte b = (sbyte) str.Call("boolValue");
+		Assert.AreEqual(0, b);
 
 		// can call new MyBase methods
 		int i = (int) str.Call("get33");
@@ -142,8 +141,8 @@ public class ExportTests
 		NSObject str = (NSObject) new Class("MyDerived").Call("alloc").Call("init");
 
 		// can call NSString methods
-		bool b = (bool) str.Call("boolValue");
-		Assert.IsFalse(b);
+		sbyte b = (sbyte) str.Call("boolValue");
+		Assert.AreEqual(0, b);
 
 		// can call MyBase methods
 		int i = (int) str.Call("get33");
@@ -207,6 +206,63 @@ public class ExportTests
 	}
 
 	[Test]
+	public void UShortArg() 
+	{	
+		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
+
+		ushort n = (ushort) instance.Call("TakeUInt162", (ushort) 12);
+		Assert.AreEqual(22, n);
+	}
+	
+	[Test]
+	public void StringArg() 
+	{	
+		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
+
+		string n = (string) instance.Call("TakeString", "hmm");
+		Assert.AreEqual("hmmhmm", n);
+	}
+	
+	[Test]
+	public void ObjectArg1() 
+	{	
+		Subclass1 x = Subclass1.make(13);
+		Subclass1 y = Subclass1.make(1);
+
+		int n = (int) x.Call("TakeBase", y);
+		Assert.AreEqual(3, n);
+	}
+	
+	[Test]
+	public void ObjectArg2() 
+	{	
+		NSObject x = Subclass1.make(13);
+		NSObject y = Subclass1.make(1);
+
+		int n = (int) x.Call("TakeBase", y);
+		Assert.AreEqual(3, n);
+	}
+	
+	[Test]
+	public void DerivedArg() 
+	{	
+		Subclass1 x = Subclass1.make(13);
+		NSString s = NSString.stringWithString("hey");
+
+		NSString t = x.Call("concat", s, s).To<NSString>();
+		Assert.AreEqual("heyhey", t.description());
+	}
+	
+	[Test]
+	public void ObjectResult() 
+	{	
+		NSObject instance = (NSObject) new Class("PrettyData").Call("alloc").Call("init");
+
+		string s = (string) instance.description();
+		Assert.IsTrue(s.StartsWith("pretty: "));
+	}
+		
+	[Test]
 	public void StructTest() 
 	{	
 		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
@@ -224,7 +280,7 @@ public class ExportTests
 	{	
 		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
 		
-		NSRect r = instance.Call("GetRect").To<NSRect>();
+		NSRect r = (NSRect) instance.Call("GetRect");
 		Assert.AreEqual(1.0f, r.origin.x);		
 		Assert.AreEqual(2.0f, r.origin.y);		
 		Assert.AreEqual(3.0f, r.size.width);		
@@ -250,11 +306,11 @@ public class ExportTests
 	[Test]
 	public void IVarTest2() 
 	{	
-		Subclass1 instance = new Subclass1();
+		Subclass1 instance = Subclass1.makeDefault();
 		
 		// Can set ivars using IVar.
 		instance.Data = "hey";
-		NSString s = new NSString((IntPtr) instance["myData"]);
+		NSString s = (NSString) instance["myData"];
 		Assert.AreEqual("hey", s.ToString());
 		
 		// Can get ivars using IVar.

@@ -105,20 +105,18 @@ namespace MObjc
 			}
 		}
 								
-		public Untyped Invoke()	
+		public object Invoke()	
 		{			
 			if (m_disposed)        
             	throw new ObjectDisposedException(GetType().Name);
 
-			Untyped result = new Untyped(IntPtr.Zero);
+			object result = new NSObject(IntPtr.Zero);
 			
 			if (m_target != IntPtr.Zero)
 			{
 				Ffi.Call(m_cif, m_imp, m_resultBuffer, m_argBuffers);
 
-				object o = Ffi.DrainReturnBuffer(m_resultBuffer, m_returnEncoding);
-			
-				result = new Untyped(o);
+				result = Ffi.DrainReturnBuffer(m_resultBuffer, m_returnEncoding);
 			}
 			
 			return result;

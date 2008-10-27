@@ -39,7 +39,24 @@ namespace MObjc
 	{		
 		static NSObject()
 		{
-			Registrar.Init();
+			try
+			{
+				Registrar.Init();
+			}
+			catch (Exception e)		// TODO: get rid of this
+			{
+				Exception ee = e;
+				Console.Error.WriteLine("Registrar.Init failed:");
+				while (ee != null)
+				{
+					if (e.InnerException != null)
+						Console.Error.WriteLine("-------- {0} Exception --------{1}", ee == e ? "Outer" : "Inner", Environment.NewLine);
+					Console.Error.WriteLine("{0}", ee.Message + Environment.NewLine);
+					Console.Error.WriteLine("{0}", ee.StackTrace + Environment.NewLine);
+	
+					ee = ee.InnerException;
+				}
+			}
 		}
 
 		// Constructs a new managed instance using a native id. Note that there
@@ -83,12 +100,14 @@ namespace MObjc
 #endif
 			}
 		}
-				
-		// Convenience method.
-		public NSObject(Untyped instance) : this((IntPtr) instance) 
+												
+		public static NSObject Create()
 		{
+			NSObject result = (NSObject) alloc().init();
+			result.autorelease();
+			return result;
 		}
-								
+
 		// Note that the class of a class is itself.
 		public Class Class
 		{
@@ -160,21 +179,23 @@ namespace MObjc
 			return m_deallocated;
 		}
 		
-		public Untyped Call(string name, params object[] args)
+		public object Call(string name, params object[] args)
 		{
 			DBC.Pre(name != null, "name is null");
 			DBC.Assert(!m_deallocated, "ref count is zero");
 			
-			Untyped result = new Untyped(IntPtr.Zero);
+			object result = new NSObject(IntPtr.Zero);
 
 			if (m_instance != IntPtr.Zero)
 			{
 				if (name == "alloc" && args.Length == 0)	// need this so we can create an auto release pool without leaking NSMethodSignature
 				{
 					IntPtr exception = IntPtr.Zero;
-					result = new Untyped(DirectCalls.Callp(m_instance, salloc, ref exception));
+					IntPtr ip = DirectCalls.Callp(m_instance, salloc, ref exception);
 					if (exception != IntPtr.Zero)
 						CocoaException.Raise(exception);
+
+					result = NSObject.Lookup(ip);
 				}
 				else
 				{					
@@ -189,12 +210,12 @@ namespace MObjc
 			return result;
 		}
 		
-		public Untyped SuperCall(string name, params object[] args)
+		public object SuperCall(string name, params object[] args)
 		{
 			DBC.Pre(name != null, "name is null");
 			DBC.Assert(!m_deallocated, "ref count is zero");
 				
-			Untyped result = new Untyped(IntPtr.Zero);
+			object result = IntPtr.Zero;
 
 			if (m_instance != IntPtr.Zero)
 			{
@@ -288,7 +309,7 @@ namespace MObjc
 			else if (rhs.IsDeallocated())
 				return false;
 			
-			return (bool) lhs.Call("isEqual:", rhs);
+			return (sbyte) lhs.Call("isEqual:", rhs) != 0;
 		}
 		
 		public static bool operator!=(NSObject lhs, NSObject rhs)

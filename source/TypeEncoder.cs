@@ -101,28 +101,8 @@ namespace MObjc
 				
 			throw new ArgumentException("Don't know how to translate " + type);
 		}
-				
-		public static string EncodeReturn(Type type)
-		{
-			DBC.Pre(type != null, "type is null");
-
-			if (type == typeof(bool))
-				return "I";
-			
-			else if (type == typeof(byte))
-				return "I";
-			
-			else if (type == typeof(Int16))
-				return "i";
-			
-			else if (type == typeof(UInt16) || type == typeof(char))
-				return "I";
-			
-			else
-				return Encode(type);
-		}
-				
-		#region Private Methods		
+								
+		#region Private Methods	-----------------------------------------------
 		private static string DoGetStructEncoding(Type type)
 		{
 			string encoding = "{"; 
@@ -141,7 +121,7 @@ namespace MObjc
 		}
 		#endregion
 		
-		#region Fields			
+		#region Fields --------------------------------------------------------		
 		private static Dictionary<string, Type> ms_structs = new Dictionary<string, Type>();
 		#endregion
 	}
