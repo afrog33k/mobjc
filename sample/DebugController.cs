@@ -33,15 +33,13 @@ internal sealed class DebugController : NSObject
 	}
 
 #if DEBUG	
-	[Register("collectGarbage:")]		
-	public void CollectGarbage(NSObject sender)
+	public void collectGarbage(NSObject sender)
 	{
 		GC.Collect();
 		GC.WaitForPendingFinalizers();
 	}
 		
-	[Register("dumpObjects:")]		
-	public void DumpObjects(NSObject sender)
+	public void dumpObjects(NSObject sender)
 	{
 		List<string> lines = new List<string>();
 		
@@ -59,14 +57,12 @@ internal sealed class DebugController : NSObject
 		Console.WriteLine(" ");
 	}
 		
-	[Register("dumpMemory:")]		
-	public void DumpMemory(NSObject sender)
+	public void dumpMemory(NSObject sender)
 	{
 		DoPrintMemory();		
 	}
 		
-	[Register("memoryTest:")]		
-	public void MemoryTest(NSObject sender)	
+	public void memoryTest(NSObject sender)	
 	{
 		lock (m_lock)
 		{
@@ -102,8 +98,7 @@ internal sealed class DebugController : NSObject
 	}
 #endif
 
-	[Register("validateMenuItem:")]		
-	public bool ValidateMenuItem(NSObject menuItem)
+	public bool validateMenuItem(NSObject menuItem)
 	{
 		Selector selector = (Selector) menuItem.Call("action");
 		if (selector.Name == "memoryTest:")
@@ -124,10 +119,10 @@ internal sealed class DebugController : NSObject
 		return true;
 	}
 
+#if DEBUG	
 	// There's probably a better way to do this but using top is easy and should give us
 	// accurate results. Note that Process does have a number of memory related properties
 	// but they all return 0 with mono 1.9 except Process.MaxWorkingSet.
-#if DEBUG	
 	private void DoPrintMemory()
 	{
 		GC.Collect();

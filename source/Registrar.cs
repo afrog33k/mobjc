@@ -141,9 +141,18 @@ namespace MObjc
 
 			foreach (MethodInfo info in type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)) 
 			{
-				RegisterAttribute attr = Attribute.GetCustomAttribute(info, typeof(RegisterAttribute)) as RegisterAttribute;
-				if (attr != null) 
-					DoAddMethod(name, info, attr.Name ?? info.Name, klass, superClass);
+				if (!info.IsSpecialName && info.DeclaringType.Name != "NSObject")
+				{
+					RegisterAttribute attr = Attribute.GetCustomAttribute(info, typeof(RegisterAttribute)) as RegisterAttribute;
+					if (attr != null) 
+						DoAddMethod(name, info, attr.Name ?? info.Name, klass, superClass);
+				
+					else if (info.GetParameters().Length == 0 && char.IsLower(info.Name[0]))
+						DoAddMethod(name, info, info.Name, klass, superClass);
+
+					else if (info.GetParameters().Length == 1 && char.IsLower(info.Name[0]))
+						DoAddMethod(name, info, info.Name + ":", klass, superClass);
+				}
 			}
 
 			MethodInfo info2 = typeof(NSObject).GetMethod("OnDealloc", BindingFlags.Instance | BindingFlags.NonPublic);

@@ -27,6 +27,11 @@ namespace MObjc
 	// 1) methods which may be called from native code
 	// 2) structs which may be marshaled to and from native code 
 	// 3) classes which may be used as managed method argument types
+	//
+	// Note that public, lower case, nullary and unary methods are registered 
+	// automatically if RegisterAttribute is not present. The native method 
+	// name will be the managed name except that if the method is unary a colon 
+	// is appended.
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Struct | AttributeTargets.Class, AllowMultiple = false)]
 	public sealed class RegisterAttribute : Attribute
 	{		
