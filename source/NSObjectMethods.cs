@@ -139,7 +139,7 @@ namespace MObjc
 			uint oldCount = retainCount();
 				
 			IntPtr exception = IntPtr.Zero;
-			Ignore.Value = DirectCalls.Callp(m_instance, srelease, ref exception);
+			Unused.Value = DirectCalls.Callp(m_instance, srelease, ref exception);
 			if (exception != IntPtr.Zero)
 				CocoaException.Raise(exception);
 				
@@ -168,7 +168,7 @@ namespace MObjc
 			DBC.Assert(!m_deallocated, "ref count is zero");
 				
 			IntPtr exception = IntPtr.Zero;
-			Ignore.Value = DirectCalls.Callp(m_instance, sretain, ref exception);
+			Unused.Value = DirectCalls.Callp(m_instance, sretain, ref exception);
 			if (exception != IntPtr.Zero)
 				CocoaException.Raise(exception);
 				
@@ -238,7 +238,7 @@ namespace MObjc
 				
 			if (m_instance != IntPtr.Zero)
 			{
-				Ignore.Value = Call("performSelectorOnMainThread:withObject:waitUntilDone:",
+				Unused.Value = Call("performSelectorOnMainThread:withObject:waitUntilDone:",
 					selector, arg, wait);
 			}
 		}

@@ -75,8 +75,8 @@ namespace MObjc
 				
 				m_argTypes[numArgs] = IntPtr.Zero;
 				
-				Ignore.Value = Ffi.FillBuffer(m_argBuffers[0], target, "@", m_handles);
-				Ignore.Value = Ffi.FillBuffer(m_argBuffers[1], m_selector, ":", m_handles);
+				Unused.Value = Ffi.FillBuffer(m_argBuffers[0], target, "@", m_handles);
+				Unused.Value = Ffi.FillBuffer(m_argBuffers[1], m_selector, ":", m_handles);
 	
 				// Allocate the ffi_cif*.
 				m_cif = Ffi.AllocCif(resultType, m_argTypes);
@@ -137,7 +137,7 @@ namespace MObjc
 		#region Private Methods -----------------------------------------------
 		private void DoDispose(bool disposing)
 		{
-			Unused.Arg(disposing);
+			Unused.Value = disposing;
 			
 			if (!m_disposed)
 			{

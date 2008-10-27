@@ -50,7 +50,7 @@ namespace MObjc
 				// to multithreading mode here.
 				Selector selector = new Selector("foo");
 				NSObject thread = new Class("NSThread").Call("alloc").Call("initWithTarget:selector:object:", null, selector, null).To<NSObject>();
-				Ignore.Value = thread.Call("start");
+				Unused.Value = thread.Call("start");
 		
 				ms_inited = true;
 				pool.release();

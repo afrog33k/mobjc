@@ -352,7 +352,7 @@ namespace MObjc
 			bool removed = ms_instances.Remove(m_instance);
 			DBC.Assert(removed, "dealloc was called but the instance is not in ms_instances");
 
-			Ignore.Value = SuperCall("dealloc");
+			Unused.Value = SuperCall("dealloc");
 			m_deallocated = true;
 		}
 		#endregion

@@ -25,10 +25,6 @@ namespace MObjc
 {			
 	public static class Unused	// thread safe
 	{
-	    public static void Arg(params object[] args)
-    	{
-	    }
-
 		public static object Value 
 		{
 			[DisableRule("C1022", "UseSetterValue")]    

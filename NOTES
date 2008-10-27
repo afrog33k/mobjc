@@ -10,7 +10,6 @@ NSString (): 		2.5 secs	2.6
 native NSString ():             1.6
 ToUpper control: 	0.0 secs	0.1
 
-
 * Might want to remove the method attributes: could simply register all methods
   that are lower case.
 * Do some timing tests.

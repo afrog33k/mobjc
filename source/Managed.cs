@@ -166,7 +166,7 @@ namespace MObjc
 				byte[] data = stream.ToArray();
 				GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
 				NSObject buffer = (NSObject) new Class("NSData").Call("dataWithBytes:length:", handle.AddrOfPinnedObject(), (uint) stream.Length);
-				Ignore.Value = userInfo.Call("setObject:forKey:", buffer, key);
+				Unused.Value = userInfo.Call("setObject:forKey:", buffer, key);
 			}
 			catch (Exception ee)
 			{

@@ -182,7 +182,7 @@ internal sealed class DebugController : NSObject
 	private void DoDumpStatsThread(object instance)
 	{		
 		TimeSpan interval = TimeSpan.FromMinutes(60);
-		Ignore.Value = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
+		Unused.Value = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
 
 		lock (m_lock)
 		{
@@ -190,7 +190,7 @@ internal sealed class DebugController : NSObject
 			{
 				DoPrintMemory();		
 
-				Ignore.Value = Monitor.Wait(m_lock, interval);
+				Unused.Value = Monitor.Wait(m_lock, interval);
 			}
 		}
 	}
