@@ -1,282 +1,137 @@
 ------------------------------------------------------------------------
-r11 | jesjones@mindspring.com | 2008-06-08 22:50:45 -0700 (Sun, 08 Jun 2008) | 3 lines
+r1 | (no author) | 2008-10-24 16:19:50 -0700 (Fri, 24 Oct 2008) | 1 line
 
-Index: Makefile
-* Updated version number.
-
+Initial directory structure.
 ------------------------------------------------------------------------
-r12 | jesjones@mindspring.com | 2008-06-12 01:38:27 -0700 (Thu, 12 Jun 2008) | 3 lines
+r2 | jesjones@mindspring.com | 2008-10-24 16:23:39 -0700 (Fri, 24 Oct 2008) | 3 lines
 
-Namespace wasn't cased right.
+Initial import.
 
 
 ------------------------------------------------------------------------
-r13 | jesjones@mindspring.com | 2008-06-12 02:26:41 -0700 (Thu, 12 Jun 2008) | 18 lines
-
-Index: Makefile
-* Ccc and gcc flags are now prereqs for the associated targets.
-* Clearer distinction between primary and binary targets. 
-* Build number is computed a bit differently.
- 
-Index: glue/Makefile
-Index: test/Makefile
-Index: source/Makefile
-* Only use a nested makefile for the sample.
-
-Index: sample/Makefile
-* Made stand-alone.
-
-Index: MIT.X11
-Index: gen_version.sh
-* Added.
-
-
-------------------------------------------------------------------------
-r14 | jesjones@mindspring.com | 2008-06-12 02:32:26 -0700 (Thu, 12 Jun 2008) | 3 lines
-
-Added a catch block when serializing exceptions to better handle exceptions that are not serializeable.
-
-
-------------------------------------------------------------------------
-r15 | jesjones@mindspring.com | 2008-06-12 07:55:44 -0700 (Thu, 12 Jun 2008) | 3 lines
-
-NSObject is no longer IDisposable.
-
-
-------------------------------------------------------------------------
-r16 | jesjones@mindspring.com | 2008-06-12 08:45:26 -0700 (Thu, 12 Jun 2008) | 3 lines
-
-Use the "Libraries with Unstable APIs" scheme with the package file.
-
-
-------------------------------------------------------------------------
-r17 | jesjones@mindspring.com | 2008-06-15 19:50:21 -0700 (Sun, 15 Jun 2008) | 16 lines
-
-Index: test/ManagedTypes.cs
-Index: source/Managed.cs
-Index: source/Registrar.cs
-Index: source/NSObject.cs
-Index: source/RegisterAttribute.cs
-Index: test/ArgTests.cs
-* Can now use RegisterAttribute on classes to allow them to be used as 
-  managed method argument types.  
-
-Index: source/NativeValue.cs
-* IntPtr cast now works if the value is an NSObject subclass.
-
-Index: Makefile
-* Removed GLUE_INSTALL_DIR from help.
-
-
-------------------------------------------------------------------------
-r18 | jesjones@mindspring.com | 2008-06-15 23:45:20 -0700 (Sun, 15 Jun 2008) | 3 lines
-
-RegisterAttribute name is now optional.
-
-
-------------------------------------------------------------------------
-r19 | jesjones@mindspring.com | 2008-06-16 02:30:22 -0700 (Mon, 16 Jun 2008) | 3 lines
-
-Renamed some NSObjectMethods.
-
-
-------------------------------------------------------------------------
-r20 | jesjones@mindspring.com | 2008-06-18 19:59:43 -0700 (Wed, 18 Jun 2008) | 11 lines
-
-Index: source/DBC.cs
-* Added.
+r3 | jesjones@mindspring.com | 2008-10-24 17:15:39 -0700 (Fri, 24 Oct 2008) | 22 lines
 
 Index: source/Managed.cs
-* Write to stderr if we have a problem serializing the exception.
-
-Index: source/CocoaException.cs
-* Assert that if we have a key for the .NET excception that the value isn't
-  null or nil.
+* Clients can now replace the code that logs exceptions in managed code
+  called from unmanaged code.
   
- 
-------------------------------------------------------------------------
-r21 | jesjones@mindspring.com | 2008-06-19 03:36:22 -0700 (Thu, 19 Jun 2008) | 4 lines
-
-NSObject no longer fiddles with ref counts or relies on finalizers.
-Got rid of NSObject::Create.
-
-
-------------------------------------------------------------------------
-r22 | jesjones@mindspring.com | 2008-06-19 04:17:44 -0700 (Thu, 19 Jun 2008) | 3 lines
-
-Use DBC instead of an if + exception.
-
-
-------------------------------------------------------------------------
-r23 | jesjones@mindspring.com | 2008-06-19 04:30:43 -0700 (Thu, 19 Jun 2008) | 3 lines
-
-Renamed NativeValue Untyped.
-
-
-------------------------------------------------------------------------
-r24 | jesjones@mindspring.com | 2008-06-19 04:45:16 -0700 (Thu, 19 Jun 2008) | 3 lines
-
-IVar assignment no longer does a retain.
-
-
-------------------------------------------------------------------------
-r25 | jesjones@mindspring.com | 2008-06-19 06:42:15 -0700 (Thu, 19 Jun 2008) | 3 lines
-
-Indexer uses Lookup.
-
-
-------------------------------------------------------------------------
-r26 | jesjones@mindspring.com | 2008-06-19 18:53:32 -0700 (Thu, 19 Jun 2008) | 3 lines
-
-Added an IVar class to provide type safe access to instance vars.
-
-
-------------------------------------------------------------------------
-r27 | jesjones@mindspring.com | 2008-06-19 23:58:37 -0700 (Thu, 19 Jun 2008) | 22 lines
-
-Index: source/NSObject.cs
-Index: source/WeakList.cs
-* Added Snapshot which returns all NSObject's which are still around.
-
-Index: source/Managed.cs
-* In debug write exceptions thrown by managed code to stderr.
-
-Index: sample/DebugController.cs
-* Added dump objects menu item.
-
-Index: test/BaseClassTests.cs
+Index: test/ArgTests.cs
+Index: test/ManagedTypes.cs
+Index: test/ReturnTests.cs
 Index: test/ExportTests.cs
-* Renamed.
-
-Index: source/NSObjectString.cs
-* Added "S" safe format which is useful with objects which may be deallocated.
-
-Index: sample/Makefile
-* App now has a dependency upon objc3-sharp.dll.
-
-
-
-------------------------------------------------------------------------
-r28 | jesjones@mindspring.com | 2008-06-20 19:46:51 -0700 (Fri, 20 Jun 2008) | 32 lines
-
-Index: source/Ffi.cs
-* Map null NSObject arguments to nil.
+Index: test/NativeCallTests.cs
+Index: test/InstanceTests.cs
+Index: test/FormattedTests.cs
+Index: sample/SimpleLayoutView.cs
+Index: sample/NSApplication.cs
+Index: sample/Program.cs
+Index: sample/DebugController.cs
+* Updated for NSObject method case changes.
+* Tests that throw exceptions from managed code disable the stderr logging.
 
 Index: test/MemoryTests.cs
-* Enabled.
-
-Index: source/WeakList.cs
-* Snapshot no longer returns the same object more than once.
-
-Index: source/Native.cs
-Index: source/Compiler.cs
-Index: source/Compiled.cs
-* Format expressions now support NULL.
-
-Index: source/NSObject.cs
-Index: source/NSObjectMethods.cs
-Index: source/Class.cs
-* Class and base class are now set when NSObject is constructed. 
-
-Index: source/NSObjectString.cs
-* Got rid of safe format.
-* DoGetDefaultString no longer makes any native calls on the instance
-  (but does on the class and base class which will always be OK).
-* DoGetDefaultString prepends "class " if the instance is a class.
-
-Index: sample/SimpleLayoutView.cs
-* Added missing release call.
-
-Index: sample/DebugController.cs
-* Memory test now does a sleep so GC will kick in.
+* Disabled again (takes too long to run and a little iffy anyway).
 
 
 ------------------------------------------------------------------------
-r29 | jesjones@mindspring.com | 2008-06-22 19:14:00 -0700 (Sun, 22 Jun 2008) | 15 lines
+r4 | jesjones@mindspring.com | 2008-10-24 17:16:07 -0700 (Fri, 24 Oct 2008) | 3 lines
+
+AssemblyVersion.cs should not be checked in.
+
+
+------------------------------------------------------------------------
+r5 | jesjones@mindspring.com | 2008-10-25 21:56:26 -0700 (Sat, 25 Oct 2008) | 13 lines
 
 Index: source/IVar.cs
-* Getter handles null values properly.
-
-Index: source/Ffi.cs
-* Handle null when marshaling to a native pointer.
-
-Index: source/NSObjectMethods.cs
-* Renamed RespondsToSelector RespondsTo. Also added a string overload.
-
-Index: source/NSObject.cs
-* IntPtr casts and IsNil checks don't complain if deallocated.
+* Value getter checks to see if the variable is null in addition to nil.
+ 		
+Index: cocoa-pack
+* Run out of MacOS again (or the Info.plist isn't found).
 
 Index: Makefile
-* Use := with smokey_flags instead of ?=.
+* tar excludes svn files.
 
-------------------------------------------------------------------------
-r30 | jesjones@mindspring.com | 2008-06-22 19:14:27 -0700 (Sun, 22 Jun 2008) | 3 lines
-
-Moving cocoa-pack here (from cocoa3-sharp).
-
-
-------------------------------------------------------------------------
-r31 | jesjones@mindspring.com | 2008-06-22 19:42:24 -0700 (Sun, 22 Jun 2008) | 9 lines
-
-Index: sample/Makefile
-* Use cocoa-pack instead of macpack.
-
-Index: sample/Info.plist
-* Use a better plist.
-
-Index: Makefile
-* Tweaked sample targets.
-
-------------------------------------------------------------------------
-r32 | jesjones@mindspring.com | 2008-06-22 22:29:54 -0700 (Sun, 22 Jun 2008) | 5 lines
-
-Index: cocoa-pack.py
-* Copy mdb files and dSYM directories if --debug. 
-* When copying directories don't include any subdirs that start with a '.'.
-* Add a PkgInfo file.
-
-------------------------------------------------------------------------
-r33 | jesjones@mindspring.com | 2008-06-22 23:15:01 -0700 (Sun, 22 Jun 2008) | 9 lines
-
-Index: source/IVar.cs
-Index: source/MethodSignature.cs
-Index: source/NSObject.cs
-Index: source/Untyped.cs
-* Override Equals and GetHashCode.
-
-Index: sample/DebugController.cs
-* Use WaitForPendingFinalizers after collecting garbage.
-
-------------------------------------------------------------------------
-r34 | jesjones@mindspring.com | 2008-06-22 23:34:44 -0700 (Sun, 22 Jun 2008) | 10 lines
-
-Index: Makefile
-* Installs cocoa-pack.
-* Only installs mdb files if debug.
-* Mdb file is added to objc3-sharp.pc (if debug).
-
-Index: sample/Makefile
-Index: cocoa-pack.py
-* cocoa-pack now uses a shebang.
-
-
-------------------------------------------------------------------------
-r35 | jesjones@mindspring.com | 2008-06-23 00:16:20 -0700 (Mon, 23 Jun 2008) | 16 lines
-
-Index: source/DBC.cs
-* Added default ctors to exception classes.
-
-Index: source/Registrar.cs
-Index: glue/Registrar.m
-* mimp no longer takes a superImp arg.
-
-Index: source/Unused.cs
+Index: test/TimingTest.cs
 * Added.
 
-Index: sample/DebugController.cs
-* Compiles in release.
 
-Index: Makefile
-* Updated tar target.
+------------------------------------------------------------------------
+r6 | jesjones@mindspring.com | 2008-10-26 02:16:19 -0700 (Sun, 26 Oct 2008) | 3 lines
+
+Removed formatted calls.
+
+
+------------------------------------------------------------------------
+r7 | jesjones@mindspring.com | 2008-10-26 02:17:21 -0700 (Sun, 26 Oct 2008) | 3 lines
+
+Removed formatted call files.
+
+
+------------------------------------------------------------------------
+r8 | jesjones@mindspring.com | 2008-10-26 22:07:21 -0700 (Sun, 26 Oct 2008) | 12 lines
+
+* Removed Untyped class: Call methods now return an object and you must cast it
+  to the correct type.
+* Added System.Object extension methods allowing us to chain calls.
+* Added System.Object extension method to do a cast which throws an exception
+  with a decent message if it fails (new --debug=casts switch doesn't work
+  on all platforms).
+* We no longer promote managed types to whatever the native calls expect: if the
+  native code expects an int then it's an error to pass anything else.
+* Type encoder no longer has the gross hack where small results were encoded
+  as "I" (Managed class now properly fills the return buffer for small types).
+ 		
+
+------------------------------------------------------------------------
+r9 | jesjones@mindspring.com | 2008-10-26 22:07:54 -0700 (Sun, 26 Oct 2008) | 3 lines
+
+Removed Untyped.cs
+
+
+------------------------------------------------------------------------
+r10 | jesjones@mindspring.com | 2008-10-26 22:11:38 -0700 (Sun, 26 Oct 2008) | 3 lines
+
+Removed Ignore class.
+
+
+------------------------------------------------------------------------
+r11 | jesjones@mindspring.com | 2008-10-26 22:47:33 -0700 (Sun, 26 Oct 2008) | 3 lines
+
+Replaced NewMethodAttribute and OverrideMethodAttribute with RegisterAttribute.
+
+
+------------------------------------------------------------------------
+r12 | jesjones@mindspring.com | 2008-10-26 22:48:37 -0700 (Sun, 26 Oct 2008) | 3 lines
+
+Removed old method attribute files.
+
+
+------------------------------------------------------------------------
+r13 | jesjones@mindspring.com | 2008-10-26 23:23:49 -0700 (Sun, 26 Oct 2008) | 3 lines
+
+RegisterAttribute is now optional on methods.
+
+
+------------------------------------------------------------------------
+r14 | jesjones@mindspring.com | 2008-10-27 01:49:06 -0700 (Mon, 27 Oct 2008) | 3 lines
+
+Minor smokey fixes.
+
+
+------------------------------------------------------------------------
+r15 | jesjones@mindspring.com | 2008-10-27 17:22:50 -0700 (Mon, 27 Oct 2008) | 7 lines
+
+Index: source/Native.cs
+* Dispose code checks fields for null before freeing.
+
+Index: source/NSObjectString.cs
+* Tweaked output so it's a bit less confusing.
+
+
+------------------------------------------------------------------------
+r16 | jesjones@mindspring.com | 2008-10-28 12:21:09 -0700 (Tue, 28 Oct 2008) | 3 lines
+
+* Minor Smokey/Gendarme fixes.
+ 		
 
 ------------------------------------------------------------------------

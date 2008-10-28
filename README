@@ -1,6 +1,6 @@
 BUILDING
 
-Navigate to the objc3-sharp directory with a terminal and type
+Navigate to the mobjc directory with a terminal and type
 `make` to make the libraries and the application. Type `make check`
 to run the unit tests and `make run-app` to run the sample Cocoa app.
 
@@ -14,7 +14,7 @@ change this with a command like this: `make INSTALL_DIR=/tmp install`.
 
 USING
 
-For usage see the wiki: <http://code.google.com/p/objc3-sharp/wiki/Usage>.
+For usage see the wiki: <http://code.google.com/p/mobjc/w/list>.
 Also look at the sample app.
 
 jesjones@mindspring.com

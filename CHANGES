@@ -1,3 +1,21 @@
+-- Version 0.3.0.0 (r16) ----
+
+* Simplified the library:
+	- removed support for formatted calls (Call("[[NSFoo alloc] initWithInt:{0}]", 100).
+	- removed the Untyped class
+	- typing is now stricter: in particular promotions will generally not be
+	  done automatically, if native code expects an int you can no longer pass
+	  in a short for example
+	- replaced NewMethodAttribute and OverrideMethodAttribute with RegisterAttribute
+	- public nullary and unary methods that start with a lower case letter are
+	  now automatically registered
+* Methods that call directly into Objective-C now start with a lower case letter
+  (like retain() and mutableCopy()).
+* A number of minor bugs have been fixed.
+
+
+------------------------------------------------------------------------
+
 -- Version 0.2.0.0 (r35) ----
 
 * Changed namespace casing.
