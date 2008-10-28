@@ -109,6 +109,8 @@ namespace MObjc
 		{
 			if (m_instance == m_class)
 				builder.Append("class ");
+			else
+				builder.Append("instance ");
 
 			IntPtr ptr = class_getName(m_class);
 			builder.Append(Marshal.PtrToStringAnsi(ptr));

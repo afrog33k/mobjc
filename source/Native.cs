@@ -43,7 +43,9 @@ namespace MObjc
 		internal Native(IntPtr target, Selector selector, Class klass) : this(target, selector, DoGetImp(target, selector, (IntPtr) klass))
 		{
 		}
-												
+		
+		// I've experimented with adding a fast path for @@: methods which bypassed libffi
+		// using DirectCalls.Callp, but the speed improvement was quite small.
 		internal Native(IntPtr target, Selector selector, IntPtr imp)
 		{
 			DBC.Pre(selector != null, "selector is null");
@@ -90,7 +92,7 @@ namespace MObjc
             	throw new ObjectDisposedException(GetType().Name);
 
 			if (m_target != IntPtr.Zero)
-			{
+			{	
 				if (m_sig.GetNumArgs() != 2 + args.Length)
 					throw new InvalidCallException(string.Format("{0} takes {1} arguments but was called with {2} arguments", m_selector, m_sig.GetNumArgs() - 2, args.Length));
 
@@ -116,13 +118,12 @@ namespace MObjc
 			if (m_target != IntPtr.Zero)
 			{
 				Ffi.Call(m_cif, m_imp, m_resultBuffer, m_argBuffers);
-
 				result = Ffi.DrainReturnBuffer(m_resultBuffer, m_returnEncoding);
 			}
 			
 			return result;
 		}
-																								
+																										
 		public void Dispose()
 		{
 			DoDispose(true);
@@ -147,14 +148,18 @@ namespace MObjc
 			{
 				if (m_target != IntPtr.Zero)
 				{
-					m_argBuffers.Free();
-					m_argTypes.FreeBuffer();
+					if (m_argBuffers != null)		// check everything for null in case one of our ctors threw
+						m_argBuffers.Free();
+
+					if (m_argTypes != null)
+						m_argTypes.FreeBuffer();
 					DoFreeBuffers();
 	
 					if (m_resultBuffer != IntPtr.Zero)
 						Marshal.FreeHGlobal(m_resultBuffer);
 				
-					Ffi.FreeCif(m_cif);
+					if (m_cif != IntPtr.Zero)
+						Ffi.FreeCif(m_cif);
 				}
 	
 				m_disposed = true;
@@ -163,17 +168,23 @@ namespace MObjc
 
 		private void DoFreeBuffers()
 		{
-			foreach (GCHandle handle in m_handles)	
+			if (m_handles != null)
 			{
-				handle.Free();
+				foreach (GCHandle handle in m_handles)	
+				{
+					handle.Free();
+				}
+				m_handles.Clear();
 			}
-			m_handles.Clear();
 			
-			foreach (IntPtr buffer in m_buffers)
+			if (m_buffers != null)
 			{
-				Marshal.FreeHGlobal(buffer);
+				foreach (IntPtr buffer in m_buffers)
+				{
+					Marshal.FreeHGlobal(buffer);
+				}
+				m_buffers.Clear();
 			}
-			m_buffers.Clear();
 		}
 		
 		private static IntPtr DoGetImp(IntPtr target, Selector selector, IntPtr klass)
@@ -224,7 +235,7 @@ namespace MObjc
 		private MethodSignature m_sig;
 		private IntPtr m_imp;
 		private IntPtr m_cif;
-		private bool m_disposed = false;
+		private bool m_disposed;
 	
 		private string m_returnEncoding;
 		private IntPtr m_resultBuffer;
