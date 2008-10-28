@@ -39,24 +39,7 @@ namespace MObjc
 	{		
 		static NSObject()
 		{
-			try
-			{
-				Registrar.Init();
-			}
-			catch (Exception e)		// TODO: get rid of this
-			{
-				Exception ee = e;
-				Console.Error.WriteLine("Registrar.Init failed:");
-				while (ee != null)
-				{
-					if (e.InnerException != null)
-						Console.Error.WriteLine("-------- {0} Exception --------{1}", ee == e ? "Outer" : "Inner", Environment.NewLine);
-					Console.Error.WriteLine("{0}", ee.Message + Environment.NewLine);
-					Console.Error.WriteLine("{0}", ee.StackTrace + Environment.NewLine);
-	
-					ee = ee.InnerException;
-				}
-			}
+			Registrar.Init();
 		}
 
 		// Constructs a new managed instance using a native id. Note that there

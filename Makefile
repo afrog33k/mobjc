@@ -81,6 +81,7 @@ smokey_flags += -exclude-check:PO1002	# DllImportExtension
 smokey_flags += -exclude-check:P1003	# AvoidBoxing
 smokey_flags += -exclude-check:P1004	# AvoidUnboxing
 smokey_flags += -exclude-check:P1005	# StringConcat
+smokey_flags += -exclude-check:R1039	# ThreadSafeAttr
 smoke: bin/sample.exe
 	@-smoke $(smokey_flags) bin/mobjc.dll
 	@echo " "

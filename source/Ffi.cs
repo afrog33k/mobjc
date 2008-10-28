@@ -659,6 +659,7 @@ namespace MObjc
 			return code;
 		}
 
+		[DisableRule("D1002", "MethodTooComplex")]
 		private static IntPtr DoCreateBuffer(string encoding)
 		{
 			IntPtr buffer;

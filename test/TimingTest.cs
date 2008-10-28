@@ -24,6 +24,7 @@ using MObjc;
 using System;
 using System.Diagnostics;
 
+#if UNUSED
 [TestFixture]
 public class TimingTest 	
 {
@@ -92,3 +93,4 @@ public class TimingTest
 
 	private NSObject m_pool;
 }
+#endif

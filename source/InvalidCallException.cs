@@ -36,7 +36,7 @@ namespace MObjc
 		{
 		}
 		
-		internal InvalidCallException(string text, Exception inner) : base(text, inner)
+		public InvalidCallException(string text, Exception inner) : base(text, inner)
 		{
 		}
 		
