@@ -61,8 +61,8 @@ namespace MObjc
 		// Init will grovel through all the loaded .NET types, find the ones which are registered
 		// with mobjc, and define the associated Objective-C classes. However this can be
 		// a bit tricky if multiple assemblies register types. Because this leads to rather icky
-		// hard to track down errors, you must explicitly notify objc-sharp when it is safe to
-		// call Init.
+		// hard to track down errors, you must explicitly notify mobjc when it is safe to call
+		// Init.
 		public static bool CanInit
 		{
 			get {return ms_canInit;}
@@ -84,11 +84,11 @@ namespace MObjc
 			{
 				foreach (Type type in assembly.GetTypes()) 
 				{
-					ExportClassAttribute attr = Attribute.GetCustomAttribute(type, typeof(ExportClassAttribute)) as ExportClassAttribute;
+					ExportClassAttribute attr = Attribute.GetCustomAttribute(type, typeof(ExportClassAttribute), false) as ExportClassAttribute;
 					if (attr != null)
 						exports.Add(new ClassEntry(type, attr));
 
-					RegisterAttribute attr2 = Attribute.GetCustomAttribute(type, typeof(RegisterAttribute)) as RegisterAttribute;
+					RegisterAttribute attr2 = Attribute.GetCustomAttribute(type, typeof(RegisterAttribute), false) as RegisterAttribute;
 					if (attr2 != null)
 					{
 						string name = attr2.Name ?? type.Name;
@@ -97,7 +97,7 @@ namespace MObjc
 							TypeEncoder.Register(type, name);
 						else
 							NSObject.Register(type, name);
-						}
+					}
 				}
 			}
 			
@@ -143,7 +143,7 @@ namespace MObjc
 			{
 				if (!info.IsSpecialName && info.DeclaringType.Name != "NSObject")
 				{
-					RegisterAttribute attr = Attribute.GetCustomAttribute(info, typeof(RegisterAttribute)) as RegisterAttribute;
+					RegisterAttribute attr = Attribute.GetCustomAttribute(info, typeof(RegisterAttribute), false) as RegisterAttribute;
 					if (attr != null) 
 						DoAddMethod(name, info, attr.Name ?? info.Name, klass, superClass);
 				
@@ -238,7 +238,7 @@ namespace MObjc
 		{
 			foreach (MethodInfo info in type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)) 
 			{
-				ExportClassAttribute attr = Attribute.GetCustomAttribute(type, typeof(ExportClassAttribute)) as ExportClassAttribute;
+				ExportClassAttribute attr = Attribute.GetCustomAttribute(type, typeof(ExportClassAttribute), false) as ExportClassAttribute;
 				if (attr != null)
 				{
 					if (!typeof(NSObject).IsAssignableFrom(type))
@@ -251,8 +251,8 @@ namespace MObjc
 
 		private static void DoValidateMethod(Type type, MethodInfo info)
 		{
-			ExportClassAttribute klassAttr = Attribute.GetCustomAttribute(type, typeof(ExportClassAttribute)) as ExportClassAttribute;
-			RegisterAttribute methodAttr = Attribute.GetCustomAttribute(info, typeof(RegisterAttribute)) as RegisterAttribute;
+			ExportClassAttribute klassAttr = Attribute.GetCustomAttribute(type, typeof(ExportClassAttribute), false) as ExportClassAttribute;
+			RegisterAttribute methodAttr = Attribute.GetCustomAttribute(info, typeof(RegisterAttribute), false) as RegisterAttribute;
 
 			if (klassAttr != null)
 			{

@@ -13,9 +13,6 @@
   (like retain() and mutableCopy()).
 * A number of minor bugs have been fixed.
 
-
-------------------------------------------------------------------------
-
 -- Version 0.2.0.0 (r35) ----
 
 * Changed namespace casing.

@@ -162,7 +162,7 @@ namespace MObjc
 			return m_deallocated;
 		}
 		
-		public object Call(string name, params object[] args)
+		public object Call(string name, params object[] args)	// thread safe
 		{
 			DBC.Pre(name != null, "name is null");
 			DBC.Assert(!m_deallocated, "ref count is zero");
