@@ -49,7 +49,7 @@ check: bin/tests.dll bin/mobjc-glue.dylib
 	cd bin && "$(NUNIT)" tests.dll -nologo
 
 check1: bin/tests.dll bin/mobjc-glue.dylib
-	cd bin && "$(NUNIT)" tests.dll -fixture=DerivedTest -nologo
+	cd bin && "$(NUNIT)" tests.dll -fixture=ReturnTests.BadFloatTo -nologo
 
 app: libs
 	cd sample && make app

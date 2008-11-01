@@ -336,4 +336,60 @@ public class MyDerived : MyBase
 	}
 }
 
+// -----------------------------------------------
 
+[ExportClass("Item", "NSObject")]
+public class Item : NSObject			// make sure Registrar processes base types before derived types
+{
+	protected Item(IntPtr instance) : base(instance)
+	{
+	}
+}
+
+[ExportClass("File", "Item")]
+public class File : Item
+{
+	protected File(IntPtr instance) : base(instance)
+	{
+	}
+}
+
+[ExportClass("Media", "File")]
+public class Media : File
+{
+	protected Media(IntPtr instance) : base(instance)
+	{
+	}
+}
+
+[ExportClass("Image", "Media")]
+public class Image : Media
+{
+	protected Image(IntPtr instance) : base(instance)
+	{
+	}
+}
+
+[ExportClass("Movie", "Media")]
+public class Movie : Media
+{
+	protected Movie(IntPtr instance) : base(instance)
+	{
+	}
+}
+
+[ExportClass("PDF", "File")]
+public class PDF : File
+{
+	protected PDF(IntPtr instance) : base(instance)
+	{
+	}
+}
+
+[ExportClass("User", "Item")]
+public class User : Item
+{
+	protected User(IntPtr instance) : base(instance)
+	{
+	}
+}

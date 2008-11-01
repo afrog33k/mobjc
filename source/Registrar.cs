@@ -101,9 +101,19 @@ namespace MObjc
 				}
 			}
 			
-			// Note that we need to initialize classes after structs in case a class method refers
-			// to a struct.
-			exports.Sort();									// must process base types before derived types
+			for (int i = 0; i < exports.Count; ++i)				// must process base types before derived types
+			{
+				for (int j = i + 1; j < exports.Count; ++j)		// crappy O(N^2) sort, but it's difficult to use a more efficient sort because we cannot meaningfully compare two elements in isolation
+				{												// should be OK though, because this is only for exported types, not registered types
+					if (ClassEntry.LeftDerivesFromRight(exports[i], exports[j]))
+					{
+						ClassEntry temp = exports[i];
+						exports[i] = exports[j];
+						exports[j] = temp;
+					}
+				}
+			}
+					
 			foreach (ClassEntry export in exports)
 			{
 				if (ms_typeNames.ContainsKey(export.Attr.DerivedName))
@@ -115,7 +125,7 @@ namespace MObjc
 				DoInitClass(export.Attr.DerivedName, export.Attr.BaseName, export.Type, export.Attr.IVars);
 			}
 		}
-							
+		
 		private static void DoInitClass(string name, string baseName, Type type, string ivars)
 		{
 			Class superClass = new Class(baseName);
@@ -268,67 +278,79 @@ namespace MObjc
 		#endregion
 		
 		#region Private Types -------------------------------------------------
-		private struct ClassEntry : IComparable<ClassEntry>, IEquatable<ClassEntry>
+		private class ClassEntry : IEquatable<ClassEntry>
 		{        
 			public ClassEntry(Type type, ExportClassAttribute attr)
 			{
-				m_type = type;
-				m_attr = attr;
+				Type = type;
+				Attr = attr;
+				
+				ExportClassAttribute baseAttr = Attribute.GetCustomAttribute(type.BaseType, typeof(ExportClassAttribute), false) as ExportClassAttribute;
+				if (baseAttr != null)
+					Base = new ClassEntry(type.BaseType, baseAttr);
 			}
 			
-			public Type Type
-			{
-				get {return m_type;}
-			}
+			public Type Type {get; private set;}
 			
-			public ExportClassAttribute Attr
+			public ExportClassAttribute Attr {get; private set;}
+						
+			public static bool LeftDerivesFromRight(ClassEntry lhs, ClassEntry rhs)
 			{
-				get {return m_attr;}
-			}
-			
-			public int CompareTo(ClassEntry rhs)    
-			{
-				if (m_attr.DerivedName == rhs.m_attr.BaseName)	// if lhs is rhs's base then it needs to be processed before rhs	
-					return -1;
+				if (lhs.Attr.BaseName == rhs.Attr.DerivedName) 
+					return true;
 					
-				else if (m_attr.BaseName == rhs.m_attr.DerivedName)	// if lhs is a subclass of rhs then it needs to be processed after rhs
-					return +1;
+				else if (rhs.Attr.BaseName == lhs.Attr.DerivedName)
+					return false;
+				
+				else if (lhs.Base != null)
+					return LeftDerivesFromRight(lhs.Base, rhs);
 					
-				else
-					return 0;
+				return false;
 			}
 		 
 			public override bool Equals(object rhsObj)
 			{
-				if (rhsObj == null)        
+				if (rhsObj == null)           
 					return false;
 				
-				if (GetType() != rhsObj.GetType()) 
-					return false;
-				
-				ClassEntry rhs = (ClassEntry) rhsObj; 
-				return CompareTo(rhs) == 0;
+				ClassEntry rhs = rhsObj as ClassEntry;
+				return this == rhs;
 			}
 				
 			public bool Equals(ClassEntry rhs)    
 			{
-				return CompareTo(rhs) == 0;
+				return this == rhs;
 			}
-
+		
+			public static bool operator==(ClassEntry lhs, ClassEntry rhs)
+			{
+				if (object.ReferenceEquals(lhs, rhs))
+					return true;
+				
+				if ((object) lhs == null || (object) rhs == null)
+					return false;
+				
+				return lhs.Attr.BaseName == rhs.Attr.BaseName && lhs.Attr.DerivedName == rhs.Attr.DerivedName;
+			}
+			
+			public static bool operator!=(ClassEntry lhs, ClassEntry rhs)
+			{
+				return !(lhs == rhs);
+			}
+    
 			public override int GetHashCode()
 			{
 				int hash;
 				
 				unchecked
 				{
-					hash = m_attr.BaseName.GetHashCode() + m_attr.DerivedName.GetHashCode();
+					hash = 3*Attr.BaseName.GetHashCode() + 7*Attr.DerivedName.GetHashCode();
 				}
 				
 				return hash;
 			}
-			
-			private readonly Type m_type;
-			private readonly ExportClassAttribute m_attr;
+
+			private ClassEntry Base {get; set;}
 		}
 
 		private delegate IntPtr ManagedImp(IntPtr dummy, IntPtr result, IntPtr args);

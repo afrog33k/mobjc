@@ -39,7 +39,30 @@ namespace MObjc
 	{		
 		static NSObject()
 		{
-			Registrar.Init();
+			try
+			{
+				Registrar.Init();
+			}
+			catch (Exception e)
+			{
+				// This is a fatal error and the nunit which ships with mono does a poor
+				// job printing inner exceptions. So, we'll print the exception ourself
+				// and shutdown the app.
+				Console.Error.WriteLine("Registrar.Init raised an exception:");
+				Exception ee = e;
+				while (ee != null)
+				{
+					if (e.InnerException != null)
+						Console.Error.WriteLine("--------- {0} Exception{1}", ee == e ? "Outer" : "Inner", Environment.NewLine);
+					Console.Error.WriteLine("{0}", ee.Message + Environment.NewLine);
+					Console.Error.WriteLine("{0}", ee.StackTrace + Environment.NewLine);
+
+					ee = ee.InnerException;
+				}
+				Console.Out.Flush();
+				Console.Error.Flush();
+				Environment.Exit(13);
+			}
 		}
 
 		// Constructs a new managed instance using a native id. Note that there
@@ -187,10 +210,22 @@ namespace MObjc
 
 			if (m_instance != IntPtr.Zero)
 			{
-				using (Native native = new Native(m_instance, new Selector(name)))
+				if (name == "alloc" && args.Length == 0)	// need this so we can create an auto release pool without leaking NSMethodSignature
 				{
-					native.SetArgs(args);			
-					result = native.Invoke();
+					IntPtr exception = IntPtr.Zero;
+					IntPtr ip = DirectCalls.Callp(m_instance, salloc, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+
+					result = NSObject.Lookup(ip);
+				}
+				else
+				{					
+					using (Native native = new Native(m_instance, new Selector(name)))
+					{
+						native.SetArgs(args);			
+						result = native.Invoke();
+					}
 				}
 			}
 			
