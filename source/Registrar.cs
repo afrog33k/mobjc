@@ -40,7 +40,7 @@ namespace MObjc
 				if (!ms_canInit)
 					throw new InvalidOperationException("mobjc was used, but CanInit is false");
 					
-				NSObject pool = new Class("NSAutoreleasePool").Call("alloc").Call("init").To<NSObject>();
+				NSObject pool = new NSObject(NSObject.CreateNative("NSAutoreleasePool"));
 				
 				DoInit();
 		

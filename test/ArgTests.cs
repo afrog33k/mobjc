@@ -32,7 +32,7 @@ public class ArgTests
 	public void Init()
 	{
 		Registrar.CanInit = true;
-		m_pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
+		m_pool = new NSObject(NSObject.CreateNative("NSAutoreleasePool"));
 	}
 	
 	[TestFixtureTearDown]

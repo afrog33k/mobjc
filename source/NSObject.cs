@@ -84,6 +84,22 @@ namespace MObjc
 			}
 		}
 												
+		public static IntPtr CreateNative(string name)
+		{
+			Class klass = new Class(name);
+
+			IntPtr exception = IntPtr.Zero;
+			IntPtr instance = DirectCalls.Callp(klass, salloc, ref exception);
+			if (exception != IntPtr.Zero)
+				CocoaException.Raise(exception);
+			
+			instance = DirectCalls.Callp(instance, sinit, ref exception);
+			if (exception != IntPtr.Zero)
+				CocoaException.Raise(exception);
+			
+			return instance;
+		}
+
 		public static NSObject Create()
 		{
 			NSObject result = (NSObject) alloc().init();
@@ -171,22 +187,10 @@ namespace MObjc
 
 			if (m_instance != IntPtr.Zero)
 			{
-				if (name == "alloc" && args.Length == 0)	// need this so we can create an auto release pool without leaking NSMethodSignature
+				using (Native native = new Native(m_instance, new Selector(name)))
 				{
-					IntPtr exception = IntPtr.Zero;
-					IntPtr ip = DirectCalls.Callp(m_instance, salloc, ref exception);
-					if (exception != IntPtr.Zero)
-						CocoaException.Raise(exception);
-
-					result = NSObject.Lookup(ip);
-				}
-				else
-				{					
-					using (Native native = new Native(m_instance, new Selector(name)))
-					{
-						native.SetArgs(args);			
-						result = native.Invoke();
-					}
+					native.SetArgs(args);			
+					result = native.Invoke();
 				}
 			}
 			
@@ -394,6 +398,7 @@ namespace MObjc
 
 		private static readonly Selector salloc = new Selector("alloc");
 		private static readonly Selector sclass = new Selector("class");
+		private static readonly Selector sinit = new Selector("init");
 		private static readonly Selector srelease = new Selector("release");
 		private static readonly Selector sretain = new Selector("retain");
 		private static readonly Selector sretainCount = new Selector("retainCount");

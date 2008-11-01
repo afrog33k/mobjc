@@ -31,7 +31,7 @@ public class ReturnTests
 	public void Init()
 	{
 		Registrar.CanInit = true;
-		m_pool = new Class("NSAutoreleasePool").Call("alloc").Call("init").To<NSObject>();
+		m_pool = new NSObject(NSObject.CreateNative("NSAutoreleasePool"));
 	}
 	
 	[TestFixtureTearDown]

@@ -41,7 +41,7 @@ internal static class Program
 			SetFrontProcess(ref psn);
 		
 			// Load the nib and run the main event loop.
-			NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
+			NSObject pool = new NSObject(NSObject.CreateNative("NSAutoreleasePool"));
 			App app = new App("MainMenu.nib");
 			pool.release();
 
