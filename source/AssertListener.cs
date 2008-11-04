@@ -21,41 +21,56 @@
 
 using System;
 using System.Diagnostics;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 
-internal class AssertException : Exception
-{
-	public AssertException(string text) : base(text) 
+namespace MObjc
+{			
+	[Serializable]
+	public class AssertException : Exception
 	{
+		public AssertException(string text) : base(text) 
+		{
+		}
+
+		public AssertException(string text, Exception inner) : base (text, inner)
+		{
+		}
+		
+		[SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+		private AssertException(SerializationInfo info, StreamingContext context) : base(info, context)
+		{
+		}
 	}
-}
-
-// Trace.Assert and Debug.Assert work well on Windows where they pop up a
-// dialog. They don't work so well on Mono where all they do is write a message
-// (and even that has to be explicitly enabled). We want asserts to be very
-// visible events so what we do is use this listener to throw an exception
-// on asserts.
-internal sealed class AssertListener : TraceListener
-{
-	public override void Fail(string message)
+	
+	// Trace.Assert and Debug.Assert work well on Windows where they pop up a
+	// dialog. They don't work so well on Mono where all they do is write a message
+	// (and even that has to be explicitly enabled). We want asserts to be very
+	// visible events so what we do is provide this listener which will throw an 
+	// exception on asserts.
+	public sealed class AssertListener : TraceListener
 	{
-		throw new AssertException(message);
-	}
-
-	public override void Fail(string message, string details)
-	{
-		if (string.IsNullOrEmpty(details))
+		public override void Fail(string message)
+		{
 			throw new AssertException(message);
-		else
-			throw new AssertException(message + " --- " + details);
-	}
-
-	public override void Write(string message)
-	{
-		// need to override this, but we don't want to do anything
-	}
-
-	public override void WriteLine(string message)
-	{
-		// need to override this, but we don't want to do anything
+		}
+	
+		public override void Fail(string message, string details)
+		{
+			if (string.IsNullOrEmpty(details))
+				throw new AssertException(message);
+			else
+				throw new AssertException(message + " --- " + details);
+		}
+	
+		public override void Write(string message)
+		{
+			// need to override this, but we don't want to do anything
+		}
+	
+		public override void WriteLine(string message)
+		{
+			// need to override this, but we don't want to do anything
+		}
 	}
 }
