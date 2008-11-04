@@ -20,6 +20,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 
 namespace MObjc
 {			
@@ -27,8 +28,8 @@ namespace MObjc
 	{
 		public IVar(NSObject owner, string name)
 		{
-			DBC.Pre(!NSObject.IsNullOrNil(owner), "owner is null or nil");
-			DBC.Pre(!string.IsNullOrEmpty(name), "name is null or empty");
+			Trace.Assert(!NSObject.IsNullOrNil(owner), "owner is null or nil");
+			Trace.Assert(!string.IsNullOrEmpty(name), "name is null or empty");
 
 			m_owner = owner;
 			m_name = name;

@@ -9,10 +9,10 @@ GCC ?= gcc
 NUNIT ?= nunit-console2
 
 ifdef RELEASE
-	CSC_FLAGS ?= -checked+ -warn:4 -optimize+
+	CSC_FLAGS ?= -checked+ -optimize+ -warn:4 -d:TRACE
 	GCC_FLAGS ?= -Wall -O3
 else
-	CSC_FLAGS ?= -checked+ -debug+ -warnaserror+ -warn:4 -define:DEBUG
+	CSC_FLAGS ?= -checked+ -debug+ -warn:4 -warnaserror+ -d:DEBUG -d:TRACE
 	GCC_FLAGS ?= -ggdb -Wall -Werror -D DEBUG
 endif
 
@@ -48,7 +48,7 @@ libs: bin/mobjc.dll bin/mobjc-glue.dylib
 # directory and aren't using an absolute path to nunit the tests dll won't
 # be able to use other dlls beside it.
 test: bin/tests.dll bin/mobjc-glue.dylib
-	cd bin && "$(NUNIT)" tests.dll -nologo
+	cd bin && "$(NUNIT)" -nologo tests.dll
 
 test1: bin/tests.dll bin/mobjc-glue.dylib
 	cd bin && "$(NUNIT)" -nologo -fixture=$(TEST1) tests.dll 

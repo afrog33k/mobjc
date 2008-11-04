@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -203,8 +204,8 @@ namespace MObjc
 		
 		public object Call(string name, params object[] args)	// thread safe
 		{
-			DBC.Pre(name != null, "name is null");
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(name != null, "name is null");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 			
 			object result = new NSObject(IntPtr.Zero);
 
@@ -234,8 +235,8 @@ namespace MObjc
 		
 		public object SuperCall(string name, params object[] args)
 		{
-			DBC.Pre(name != null, "name is null");
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(name != null, "name is null");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			object result = IntPtr.Zero;
 
@@ -255,8 +256,8 @@ namespace MObjc
 		{
 			get
 			{
-				DBC.Pre(!string.IsNullOrEmpty(ivarName), "ivarName is null or empty");
-				DBC.Assert(!m_deallocated, "ref count is zero");
+				Trace.Assert(!string.IsNullOrEmpty(ivarName), "ivarName is null or empty");
+				Trace.Assert(!m_deallocated, "ref count is zero");
 				
 				NSObject result;
 				
@@ -278,8 +279,8 @@ namespace MObjc
 			
 			set
 			{
-				DBC.Pre(!string.IsNullOrEmpty(ivarName), "ivarName is null or empty");
-				DBC.Assert(!m_deallocated, "ref count is zero");
+				Trace.Assert(!string.IsNullOrEmpty(ivarName), "ivarName is null or empty");
+				Trace.Assert(!m_deallocated, "ref count is zero");
 				
 				if (m_instance != IntPtr.Zero)
 				{
@@ -372,7 +373,7 @@ namespace MObjc
 		protected virtual void OnDealloc()
 		{
 			bool removed = ms_instances.Remove(m_instance);
-			DBC.Assert(removed, "dealloc was called but the instance is not in ms_instances");
+			Trace.Assert(removed, "dealloc was called but the instance is not in ms_instances");
 
 			Unused.Value = SuperCall("dealloc");
 			m_deallocated = true;

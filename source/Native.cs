@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -48,8 +49,8 @@ namespace MObjc
 		// using DirectCalls.Callp, but the speed improvement was quite small.
 		internal Native(IntPtr target, Selector selector, IntPtr imp)
 		{
-			DBC.Pre(selector != null, "selector is null");
-			DBC.Pre(target == IntPtr.Zero || imp != IntPtr.Zero, "imp is null");
+			Trace.Assert(selector != null, "selector is null");
+			Trace.Assert(target == IntPtr.Zero || imp != IntPtr.Zero, "imp is null");
 						
 			// Save the target, the method we need to call, and the method's signature.
 			m_target = target;

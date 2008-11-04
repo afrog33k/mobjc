@@ -20,6 +20,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -32,7 +33,7 @@ namespace MObjc
 		// Name should be something like "stringWithCharacters:length:".
 		public Selector(string name)
 		{
-			DBC.Pre(!string.IsNullOrEmpty(name), "name is null or empty");
+			Trace.Assert(!string.IsNullOrEmpty(name), "name is null or empty");
 				
 			m_selector = sel_registerName(name);
 			m_name = name;
@@ -43,7 +44,7 @@ namespace MObjc
 		
 		public Selector(IntPtr selector)
 		{
-			DBC.Pre(selector != IntPtr.Zero, "selector is nil");
+			Trace.Assert(selector != IntPtr.Zero, "selector is nil");
 			
 			m_selector = selector;
 

@@ -20,6 +20,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace MObjc
@@ -34,8 +35,8 @@ namespace MObjc
 	
 		public static object Call(this object instance, Selector selector, params object[] args)
 		{			
-			DBC.Pre(selector != null, "selector is null");
-			DBC.Pre(args != null, "args is null");
+			Trace.Assert(selector != null, "selector is null");
+			Trace.Assert(args != null, "args is null");
 			
 			object result = new NSObject(IntPtr.Zero);
 			

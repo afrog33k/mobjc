@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace MObjc
@@ -36,14 +37,14 @@ namespace MObjc
 		
 		public static bool TryGetStruct(string name, out Type type)
 		{
-			DBC.Pre(!string.IsNullOrEmpty(name), "name is null or empty");
+			Trace.Assert(!string.IsNullOrEmpty(name), "name is null or empty");
 			
 			return ms_structs.TryGetValue(name, out type);
 		}
 		
 		public static string Encode(Type type)
 		{
-			DBC.Pre(type != null, "type is null");
+			Trace.Assert(type != null, "type is null");
 			
 			if (type == typeof(bool))
 				return "c";

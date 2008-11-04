@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -32,7 +33,7 @@ namespace MObjc
 		#region Protocol
 		public void autorelease()
 		{
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
 				Unused.Value = Call("autorelease");
@@ -53,8 +54,8 @@ namespace MObjc
 
 		public bool conformsToProtocol(IntPtr protocol)
 		{
-			DBC.Pre(protocol != IntPtr.Zero, "protocol is nil");
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(protocol != IntPtr.Zero, "protocol is nil");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
 				return (sbyte) Call("conformsToProtocol:", protocol) != 0;
@@ -64,7 +65,7 @@ namespace MObjc
 		
 		public string description()
 		{
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
 			{
@@ -77,7 +78,7 @@ namespace MObjc
 		
 		public int hash()
 		{
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
 				return unchecked((int) Call("hash"));
@@ -87,7 +88,7 @@ namespace MObjc
 		
 		public bool isEqual(NSObject rhs)
 		{
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
 				return (sbyte) Call("isEqual:", rhs) != 0;
@@ -97,8 +98,8 @@ namespace MObjc
 		
 		public bool isKindOfClass(NSObject rhs)
 		{
-			DBC.Pre(!NSObject.IsNullOrNil(rhs), "rhs is null or nil");
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(!NSObject.IsNullOrNil(rhs), "rhs is null or nil");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
 				return (sbyte) Call("isKindOfClass:", rhs) != 0;
@@ -108,8 +109,8 @@ namespace MObjc
 										
 		public bool isMemberOfClass(NSObject klass)
 		{
-			DBC.Pre(!NSObject.IsNullOrNil(klass), "klass is null or nil");
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(!NSObject.IsNullOrNil(klass), "klass is null or nil");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
 				return (sbyte) Call("isMemberOfClass:", klass) != 0;
@@ -119,7 +120,7 @@ namespace MObjc
 										
 		public bool isProxy()
 		{
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
 				return (sbyte) Call("isProxy") != 0;
@@ -134,7 +135,7 @@ namespace MObjc
 		// for details on the memory management rules.
 		public void release()
 		{
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			uint oldCount = retainCount();
 				
@@ -154,8 +155,8 @@ namespace MObjc
 				
 		public bool respondsToSelector(Selector selector)
 		{
-			DBC.Pre(selector != null, "selector is null");
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(selector != null, "selector is null");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
 				return (sbyte) Call("respondsToSelector:", selector) != 0;
@@ -165,7 +166,7 @@ namespace MObjc
 				
 		public NSObject retain()
 		{
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			IntPtr exception = IntPtr.Zero;
 			Unused.Value = DirectCalls.Callp(m_instance, sretain, ref exception);
@@ -177,7 +178,7 @@ namespace MObjc
 						
 		public uint retainCount()
 		{
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			uint count = uint.MaxValue;
 			
@@ -194,7 +195,7 @@ namespace MObjc
 						
 		public Class superclass()
 		{
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
 				return (Class) Call("superclass");
@@ -204,7 +205,7 @@ namespace MObjc
 		
 		public IntPtr zone()
 		{
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			return (IntPtr) Call("zone");
 		}
@@ -213,7 +214,7 @@ namespace MObjc
 		#region Instance Methods
 		public NSObject copy()
 		{
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
 				return NSObject.Lookup((IntPtr) Call("copy"));
@@ -223,7 +224,7 @@ namespace MObjc
 
 		public NSObject mutableCopy()
 		{
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
 				return NSObject.Lookup((IntPtr) Call("mutableCopy"));
@@ -233,8 +234,8 @@ namespace MObjc
 
 		public void performSelectorOnMainThreadWithObjectWaitUntilDone(Selector selector, NSObject arg, bool wait)
 		{
-			DBC.Pre(selector != null, "selector is null");
-			DBC.Assert(!m_deallocated, "ref count is zero");
+			Trace.Assert(selector != null, "selector is null");
+			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
 			{

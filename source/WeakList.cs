@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace MObjc
 {			
@@ -29,7 +30,7 @@ namespace MObjc
 	{
 		public WeakList(int capacity)
 		{
-			DBC.Pre(capacity > 0, "capacity is not positive");
+			Trace.Assert(capacity > 0, "capacity is not positive");
 			
 			m_capacity = capacity;
 			m_list = new List<WeakReference>(capacity);			

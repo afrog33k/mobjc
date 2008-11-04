@@ -20,6 +20,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -73,7 +74,7 @@ namespace MObjc
 		#region Private Methods -----------------------------------------------
 		private static IntPtr DoGetDefinition(string name)
 		{
-			DBC.Pre(!string.IsNullOrEmpty(name), "name is null or empty");
+			Trace.Assert(!string.IsNullOrEmpty(name), "name is null or empty");
 				
 			IntPtr klass = objc_getClass(name);
 			

@@ -32,16 +32,16 @@ namespace MObjc
 	{
 		internal Managed(MethodInfo info, string encoding)
 		{
-			DBC.Pre(info != null, "info is null");
-			DBC.Pre(!string.IsNullOrEmpty(encoding), "encoding is null or empty");
+			Trace.Assert(info != null, "info is null");
+			Trace.Assert(!string.IsNullOrEmpty(encoding), "encoding is null or empty");
 			
 			m_info = info;
 			m_signature = new MethodSignature(encoding);
 		}
 		
 		// We default to logging exceptions thrown by managed code to stderr before
-		// we convert them into a native exception. If you want to do something else
-		// you can set this.
+		// we convert them into a native exception (because Cocoa has a tendency to
+		// eat them). If you want to do something else you can set this.
 		public static Action<Exception> LogException {get; set;}
 		
 		internal IntPtr Call(IntPtr dummy, IntPtr resultBuffer, IntPtr argBuffers)	// thread safe
@@ -131,9 +131,6 @@ namespace MObjc
 		}
 		
 		#region Private Methods -----------------------------------------------
-		// Cocoa has a tendency to eat exceptions so in debug, at least, we'll write any 
-		// exceptions thrown from managed code to stderr.
-		[Conditional("DEBUG")]
 		private static void DoLogException(Exception e)
 		{
 			Console.Error.WriteLine("Exception was thrown from managed code:");

@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -31,7 +32,7 @@ namespace MObjc
 	{
 		public SignatureInfo(IntPtr sig) 
 		{
-			DBC.Pre(sig != IntPtr.Zero, "sig is nil");
+			Trace.Assert(sig != IntPtr.Zero, "sig is nil");
 			
 			// Get the return encoding.
 			IntPtr exception = IntPtr.Zero;
@@ -98,14 +99,14 @@ namespace MObjc
 	{
 		public MethodSignature(string encoding) 
 		{		
-			DBC.Pre(!string.IsNullOrEmpty(encoding), "encoding is null or empty");
+			Trace.Assert(!string.IsNullOrEmpty(encoding), "encoding is null or empty");
 			m_info = DoEncodingToSig(encoding);	
 		}
 				
 		public MethodSignature(IntPtr target, IntPtr selector) 
 		{
-			DBC.Pre(target != IntPtr.Zero, "target is nil");
-			DBC.Pre(selector != IntPtr.Zero, "selector is nil");
+			Trace.Assert(target != IntPtr.Zero, "target is nil");
+			Trace.Assert(selector != IntPtr.Zero, "selector is nil");
 			
 			m_info = DoClassSelectorToSig(target, selector);	
 			if (m_info == null)

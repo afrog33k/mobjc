@@ -22,6 +22,7 @@
 // This is based on the AnimatingViews AppKit example from the developer examples.
 using MObjc;
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 // http://developer.apple.com/documentation/Cocoa/Reference/ApplicationKit/Miscellaneous/AppKit_Functions/Reference/reference.html
@@ -32,6 +33,11 @@ internal static class Program
 		try
 		{
 			Registrar.CanInit = true;
+
+#if DEBUG			
+			Debug.Listeners.Add(new AssertListener());
+#endif
+			Trace.Listeners.Add(new AssertListener());
 			
 			// Make our app a foreground app (if we don't do this we won't appear in the dock).
 			IntPtr psn = IntPtr.Zero;	
