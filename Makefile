@@ -3,6 +3,7 @@
 
 # ------------------
 # Public variables
+TEST1 ?= ReturnTests
 CSC ?= gmcs
 GCC ?= gcc
 NUNIT ?= nunit-console2
@@ -15,14 +16,7 @@ else
 	GCC_FLAGS ?= -ggdb -Wall -Werror -D DEBUG
 endif
 
-# use the libffi that ships with leopard
-FFI_INCLUDE ?= /usr/include
-FFI_LIB ?= ffi
-#FFI_INCLUDE ?= /usr/local/lib/libffi-3.0.5/include	# the newer libffi
-#FFI_LIB ?= ffi.5
-
 INSTALL_DIR ?= /usr/local
-PKG_CONFIG_DIR ?= /usr/local/lib/pkgconfig
 
 # ------------------
 # Internal variables
@@ -35,6 +29,14 @@ version := $(shell ./get_version.sh $(base_version) build_num)	# this will incre
 version := $(strip $(version))
 export version
 
+# use the libffi that ships with leopard
+ffi_include := /usr/include
+ffi_lib := ffi
+#ffi_include := /usr/local/lib/libffi-3.0.5/include	# the newer libffi
+#ffi_lib := ffi.5
+
+pkg_config_dir := $(INSTALL_DIR)/lib/pkgconfig
+
 # ------------------
 # Primary targets
 all: bin/tests.dll bin/sample.exe
@@ -45,11 +47,11 @@ libs: bin/mobjc.dll bin/mobjc-glue.dylib
 # to like absolute paths to the tests dll and if you're not in the tests
 # directory and aren't using an absolute path to nunit the tests dll won't
 # be able to use other dlls beside it.
-check: bin/tests.dll bin/mobjc-glue.dylib
+test: bin/tests.dll bin/mobjc-glue.dylib
 	cd bin && "$(NUNIT)" tests.dll -nologo
 
-check1: bin/tests.dll bin/mobjc-glue.dylib
-	cd bin && "$(NUNIT)" tests.dll -fixture=ReturnTests.BadFloatTo -nologo
+test1: bin/tests.dll bin/mobjc-glue.dylib
+	cd bin && "$(NUNIT)" -nologo -fixture=$(TEST1) tests.dll 
 
 app: libs
 	cd sample && make app
@@ -64,7 +66,7 @@ bin/mobjc.dll: keys bin/csc_flags source/*.cs
 	$(CSC) -out:bin/mobjc.dll $(CSC_FLAGS) -keyfile:keys -target:library source/*.cs
 
 bin/mobjc-glue.dylib: bin/gcc_flags glue/*.m
-	$(GCC) -o bin/mobjc-glue.dylib $(GCC_FLAGS) -framework Foundation -dynamiclib -l$(FFI_LIB) -I $(FFI_INCLUDE) glue/*.m
+	$(GCC) -o bin/mobjc-glue.dylib $(GCC_FLAGS) -framework Foundation -dynamiclib -l$(ffi_lib) -I $(ffi_include) glue/*.m
 
 bin/tests.dll: bin/csc_flags bin/mobjc.dll test/*.cs
 	$(CSC) -out:bin/tests.dll $(CSC_FLAGS) -pkg:mono-nunit -r:bin/mobjc.dll -target:library test/*.cs
@@ -102,7 +104,7 @@ help:
 	@echo " "
 	@echo "The primary targets are:"
 	@echo "libs      - build the managed and native dll's"
-	@echo "check     - run the unit tests"
+	@echo "test      - run the unit tests"
 	@echo "app       - build the cocoa sample app"
 	@echo "run-app   - run the cocoa sample app"
 	@echo "install   - install the dll's and a pkg-config file"
@@ -115,7 +117,7 @@ help:
 	@echo "Here's an example:"	
 	@echo "sudo make RELEASE=1 install"	
 
-pc_file := $(PKG_CONFIG_DIR)/mobjc.pc
+pc_file := $(pkg_config_dir)/mobjc.pc
 install: libs
 	cp "cocoa-pack" "$(INSTALL_DIR)/bin"
 	cp "bin/mobjc-glue.dylib" "$(INSTALL_DIR)/lib"
