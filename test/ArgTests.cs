@@ -31,6 +31,9 @@ public class ArgTests
 	[TestFixtureSetUp]
 	public void Init()
 	{
+		AssertListener.TraceInstall();
+		AssertListener.DebugInstall();
+
 		Registrar.CanInit = true;
 		m_pool = new NSObject(NSObject.CreateNative("NSAutoreleasePool"));
 	}

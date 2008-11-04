@@ -35,6 +35,9 @@ public class MemoryTests
 	[TestFixtureSetUp]
 	public void Init()
 	{
+		AssertListener.TraceInstall();
+		AssertListener.DebugInstall();
+
 		Registrar.CanInit = true;
 	}
 	
