@@ -50,24 +50,15 @@ namespace MObjc
 	// exception on asserts.
 	public sealed class AssertListener : TraceListener
 	{
-		public static void TraceInstall()
+		public static void Install()
 		{
-			if (!ms_traceInstalled)
+			if (!ms_installed)
 			{
-				Trace.Listeners.Add(new AssertListener());
-				ms_traceInstalled = true;
+				Trace.Listeners.Add(new AssertListener());	// note that Trace and Debug share the same listener collection
+				ms_installed = true;
 			}
 		}
-		
-		public static void DebugInstall()
-		{
-			if (!ms_debugInstalled)
-			{
-				Debug.Listeners.Add(new AssertListener());
-				ms_debugInstalled = true;
-			}
-		}
-		
+				
 		public override void Fail(string message)
 		{
 			throw new AssertException(message);
@@ -91,7 +82,6 @@ namespace MObjc
 			// need to override this, but we don't want to do anything
 		}
 	
-		private static bool ms_traceInstalled;
-		private static bool ms_debugInstalled;
+		private static bool ms_installed;
 	}
 }

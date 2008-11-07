@@ -15,6 +15,8 @@ change this with a command like this: `make INSTALL_DIR=/tmp install`.
 USING
 
 For usage see the wiki: <http://code.google.com/p/mobjc/w/list>.
-Also look at the sample app.
+Also look at the sample app (but note that this is not how applications
+should typically be written, see mcocoa's animating-views example for
+that).
 
 jesjones@mindspring.com

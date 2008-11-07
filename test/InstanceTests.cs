@@ -31,8 +31,7 @@ public class InstanceTests
 	[SetUp]
 	public void Setup()
 	{
-		AssertListener.TraceInstall();
-		AssertListener.DebugInstall();
+		AssertListener.Install();
 
 		Registrar.CanInit = true;
 		GC.Collect(); 				

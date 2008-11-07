@@ -1,5 +1,10 @@
 set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-console.exe -fixture=BaseClassTests -nologo bin/tests.dll
 
+* Need a single AssertListener install method.
+* Work on docs:
+	- 99% of the time only use NSObject.Call, show an example
+	- app is not an example of how to write an app
+	- review cocoa docs (esp building)
 * Rename IVar IBOutlet.
 * Change [Register("awakeFromNib")] syntax to [IBAction("awakeFromNib")]?
 * Do a release

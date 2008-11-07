@@ -35,10 +35,7 @@ internal static class Program
 			Registrar.CanInit = true;
 
 			// Force Trace.Assert and Debug.Assert to throw exceptions
-			AssertListener.TraceInstall();
-#if DEBUG			
-			AssertListener.DebugInstall();
-#endif
+			AssertListener.Install();
 			
 			// Make our app a foreground app (if we don't do this we won't appear in the dock).
 			IntPtr psn = IntPtr.Zero;	

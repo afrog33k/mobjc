@@ -50,6 +50,8 @@ libs: bin/mobjc.dll bin/mobjc-glue.dylib
 test: bin/tests.dll bin/mobjc-glue.dylib
 	cd bin && "$(NUNIT)" -nologo tests.dll
 
+# TODO: if mono ever ships an nunit that isn't a thousand years old we can
+# use -run instead of -fixture which is a bit more flexible.
 test1: bin/tests.dll bin/mobjc-glue.dylib
 	cd bin && "$(NUNIT)" -nologo -fixture=$(TEST1) tests.dll 
 

@@ -53,8 +53,7 @@ public class DerivedTest
 	[TestFixtureSetUp]
 	public void Init()
 	{
-		AssertListener.TraceInstall();
-		AssertListener.DebugInstall();
+		AssertListener.Install();
 
 		Registrar.CanInit = true;
 		m_pool = new NSObject(NSObject.CreateNative("NSAutoreleasePool"));
