@@ -81,7 +81,7 @@ namespace MObjc
 			{
 				// It's a little inefficient to always grab this information, but it makes
 				// dumping objects much easier because we can safely do it even when ref
-				// counts are messed up.
+				// counts are zero.
 				IntPtr exception = IntPtr.Zero;
 				m_class = DirectCalls.Callp(m_instance, sclass, ref exception);
 				if (exception != IntPtr.Zero)
@@ -207,28 +207,12 @@ namespace MObjc
 			Trace.Assert(name != null, "name is null");
 			Trace.Assert(!m_deallocated, "ref count is zero");
 			
-			object result = new NSObject(IntPtr.Zero);
+			object result;
 
 			if (m_instance != IntPtr.Zero)
-			{
-				if (name == "alloc" && args.Length == 0)	// need this so we can create an auto release pool without leaking NSMethodSignature
-				{
-					IntPtr exception = IntPtr.Zero;
-					IntPtr ip = DirectCalls.Callp(m_instance, salloc, ref exception);
-					if (exception != IntPtr.Zero)
-						CocoaException.Raise(exception);
-
-					result = NSObject.Lookup(ip);
-				}
-				else
-				{					
-					using (Native native = new Native(m_instance, new Selector(name)))
-					{
-						native.SetArgs(args);			
-						result = native.Invoke();
-					}
-				}
-			}
+				result = Native.Call(m_instance, name, args);
+			else
+				result = new NSObject(IntPtr.Zero);
 			
 			return result;
 		}

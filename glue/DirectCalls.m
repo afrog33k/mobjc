@@ -58,6 +58,24 @@ int Calli(id instance, SEL selector, id* exception)
 	return result;
 }
 
+typedef int (*Methodii)(id, SEL, int);
+int Callii(id instance, SEL selector, int arg0, id* exception)
+{
+	int result;
+
+	@try
+	{
+		Methodii method = (Methodii) objc_msgSend;
+		result = method(instance, selector, arg0);
+	}
+	@catch (id e)
+	{
+		*exception = e;
+	}
+
+	return result;
+}
+
 typedef void* (*Methodpi)(id, SEL, int);
 void* Callpi(id instance, SEL selector, int arg0, id* exception)
 {
@@ -66,6 +84,24 @@ void* Callpi(id instance, SEL selector, int arg0, id* exception)
 	@try
 	{
 		Methodpi method = (Methodpi) objc_msgSend;
+		result = method(instance, selector, arg0);
+	}
+	@catch (id e)
+	{
+		*exception = e;
+	}
+
+	return result;
+}
+
+typedef int (*Methodip)(id, SEL, void*);
+int Callip(id instance, SEL selector, void* arg0, id* exception)
+{
+	int result;
+
+	@try
+	{
+		Methodip method = (Methodip) objc_msgSend;
 		result = method(instance, selector, arg0);
 	}
 	@catch (id e)

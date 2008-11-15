@@ -9,7 +9,8 @@ GCC ?= gcc
 NUNIT ?= nunit-console2
 
 ifdef RELEASE
-	CSC_FLAGS ?= -checked+ -optimize+ -warn:4 -d:TRACE
+	# Note that -debug+ just generates an mdb file.
+	CSC_FLAGS ?= -checked+ -debug+ -optimize+ -warn:4 -d:TRACE
 	GCC_FLAGS ?= -Wall -O3
 else
 	CSC_FLAGS ?= -checked+ -debug+ -warn:4 -warnaserror+ -d:DEBUG -d:TRACE

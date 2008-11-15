@@ -26,9 +26,6 @@ using System.Runtime.InteropServices;
 
 namespace MObjc
 {
-	using id = IntPtr;
-	using SEL = IntPtr;
-
 	// Represents a class definition.
 	[DisableRuleAttribute("D1041", "CircularReference")]
 	public sealed class Class : NSObject
@@ -39,7 +36,7 @@ namespace MObjc
 			m_name = name;
 		}
 		
-		public Class(id klass) : base(klass)
+		public Class(IntPtr klass) : base(klass)
 		{
 			if ((IntPtr) this != IntPtr.Zero)
 			{
@@ -90,7 +87,7 @@ namespace MObjc
 		private extern static IntPtr objc_getClass(string name);
 
 		[DllImport("/usr/lib/libobjc.dylib")]
-		private extern static IntPtr class_getName(id klass);
+		private extern static IntPtr class_getName(IntPtr klass);
 		#endregion
 		
 		#region Fields --------------------------------------------------------

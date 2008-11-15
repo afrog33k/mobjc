@@ -37,17 +37,19 @@ namespace MObjc
 			DoDispose(false);
 		}
 
-		public Native(IntPtr target, Selector selector) : this(target, selector, DoGetImp(target, selector, IntPtr.Zero))
+		public Native(IntPtr target, Selector selector) : this(target, selector, DoGetImp(target, selector, IntPtr.Zero), null)
 		{
 		}
 												
-		internal Native(IntPtr target, Selector selector, Class klass) : this(target, selector, DoGetImp(target, selector, (IntPtr) klass))
+		internal Native(IntPtr target, Selector selector, MethodSignature sig) : this(target, selector, DoGetImp(target, selector, IntPtr.Zero), sig)
+		{
+		}
+												
+		internal Native(IntPtr target, Selector selector, Class klass) : this(target, selector, DoGetImp(target, selector, (IntPtr) klass), null)
 		{
 		}
 		
-		// I've experimented with adding a fast path for @@: methods which bypassed libffi
-		// using DirectCalls.Callp, but the speed improvement was quite small.
-		internal Native(IntPtr target, Selector selector, IntPtr imp)
+		internal Native(IntPtr target, Selector selector, IntPtr imp, MethodSignature sig)
 		{
 			Trace.Assert(selector != null, "selector is null");
 			Trace.Assert(target == IntPtr.Zero || imp != IntPtr.Zero, "imp is null");
@@ -59,7 +61,7 @@ namespace MObjc
 			{
 				m_selector = selector;
 				m_imp = imp;
-				m_sig = new MethodSignature(target, (IntPtr) selector);
+				m_sig = sig ?? new MethodSignature(target, (IntPtr) selector);
 				
 				// Get ffi_type*'s and allocate buffers for the return and argument values.
 				m_returnEncoding = m_sig.GetReturnEncoding();
@@ -121,6 +123,49 @@ namespace MObjc
 				Ffi.Call(m_cif, m_imp, m_resultBuffer, m_argBuffers);
 				result = Ffi.DrainReturnBuffer(m_resultBuffer, m_returnEncoding);
 			}
+			
+			return result;
+		}
+		
+		internal static object Call(IntPtr instance, string name, object[] args)	// thread safe
+		{
+			Trace.Assert(instance != IntPtr.Zero, "instance is zero");
+			
+			object result;
+
+			Selector selector = new Selector(name);
+			MethodSignature sig = new MethodSignature(instance, (IntPtr) selector);
+			
+			do
+			{
+				if (args.Length == 0 && DoTryVoidFastPath(instance, selector, sig, out result))
+					break;
+					
+				if (args.Length == 1)
+				{
+					if (args[0] is int && DoTryIntFastPath(instance, selector, (int) args[0], sig, out result))
+						break;
+					
+					if (args[0] is uint && DoTryUIntFastPath(instance, selector, (uint) args[0], sig, out result))
+						break;
+
+					if (args[0] is IntPtr && DoTryPtrFastPath(instance, selector, (IntPtr) args[0], sig, out result))
+						break;
+
+					if (args[0] is NSObject && DoTryPtrFastPath(instance, selector, (IntPtr) (NSObject) args[0], sig, out result))
+						break;
+
+					if (args[0] is Selector && DoTryPtrFastPath(instance, selector, (IntPtr) (Selector) args[0], sig, out result))
+						break;
+				}
+					
+				using (Native native = new Native(instance, selector, sig))
+				{
+					native.SetArgs(args);			
+					result = native.Invoke();
+				}
+			}
+			while (false);
 			
 			return result;
 		}
@@ -213,6 +258,298 @@ namespace MObjc
 				throw new InvalidCallException(string.Format("Couldn't get the method for {0} {1}", new NSObject(target).Class, selector));
 
 			return imp;
+		}
+		
+		private static bool DoTryVoidFastPath(IntPtr instance, IntPtr selector, MethodSignature sig, out object result)
+		{
+			bool done = true;
+			
+			IntPtr exception = IntPtr.Zero, ip;
+			switch (sig.ToString())
+			{
+				case "v@:":
+					ip = DirectCalls.Callp(instance, selector, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = null;
+					break;
+
+				case "i@:":
+				case "l@:":
+					result = DirectCalls.Calli(instance, selector, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+					break;
+					
+				case "I@:":
+				case "L@:":
+					result = unchecked((uint) DirectCalls.Calli(instance, selector, ref exception));
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+					break;
+															
+				case "@@:":
+					ip = DirectCalls.Callp(instance, selector, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = NSObject.Lookup(ip);
+					break;
+
+				case "#@:":
+					ip = DirectCalls.Callp(instance, selector, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = new Class(ip);
+					break;
+
+				case ":@:":
+					ip = DirectCalls.Callp(instance, selector, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = new Selector(ip);
+					break;
+					
+				default:
+					done = false;
+					result = null;
+					break;
+			}		
+			
+			return done;
+		}
+		
+		private static bool DoTryIntFastPath(IntPtr instance, IntPtr selector, int arg, MethodSignature sig, out object result)
+		{
+			bool done = true;
+			
+			IntPtr exception = IntPtr.Zero, ip;
+			switch (sig.ToString())
+			{
+				case "v@:i":
+				case "v@:l":
+					ip = DirectCalls.Callpi(instance, selector, arg, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = null;
+					break;
+
+				case "i@:i":
+				case "i@:l":
+				case "l@:i":
+				case "l@:l":
+					result = DirectCalls.Callii(instance, selector, arg, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+					break;
+					
+				case "I@:i":
+				case "I@:l":
+				case "L@:i":
+				case "L@:l":
+					result = unchecked((uint) DirectCalls.Callii(instance, selector, arg, ref exception));
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+					break;
+															
+				case "@@:i":
+				case "@@:l":
+					ip = DirectCalls.Callpi(instance, selector, arg, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = NSObject.Lookup(ip);
+					break;
+
+				case "#@:i":
+				case "#@:l":
+					ip = DirectCalls.Callpi(instance, selector, arg, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = new Class(ip);
+					break;
+
+				case ":@:i":
+				case ":@:l":
+					ip = DirectCalls.Callpi(instance, selector, arg, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = new Selector(ip);
+					break;
+					
+				default:
+					done = false;
+					result = null;
+					break;
+			}		
+			
+			return done;
+		}
+
+		private static bool DoTryUIntFastPath(IntPtr instance, IntPtr selector, uint arg, MethodSignature sig, out object result)
+		{
+			bool done = true;
+			
+			IntPtr exception = IntPtr.Zero, ip;
+			switch (sig.ToString())
+			{
+				case "v@:I":
+				case "v@:L":
+					ip = DirectCalls.Callpi(instance, selector, unchecked((int) arg), ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = null;
+					break;
+
+				case "i@:I":
+				case "i@:L":
+				case "l@:I":
+				case "l@:L":
+					result = DirectCalls.Callii(instance, selector, unchecked((int) arg), ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+					break;
+					
+				case "I@:I":
+				case "I@:L":
+				case "L@:I":
+				case "L@:L":
+					result = unchecked((uint) DirectCalls.Callii(instance, selector, unchecked((int) arg), ref exception));
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+					break;
+															
+				case "@@:I":
+				case "@@:L":
+					ip = DirectCalls.Callpi(instance, selector, unchecked((int) arg), ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = NSObject.Lookup(ip);
+					break;
+
+				case "#@:I":
+				case "#@:L":
+					ip = DirectCalls.Callpi(instance, selector, unchecked((int) arg), ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = new Class(ip);
+					break;
+
+				case ":@:I":
+				case ":@:L":
+					ip = DirectCalls.Callpi(instance, selector, unchecked((int) arg), ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = new Selector(ip);
+					break;
+					
+				default:
+					done = false;
+					result = null;
+					break;
+			}		
+			
+			return done;
+		}
+
+		private static bool DoTryPtrFastPath(IntPtr instance, IntPtr selector, IntPtr arg, MethodSignature sig, out object result)
+		{
+			bool done = true;
+			
+			IntPtr exception = IntPtr.Zero, ip;
+			switch (sig.ToString())
+			{
+				case "v@:@":
+				case "v@:#":
+				case "v@::":
+				case "v@:*":
+				case "v@:r*":
+				case "v@:r^S":
+					ip = DirectCalls.Callpp(instance, selector, arg, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = null;
+					break;
+
+				case "i@:@":
+				case "i@:#":
+				case "i@::":
+				case "i@:*":
+				case "i@:r*":
+				case "i@:r^S":
+					result = DirectCalls.Callip(instance, selector, arg, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+					break;
+					
+				case "I@:@":
+				case "I@:#":
+				case "I@::":
+				case "I@:*":
+				case "I@:r*":
+				case "I@:r^S":
+					result = unchecked((uint) DirectCalls.Callip(instance, selector, arg, ref exception));
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+					break;
+															
+				case "@@:@":
+				case "@@:#":
+				case "@@::":
+				case "@@:*":
+				case "@@:r*":
+				case "@@:r^S":
+					ip = DirectCalls.Callpp(instance, selector, arg, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = NSObject.Lookup(ip);
+					break;
+
+				case "#@:@":
+				case "#@:#":
+				case "#@::":
+				case "#@:*":
+				case "#@:r*":
+				case "#@:r^S":
+					ip = DirectCalls.Callpp(instance, selector, arg, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = new Class(ip);
+					break;
+
+				case ":@:@":
+				case ":@:#":
+				case ":@::":
+				case ":@:*":
+				case ":@:r*":
+				case ":@:r^S":
+					ip = DirectCalls.Callpp(instance, selector, arg, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = new Selector(ip);
+					break;
+					
+				default:
+					done = false;
+					result = null;
+					break;
+			}		
+			
+			return done;
 		}
 		#endregion
 				

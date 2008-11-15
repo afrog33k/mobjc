@@ -33,7 +33,13 @@ namespace MObjc
 		internal extern static Int32 Calli(IntPtr instance, IntPtr selector, ref IntPtr exception);
 
 		[DllImport("mobjc-glue.dylib")]
+		internal extern static Int32 Callii(IntPtr instance, IntPtr selector, Int32 arg0, ref IntPtr exception);
+
+		[DllImport("mobjc-glue.dylib")]
 		internal extern static IntPtr Callpi(IntPtr instance, IntPtr selector, Int32 arg0, ref IntPtr exception);
+
+		[DllImport("mobjc-glue.dylib")]
+		internal extern static Int32 Callip(IntPtr instance, IntPtr selector, IntPtr arg0, ref IntPtr exception);
 
 		[DllImport("mobjc-glue.dylib")]
 		internal extern static IntPtr Callpp(IntPtr instance, IntPtr selector, IntPtr arg0, ref IntPtr exception);

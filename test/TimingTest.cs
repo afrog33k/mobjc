@@ -24,7 +24,6 @@ using MObjc;
 using System;
 using System.Diagnostics;
 
-#if UNUSED
 [TestFixture]
 public class TimingTest 	
 {
@@ -60,21 +59,21 @@ public class TimingTest
 		{
 			str3.Call("hasPrefix:", str1);
 		}
-		Console.WriteLine("bool (NSString): {0:0.0} secs", timer.ElapsedMilliseconds/1000.0);
+		Console.WriteLine("{0}	{1:0.0} secs", new Native(str3, new Selector("hasPrefix:")), timer.ElapsedMilliseconds/1000.0);
 		
 		timer = Stopwatch.StartNew();
 		for (int i = 0; i < 10000; ++i)
 		{
 			str2.Call("intValue");
 		}
-		Console.WriteLine("int (): {0:0.0} secs", timer.ElapsedMilliseconds/1000.0);
-		
+		Console.WriteLine("{0}	{1:0.0} secs", new Native(str2, new Selector("intValue")), timer.ElapsedMilliseconds/1000.0);
+				
 		timer = Stopwatch.StartNew();
 		for (int i = 0; i < 10000; ++i)
 		{
 			str1.Call("uppercaseString");
 		}
-		Console.WriteLine("NSString (): {0:0.0} secs", timer.ElapsedMilliseconds/1000.0);
+		Console.WriteLine("{0}	{1:0.0} secs", new Native(str1, new Selector("uppercaseString")), timer.ElapsedMilliseconds/1000.0);
 		
 		Native native = new Native(str1, new Selector("uppercaseString"));
 		timer = Stopwatch.StartNew();
@@ -82,7 +81,7 @@ public class TimingTest
 		{
 			native.Invoke();
 		}
-		Console.WriteLine("native NSString (): {0:0.0} secs", timer.ElapsedMilliseconds/1000.0);
+		Console.WriteLine("Native {0}	{1:0.0} secs", native, timer.ElapsedMilliseconds/1000.0);
 
 		string s = "hello world";
 		timer = Stopwatch.StartNew();
@@ -90,9 +89,8 @@ public class TimingTest
 		{
 			s.ToUpper();
 		}
-		Console.WriteLine("ToUpper control: {0:0.0} secs", timer.ElapsedMilliseconds/1000.0);
+		Console.WriteLine("Managed ToUpper: {0:0.0} secs", timer.ElapsedMilliseconds/1000.0);
 	}	
 
 	private NSObject m_pool;
 }
-#endif
