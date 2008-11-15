@@ -65,7 +65,7 @@ namespace MObjc
 				Environment.Exit(13);
 			}
 		}
-
+				
 		// Constructs a new managed instance using a native id. Note that there
 		// may be an arbitrary number of managed instances wrapping the same native
 		// id, except for the exported classes. For the exported classes NSObject
@@ -91,13 +91,21 @@ namespace MObjc
 				if (exception != IntPtr.Zero)
 					CocoaException.Raise(exception);
 	
-				ExportClassAttribute attr = Attribute.GetCustomAttribute(GetType(), typeof(ExportClassAttribute)) as ExportClassAttribute;
-				if (attr != null)
+				lock (ms_instancesLock)
 				{
-					lock (ms_instancesLock)
+					bool exported;
+					Type type = GetType();
+					if (!ms_exports.TryGetValue(type, out exported))	// GetCustomAttribute turns out to be very slow
+					{
+						ExportClassAttribute attr = Attribute.GetCustomAttribute(type, typeof(ExportClassAttribute)) as ExportClassAttribute;
+						exported = attr != null;
+						ms_exports.Add(type, exported);
+					}
+					
+					if (exported)
 					{
 						if (ms_instances.ContainsKey(instance))
-							throw new InvalidOperationException(GetType() + " is being constructed twice with the same id.");
+							throw new InvalidOperationException(type + " is being constructed twice with the same id.");
 					
 						ms_instances.Add(instance, this);
 					}
@@ -107,7 +115,7 @@ namespace MObjc
 #endif
 			}
 		}
-												
+														
 		public static IntPtr CreateNative(string name)
 		{
 			Class klass = new Class(name);
@@ -136,7 +144,7 @@ namespace MObjc
 		{
 			get {return new Class(m_class);}
 		}
-				
+		
 		public static NSObject Lookup(IntPtr instance)	// thread safe
 		{
 			NSObject managed = null;
@@ -162,9 +170,18 @@ namespace MObjc
 					// which were registered or exported.
 					Type type = DoGetManagedClass(object_getClass(instance));
 					if (type != null)
-						managed = (NSObject) Activator.CreateInstance(type, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, 
-							null, new object[]{instance}, null);
-
+					{
+						Func<IntPtr, NSObject> factory;
+						if (!ms_factories.TryGetValue(type, out factory))	// Activator.CreateInstance is also a bottleneck
+						{
+							ConstructorInfo info = type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, ms_factoryArgTypes, null);
+							if (info == null)
+								throw new InvalidOperationException("Couldn't find an (IntPtr) ctor for " + type);
+							factory = i => (NSObject) info.Invoke(new object[]{i});
+							ms_factories.Add(type, factory);
+						}
+						managed = factory(instance);
+					}
 					// If we can't create a subclass then just create an NSObject.
 					else
 						managed = new NSObject(instance);
@@ -173,7 +190,7 @@ namespace MObjc
 			
 			return managed;
 		}
-									
+				
 		public static implicit operator IntPtr(NSObject value) 
 		{				
 			return value.m_instance;
@@ -411,6 +428,9 @@ namespace MObjc
 		private static Dictionary<IntPtr, NSObject> ms_instances = new Dictionary<IntPtr, NSObject>();
 		private static object ms_instancesLock = new object();
 		private static Dictionary<string, Type> ms_registeredClasses = new Dictionary<string, Type>();
+		private static Dictionary<Type, bool> ms_exports = new Dictionary<Type, bool>();
+		private static Dictionary<Type, Func<IntPtr, NSObject>> ms_factories = new Dictionary<Type, Func<IntPtr, NSObject>>();
+		private static Type[] ms_factoryArgTypes = new Type[]{typeof(IntPtr)};
 		
 #if DEBUG
 		private static WeakList<NSObject> ms_refs = new WeakList<NSObject>(64);
