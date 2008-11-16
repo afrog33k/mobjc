@@ -60,7 +60,7 @@ namespace MObjc
 			info.AddValue("NSObject", ((IntPtr) m_instance).ToInt64());
 		}
 
-		internal static void Raise(IntPtr p)
+		public static void Raise(IntPtr p)
 		{
 			NSObject instance = new NSObject(p);
 			

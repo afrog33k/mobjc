@@ -4,11 +4,27 @@ import datetime
 import string
 import sys
 
-rtypes = ["void*", "int"]
-atypes = ["void*", "int"]
+# f - float
+# d - double
+# s - short
 
-labels = {"void*" : "p", "int" : "i"}
-mtypes = {"void*" : "IntPtr", "int" : "Int32"}
+rtypes = ["void", "void*", "int", "short", "unsigned char"]
+atypes = ["void*", "int", "short", "unsigned char"]
+
+labels = {
+	"int" : "i",
+	"short" : "s", 
+	"unsigned char" : "C", 
+	"void" : "v", 
+	"void*" : "p", 
+}
+mtypes = {
+	"int" : "Int32",
+	"short" : "Int16", 
+	"unsigned char" : "Byte",
+	"void" : "void", 
+	"void*" : "IntPtr", 
+}
 
 class GenerateCS:
 	def __init__(self, path):
@@ -73,19 +89,30 @@ class GenerateObjc:
 			self.write("typedef %s (*Method%s)(id, SEL);" % (rtype, labels[rtype]))
 			self.write("%s Call%s(id instance, SEL selector, id* exception)" % (rtype, labels[rtype]))
 			self.write("{")
-			self.write("	%s result;" % rtype)
-			self.write("")
-			self.write("	@try")
-			self.write("	{")
-			self.write("		Method%s method = (Method%s) objc_msgSend;" % (labels[rtype], labels[rtype]))
-			self.write("		result = method(instance, selector);")
-			self.write("	}")
-			self.write("	@catch (id e)")
-			self.write("	{")
-			self.write("		*exception = e;")
-			self.write("	}")
-			self.write("")	
-			self.write("	return result;")
+			if rtype != "void":
+				self.write("	%s result;" % rtype)
+				self.write("")
+				self.write("	@try")
+				self.write("	{")
+				self.write("		Method%s method = (Method%s) objc_msgSend;" % (labels[rtype], labels[rtype]))
+				self.write("		result = method(instance, selector);")
+				self.write("	}")
+				self.write("	@catch (id e)")
+				self.write("	{")
+				self.write("		*exception = e;")
+				self.write("	}")
+				self.write("")	
+				self.write("	return result;")
+			else:
+				self.write("	@try")
+				self.write("	{")
+				self.write("		Method%s method = (Method%s) objc_msgSend;" % (labels[rtype], labels[rtype]))
+				self.write("		method(instance, selector);")
+				self.write("	}")
+				self.write("	@catch (id e)")
+				self.write("	{")
+				self.write("		*exception = e;")
+				self.write("	}")
 			self.write("}")
 			self.write("")
 		
@@ -95,19 +122,30 @@ class GenerateObjc:
 				self.write("typedef %s (*Method%s%s)(id, SEL, %s);" % (rtype, labels[rtype], labels[a0], a0))
 				self.write("%s Call%s%s(id instance, SEL selector, %s arg0, id* exception)" % (rtype, labels[rtype], labels[a0], a0))
 				self.write("{")
-				self.write("	%s result;" % rtype)
-				self.write("")
-				self.write("	@try")
-				self.write("	{")
-				self.write("		Method%s%s method = (Method%s%s) objc_msgSend;" % (labels[rtype], labels[a0], labels[rtype], labels[a0]))
-				self.write("		result = method(instance, selector, arg0);")
-				self.write("	}")
-				self.write("	@catch (id e)")
-				self.write("	{")
-				self.write("		*exception = e;")
-				self.write("	}")
-				self.write("")	
-				self.write("	return result;")
+				if rtype != "void":
+					self.write("	%s result;" % rtype)
+					self.write("")
+					self.write("	@try")
+					self.write("	{")
+					self.write("		Method%s%s method = (Method%s%s) objc_msgSend;" % (labels[rtype], labels[a0], labels[rtype], labels[a0]))
+					self.write("		result = method(instance, selector, arg0);")
+					self.write("	}")
+					self.write("	@catch (id e)")
+					self.write("	{")
+					self.write("		*exception = e;")
+					self.write("	}")
+					self.write("")	
+					self.write("	return result;")
+				else:
+					self.write("	@try")
+					self.write("	{")
+					self.write("		Method%s%s method = (Method%s%s) objc_msgSend;" % (labels[rtype], labels[a0], labels[rtype], labels[a0]))
+					self.write("		method(instance, selector, arg0);")
+					self.write("	}")
+					self.write("	@catch (id e)")
+					self.write("	{")
+					self.write("		*exception = e;")
+					self.write("	}")
 				self.write("}")
 				self.write("")
 		
@@ -118,19 +156,30 @@ class GenerateObjc:
 					self.write("typedef %s (*Method%s%s%s)(id, SEL, %s, %s);" % (rtype, labels[rtype], labels[a0], labels[a1], a0, a1))
 					self.write("%s Call%s%s%s(id instance, SEL selector, %s arg0, %s arg1, id* exception)" % (rtype, labels[rtype], labels[a0], labels[a1], a0, a1))
 					self.write("{")
-					self.write("	%s result;" % rtype)
-					self.write("")
-					self.write("	@try")
-					self.write("	{")
-					self.write("		Method%s%s%s method = (Method%s%s%s) objc_msgSend;" % (labels[rtype], labels[a0], labels[a1], labels[rtype], labels[a0], labels[a1]))
-					self.write("		result = method(instance, selector, arg0, arg1);")
-					self.write("	}")
-					self.write("	@catch (id e)")
-					self.write("	{")
-					self.write("		*exception = e;")
-					self.write("	}")
-					self.write("")	
-					self.write("	return result;")
+					if rtype != "void":
+						self.write("	%s result;" % rtype)
+						self.write("")
+						self.write("	@try")
+						self.write("	{")
+						self.write("		Method%s%s%s method = (Method%s%s%s) objc_msgSend;" % (labels[rtype], labels[a0], labels[a1], labels[rtype], labels[a0], labels[a1]))
+						self.write("		result = method(instance, selector, arg0, arg1);")
+						self.write("	}")
+						self.write("	@catch (id e)")
+						self.write("	{")
+						self.write("		*exception = e;")
+						self.write("	}")
+						self.write("")	
+						self.write("	return result;")
+					else:
+						self.write("	@try")
+						self.write("	{")
+						self.write("		Method%s%s%s method = (Method%s%s%s) objc_msgSend;" % (labels[rtype], labels[a0], labels[a1], labels[rtype], labels[a0], labels[a1]))
+						self.write("		method(instance, selector, arg0, arg1);")
+						self.write("	}")
+						self.write("	@catch (id e)")
+						self.write("	{")
+						self.write("		*exception = e;")
+						self.write("	}")
 					self.write("}")
 					self.write("")
 		

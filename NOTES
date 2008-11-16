@@ -43,13 +43,29 @@ i@:			2.1 secs		0.3			0.4			0.3
 @@:			4.5 secs		2.0			1.2			0.9
 Native @@:	1.6 secs
 
+managed 0.0 secs
+native  7.4 secs
+
+				if (name == "alloc" && args.Length == 0)	// need this so we can create an auto release pool without leaking NSMethodSignature
+				{
+					IntPtr exception = IntPtr.Zero;
+					IntPtr ip = DirectCalls.Callp(m_instance, salloc, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+
+					result = NSObject.Lookup(ip);
+				}
+				else
+				{					
+					using (Native native = new Native(m_instance, new Selector(name)))
+					{
+						native.SetArgs(args);			
+						result = native.Invoke();
+					}
+				}
+
 * Generate fast path code:
-	- get rid of fast path
-	- make sure stuff still works
-	- generate a few more types
-	- generate trinary methods?
-	- might want a mcocoa timing test
-	- mcocoa generator should use direct calls
+	- Native.Call needs to do the above again, or use fast path
 * Rename IVar IBOutlet.
 * Change [Register("awakeFromNib")] syntax to [IBAction("awakeFromNib")]?
 * Do a release
