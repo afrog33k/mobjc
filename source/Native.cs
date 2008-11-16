@@ -135,13 +135,10 @@ namespace MObjc
 			MethodSignature sig = new MethodSignature(instance, (IntPtr) selector);
 			
 			object result;
-			if (!FastPath.Try(instance, selector, sig, args, out result))
+			using (Native native = new Native(instance, selector, sig))
 			{
-				using (Native native = new Native(instance, selector, sig))
-				{
-					native.SetArgs(args);			
-					result = native.Invoke();
-				}
+				native.SetArgs(args);			
+				result = native.Invoke();
 			}
 			
 			return result;
