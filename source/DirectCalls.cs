@@ -1,50 +1,56 @@
-// Copyright (C) 2008 Jesse Jones
-//
-// Permission is hereby granted, free of charge, to any person obtaining
-// a copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to
-// permit persons to whom the Software is furnished to do so, subject to
-// the following conditions:
-// 
-// The above copyright notice and this permission notice shall be
-// included in all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+// Machine generated on 2008-11-15
 using System;
 using System.Runtime.InteropServices;
 
 namespace MObjc
 {
-	internal static class DirectCalls
+	public static class DirectCalls
 	{
+		// nullary
 		[DllImport("mobjc-glue.dylib")]
-		internal extern static IntPtr Callp(IntPtr instance, IntPtr selector, ref IntPtr exception);
+		public extern static IntPtr Callp(IntPtr instance, IntPtr selector, ref IntPtr exception);
 
 		[DllImport("mobjc-glue.dylib")]
-		internal extern static Int32 Calli(IntPtr instance, IntPtr selector, ref IntPtr exception);
+		public extern static Int32 Calli(IntPtr instance, IntPtr selector, ref IntPtr exception);
+
+		// unary
+		[DllImport("mobjc-glue.dylib")]
+		public extern static IntPtr Callpp(IntPtr instance, IntPtr selector, IntPtr arg0, ref IntPtr exception);
 
 		[DllImport("mobjc-glue.dylib")]
-		internal extern static Int32 Callii(IntPtr instance, IntPtr selector, Int32 arg0, ref IntPtr exception);
+		public extern static IntPtr Callpi(IntPtr instance, IntPtr selector, Int32 arg0, ref IntPtr exception);
 
 		[DllImport("mobjc-glue.dylib")]
-		internal extern static IntPtr Callpi(IntPtr instance, IntPtr selector, Int32 arg0, ref IntPtr exception);
+		public extern static Int32 Callip(IntPtr instance, IntPtr selector, IntPtr arg0, ref IntPtr exception);
 
 		[DllImport("mobjc-glue.dylib")]
-		internal extern static Int32 Callip(IntPtr instance, IntPtr selector, IntPtr arg0, ref IntPtr exception);
+		public extern static Int32 Callii(IntPtr instance, IntPtr selector, Int32 arg0, ref IntPtr exception);
+
+		// binary
+		[DllImport("mobjc-glue.dylib")]
+		public extern static IntPtr Callppp(IntPtr instance, IntPtr selector, IntPtr arg0, IntPtr arg1, ref IntPtr exception);
 
 		[DllImport("mobjc-glue.dylib")]
-		internal extern static IntPtr Callpp(IntPtr instance, IntPtr selector, IntPtr arg0, ref IntPtr exception);
+		public extern static IntPtr Callppi(IntPtr instance, IntPtr selector, IntPtr arg0, Int32 arg1, ref IntPtr exception);
 
 		[DllImport("mobjc-glue.dylib")]
-		internal extern static IntPtr Callpp(IntPtr instance, IntPtr selector, string arg0, ref IntPtr exception);
+		public extern static IntPtr Callpip(IntPtr instance, IntPtr selector, Int32 arg0, IntPtr arg1, ref IntPtr exception);
+
+		[DllImport("mobjc-glue.dylib")]
+		public extern static IntPtr Callpii(IntPtr instance, IntPtr selector, Int32 arg0, Int32 arg1, ref IntPtr exception);
+
+		[DllImport("mobjc-glue.dylib")]
+		public extern static Int32 Callipp(IntPtr instance, IntPtr selector, IntPtr arg0, IntPtr arg1, ref IntPtr exception);
+
+		[DllImport("mobjc-glue.dylib")]
+		public extern static Int32 Callipi(IntPtr instance, IntPtr selector, IntPtr arg0, Int32 arg1, ref IntPtr exception);
+
+		[DllImport("mobjc-glue.dylib")]
+		public extern static Int32 Calliip(IntPtr instance, IntPtr selector, Int32 arg0, IntPtr arg1, ref IntPtr exception);
+
+		[DllImport("mobjc-glue.dylib")]
+		public extern static Int32 Calliii(IntPtr instance, IntPtr selector, Int32 arg0, Int32 arg1, ref IntPtr exception);
+
 	}
 }
+

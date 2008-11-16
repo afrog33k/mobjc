@@ -1,27 +1,8 @@
-// Copyright (C) 2008 Jesse Jones
-//
-// Permission is hereby granted, free of charge, to any person obtaining
-// a copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to
-// permit persons to whom the Software is furnished to do so, subject to
-// the following conditions:
-// 
-// The above copyright notice and this permission notice shall be
-// included in all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+// Machine generated on 2008-11-15
 #include <Foundation/Foundation.h>
 #include <objc/message.h>
 
+// nullary
 typedef void* (*Methodp)(id, SEL);
 void* Callp(id instance, SEL selector, id* exception)
 {
@@ -36,7 +17,7 @@ void* Callp(id instance, SEL selector, id* exception)
 	{
 		*exception = e;
 	}
-	
+
 	return result;
 }
 
@@ -54,18 +35,19 @@ int Calli(id instance, SEL selector, id* exception)
 	{
 		*exception = e;
 	}
-	
+
 	return result;
 }
 
-typedef int (*Methodii)(id, SEL, int);
-int Callii(id instance, SEL selector, int arg0, id* exception)
+// unary
+typedef void* (*Methodpp)(id, SEL, void*);
+void* Callpp(id instance, SEL selector, void* arg0, id* exception)
 {
-	int result;
+	void* result;
 
 	@try
 	{
-		Methodii method = (Methodii) objc_msgSend;
+		Methodpp method = (Methodpp) objc_msgSend;
 		result = method(instance, selector, arg0);
 	}
 	@catch (id e)
@@ -112,15 +94,160 @@ int Callip(id instance, SEL selector, void* arg0, id* exception)
 	return result;
 }
 
-typedef void* (*Methodpp)(id, SEL, void*);
-void* Callpp(id instance, SEL selector, void* arg0, id* exception)
+typedef int (*Methodii)(id, SEL, int);
+int Callii(id instance, SEL selector, int arg0, id* exception)
+{
+	int result;
+
+	@try
+	{
+		Methodii method = (Methodii) objc_msgSend;
+		result = method(instance, selector, arg0);
+	}
+	@catch (id e)
+	{
+		*exception = e;
+	}
+
+	return result;
+}
+
+// binary
+typedef void* (*Methodppp)(id, SEL, void*, void*);
+void* Callppp(id instance, SEL selector, void* arg0, void* arg1, id* exception)
 {
 	void* result;
 
 	@try
 	{
-		Methodpp method = (Methodpp) objc_msgSend;
-		result = method(instance, selector, arg0);
+		Methodppp method = (Methodppp) objc_msgSend;
+		result = method(instance, selector, arg0, arg1);
+	}
+	@catch (id e)
+	{
+		*exception = e;
+	}
+
+	return result;
+}
+
+typedef void* (*Methodppi)(id, SEL, void*, int);
+void* Callppi(id instance, SEL selector, void* arg0, int arg1, id* exception)
+{
+	void* result;
+
+	@try
+	{
+		Methodppi method = (Methodppi) objc_msgSend;
+		result = method(instance, selector, arg0, arg1);
+	}
+	@catch (id e)
+	{
+		*exception = e;
+	}
+
+	return result;
+}
+
+typedef void* (*Methodpip)(id, SEL, int, void*);
+void* Callpip(id instance, SEL selector, int arg0, void* arg1, id* exception)
+{
+	void* result;
+
+	@try
+	{
+		Methodpip method = (Methodpip) objc_msgSend;
+		result = method(instance, selector, arg0, arg1);
+	}
+	@catch (id e)
+	{
+		*exception = e;
+	}
+
+	return result;
+}
+
+typedef void* (*Methodpii)(id, SEL, int, int);
+void* Callpii(id instance, SEL selector, int arg0, int arg1, id* exception)
+{
+	void* result;
+
+	@try
+	{
+		Methodpii method = (Methodpii) objc_msgSend;
+		result = method(instance, selector, arg0, arg1);
+	}
+	@catch (id e)
+	{
+		*exception = e;
+	}
+
+	return result;
+}
+
+typedef int (*Methodipp)(id, SEL, void*, void*);
+int Callipp(id instance, SEL selector, void* arg0, void* arg1, id* exception)
+{
+	int result;
+
+	@try
+	{
+		Methodipp method = (Methodipp) objc_msgSend;
+		result = method(instance, selector, arg0, arg1);
+	}
+	@catch (id e)
+	{
+		*exception = e;
+	}
+
+	return result;
+}
+
+typedef int (*Methodipi)(id, SEL, void*, int);
+int Callipi(id instance, SEL selector, void* arg0, int arg1, id* exception)
+{
+	int result;
+
+	@try
+	{
+		Methodipi method = (Methodipi) objc_msgSend;
+		result = method(instance, selector, arg0, arg1);
+	}
+	@catch (id e)
+	{
+		*exception = e;
+	}
+
+	return result;
+}
+
+typedef int (*Methodiip)(id, SEL, int, void*);
+int Calliip(id instance, SEL selector, int arg0, void* arg1, id* exception)
+{
+	int result;
+
+	@try
+	{
+		Methodiip method = (Methodiip) objc_msgSend;
+		result = method(instance, selector, arg0, arg1);
+	}
+	@catch (id e)
+	{
+		*exception = e;
+	}
+
+	return result;
+}
+
+typedef int (*Methodiii)(id, SEL, int, int);
+int Calliii(id instance, SEL selector, int arg0, int arg1, id* exception)
+{
+	int result;
+
+	@try
+	{
+		Methodiii method = (Methodiii) objc_msgSend;
+		result = method(instance, selector, arg0, arg1);
 	}
 	@catch (id e)
 	{

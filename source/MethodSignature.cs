@@ -199,7 +199,7 @@ namespace MObjc
 					Class klass = new Class("NSMethodSignature");
 
 					IntPtr exception = IntPtr.Zero;
-					IntPtr instance = DirectCalls.Callpp(klass, signatureWithObjCTypes, encoding, ref exception);
+					IntPtr instance = DirectCalls.Callpp(klass, signatureWithObjCTypes, Marshal.StringToHGlobalAnsi(encoding), ref exception);
 					if (exception != IntPtr.Zero)
 						CocoaException.Raise(exception);
 					

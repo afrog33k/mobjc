@@ -1,13 +1,55 @@
 set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-console.exe -fixture=BaseClassTests -nologo bin/tests.dll
-							fast path
-@:@			3.0 secs
-i@:			2.1 secs		0.3
-@@:			4.5 secs		2.0
+
+				case "I@:i":
+				case "I@:l":
+				case "L@:i":
+				case "L@:l":
+					result = unchecked((uint) DirectCalls.Callii(instance, selector, arg, ref exception));
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+					break;
+															
+				case "@@:i":
+				case "@@:l":
+					ip = DirectCalls.Callpi(instance, selector, arg, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = NSObject.Lookup(ip);
+					break;
+
+				case "#@:i":
+				case "#@:l":
+					ip = DirectCalls.Callpi(instance, selector, arg, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = new Class(ip);
+					break;
+
+				case ":@:i":
+				case ":@:l":
+					ip = DirectCalls.Callpi(instance, selector, arg, ref exception);
+					if (exception != IntPtr.Zero)
+						CocoaException.Raise(exception);
+	
+					result = new Selector(ip);
+					break;
+					
+
+							fast path	attr cache	factory
+@:@			3.0 secs								2.5
+i@:			2.1 secs		0.3			0.4			0.3
+@@:			4.5 secs		2.0			1.2			0.9
 Native @@:	1.6 secs
 
-* Work on performance:
-	- try fast path for void|int (int)
-	- DoGetImp looks fairly sucky, might want to see what a cache does
+* Generate fast path code:
+	- get rid of fast path
+	- make sure stuff still works
+	- generate a few more types
+	- generate trinary methods?
+	- might want a mcocoa timing test
+	- mcocoa generator should use direct calls
 * Rename IVar IBOutlet.
 * Change [Register("awakeFromNib")] syntax to [IBAction("awakeFromNib")]?
 * Do a release
@@ -80,7 +122,7 @@ Native @@:	1.6 secs
 	- update CHANGES file
 	- update version and build numbers 
 	- install
-	- update README and wiki
+	- update README and wiki (discussion on Native usage should mention fast path)
 	- upload a new version to googlecode
 	- send an announcement
 	- make sure everything is checked in
