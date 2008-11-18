@@ -122,11 +122,11 @@ namespace MObjc
 				ms_typeNames.Add(export.Attr.DerivedName, export.Type);
 				ms_classNames.Add(export.Type, export.Attr.DerivedName);
 				
-				DoInitClass(export.Attr.DerivedName, export.Attr.BaseName, export.Type, export.Attr.IVars);
+				DoInitClass(export.Attr.DerivedName, export.Attr.BaseName, export.Type, export.Attr.Outlets);
 			}
 		}
 		
-		private static void DoInitClass(string name, string baseName, Type type, string ivars)
+		private static void DoInitClass(string name, string baseName, Type type, string outlets)
 		{
 			Class superClass = new Class(baseName);
 			
@@ -135,9 +135,9 @@ namespace MObjc
 			if (exception != IntPtr.Zero)
 				CocoaException.Raise(exception);
 			
-			if (ivars != null)
+			if (outlets != null)
 			{
-				string[] ivnames = ivars.Split(new char[]{' '}, StringSplitOptions.RemoveEmptyEntries);
+				string[] ivnames = outlets.Split(new char[]{' '}, StringSplitOptions.RemoveEmptyEntries);
 				
 				int size = Marshal.SizeOf(typeof(IntPtr));
 				byte alignment = (byte) Math.Log(size, 2);
@@ -145,7 +145,7 @@ namespace MObjc
 				{
 					byte added = class_addIvar(klass, ivname, new IntPtr(size), alignment, "@");
 					if (added == 0)
-						throw new ArgumentException(string.Format("Couldn't add ivar {0} to {1}. Is there already an ivar with that name?", ivname, name));
+						throw new ArgumentException(string.Format("Couldn't add outlet {0} to {1}. Is there already an outlet with that name?", ivname, name));
 				}
 			}
 

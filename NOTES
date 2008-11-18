@@ -1,9 +1,10 @@
 set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-console.exe -fixture=BaseClassTests -nologo bin/tests.dll
 
 mono ../mono-tools/gendarme/bin/gendarme.exe --config ../mono-tools/gendarme/rules/rules.xml --html tmp.html bin/mobjc.dll
-					
+
+* Do a checkin.
+* Remove natty targets.
 * Release checklist:
-	- make sure app memory test is OK
 	- review tar target
 	- make sure everything is checked in
 	- use svn log -r 1:HEAD > CHANGE_LOG
@@ -14,7 +15,6 @@ mono ../mono-tools/gendarme/bin/gendarme.exe --config ../mono-tools/gendarme/rul
 	- upload a new version to googlecode
 	- send an announcement
 	- make sure everything is checked in
-* Rename IVar IBOutlet.
 * Change [Register("awakeFromNib")] syntax to [IBAction("awakeFromNib")]?
 * Should be able to marshal Objc3.NSObject[] to ^r@ (NSArray ctor)
 * Smoke target has a bad prereq on sample.exe

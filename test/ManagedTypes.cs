@@ -71,13 +71,13 @@ public class NSString : NSObject
 	}
 }
 
-[ExportClass("Subclass1", "NSObject", IVars = "myData")]
+[ExportClass("Subclass1", "NSObject", Outlets = "myData")]
 public class Subclass1 : NSObject
 {
 	public static Subclass1 makeDefault()
 	{
 		Subclass1 result = Subclass1.make(0);
-		result.m_data = new IVar<NSString>(result, "myData");
+		result.m_data = new IBOutlet<NSString>(result, "myData");
 		return result;
 	}
 		
@@ -86,14 +86,14 @@ public class Subclass1 : NSObject
 		Subclass1 result = (Subclass1) new Class("Subclass1").Call("alloc").Call("init");
 		result.autorelease();
 		result.m_value = v;
-		result.m_data = new IVar<NSString>(result, "myData");
+		result.m_data = new IBOutlet<NSString>(result, "myData");
 		
 		return result;
 	}
 		
 	public Subclass1(IntPtr instance) : base(instance)
 	{
-		m_data = new IVar<NSString>(this, "myData");
+		m_data = new IBOutlet<NSString>(this, "myData");
 	}
 		
 	[Register]		
@@ -221,7 +221,7 @@ public class Subclass1 : NSObject
 		
 	private int m_value;
 	private bool m_dead;
-	private IVar<NSString> m_data;
+	private IBOutlet<NSString> m_data;
 }
 
 [ExportClass("PrettyData", "NSConcreteData")]

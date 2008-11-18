@@ -24,9 +24,9 @@ using System.Diagnostics;
 
 namespace MObjc
 {			
-	public sealed class IVar<T> : IEquatable<IVar<T>> where T : NSObject	
+	public sealed class IBOutlet<T> : IEquatable<IBOutlet<T>> where T : NSObject	
 	{
-		public IVar(NSObject owner, string name)
+		public IBOutlet(NSObject owner, string name)
 		{
 			Trace.Assert(!NSObject.IsNullOrNil(owner), "owner is null or nil");
 			Trace.Assert(!string.IsNullOrEmpty(name), "name is null or empty");
@@ -46,16 +46,16 @@ namespace MObjc
 			if (rhsObj == null)          
 				return false;
 			
-			IVar<T> rhs = rhsObj as IVar<T>;
+			IBOutlet<T> rhs = rhsObj as IBOutlet<T>;
 			return this == rhs;
 		}
 			
-		public bool Equals(IVar<T> rhs)  
+		public bool Equals(IBOutlet<T> rhs)  
 		{
 			return this == rhs;
 		}
 	
-		public static bool operator==(IVar<T> lhs, IVar<T> rhs)
+		public static bool operator==(IBOutlet<T> lhs, IBOutlet<T> rhs)
 		{
 			if (object.ReferenceEquals(lhs, rhs))
 				return true;
@@ -66,7 +66,7 @@ namespace MObjc
 			return lhs.m_owner.Equals(rhs.m_owner) && lhs.m_name == rhs.m_name;
 		}
 		
-		public static bool operator!=(IVar<T> lhs, IVar<T> rhs)
+		public static bool operator!=(IBOutlet<T> lhs, IBOutlet<T> rhs)
 		{
 			return !(lhs == rhs);
 		}

@@ -1,6 +1,3 @@
-# natty-ignore: install uninstall keys help tar
-# natty-default: libs
-
 # ------------------
 # Public variables
 TEST1 ?= ReturnTests

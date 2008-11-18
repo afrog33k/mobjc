@@ -41,31 +41,17 @@ namespace MObjc
 			if (string.IsNullOrEmpty(baseName))
 				throw new ArgumentException("baseName is null or empty");
 				
-			m_derivedName = derivedName;
-			m_baseName = baseName;
+			DerivedName = derivedName;
+			BaseName = baseName;
 		}
 		
 		// The C# class can be instantiated using a C# new expression
 		// or using the derived name and the alloc method.
-		public string DerivedName
-		{
-			get {return m_derivedName;}
-		}
+		public string DerivedName {get; private set;}
 	
-		public string BaseName
-		{
-			get {return m_baseName;}
-		}
+		public string BaseName {get; private set;}
 	
 		// Space delimited list of instance variables to add to the class.
-		public string IVars
-		{
-			get {return m_ivars;}
-			set {m_ivars = value;}
-		}
-	
-		private string m_derivedName;
-		private string m_baseName;
-		private string m_ivars;
+		public string Outlets {get; set;}
 	}
 }

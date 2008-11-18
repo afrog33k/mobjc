@@ -51,7 +51,7 @@ namespace MObjc
 				if (selector.Name == "init" && args.Length == 0)
 				{
 					IntPtr exception = IntPtr.Zero;
-					IntPtr ip = DirectCalls.Callp(ptr, sinit, ref exception);
+					IntPtr ip = DirectCalls.Callp(ptr, Selector.Init, ref exception);
 					if (exception != IntPtr.Zero)
 						CocoaException.Raise(exception);
 						
@@ -114,7 +114,5 @@ namespace MObjc
 			
 			throw new InvalidCastException("Can't cast from " + type + " to " + typeof(T) + ".");
 		}
-										
-		private static readonly Selector sinit = new Selector("init");
 	}
 }
