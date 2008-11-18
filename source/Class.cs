@@ -49,7 +49,12 @@ namespace MObjc
 							
 		public NSObject Alloc()
 		{
-			return (NSObject) Call("alloc");
+			IntPtr exception = IntPtr.Zero;
+			IntPtr instance = DirectCalls.Callp(this, Selector.Alloc, ref exception);
+			if (exception != IntPtr.Zero)
+				CocoaException.Raise(exception);
+
+			return NSObject.Lookup(instance);
 		}
 
 		public string Name

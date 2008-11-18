@@ -36,7 +36,12 @@ namespace MObjc
 			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			if (m_instance != IntPtr.Zero)
-				Unused.Value = Call("autorelease");
+			{
+				IntPtr exception = IntPtr.Zero;
+				Unused.Value = DirectCalls.Callp(this, Selector.Autorelease, ref exception);
+				if (exception != IntPtr.Zero)
+					CocoaException.Raise(exception);
+			}
 		}
 				
 		public static NSObject alloc()
@@ -44,12 +49,17 @@ namespace MObjc
 			if (ms_class == null)
 				ms_class = new Class("NSObject");
 				
-			return (NSObject) ms_class.Call("alloc");
+			return ms_class.Alloc();
 		}
 
 		public NSObject init()
 		{
-			return (NSObject) Call("init");
+			IntPtr exception = IntPtr.Zero;
+			IntPtr instance = DirectCalls.Callp(this, Selector.Init, ref exception);
+			if (exception != IntPtr.Zero)
+				CocoaException.Raise(exception);
+
+			return NSObject.Lookup(instance);
 		}
 
 		public bool conformsToProtocol(IntPtr protocol)
@@ -69,8 +79,16 @@ namespace MObjc
 				
 			if (m_instance != IntPtr.Zero)
 			{
-				NSObject o = (NSObject) Call("description");
-				return (string) o.Call("UTF8String");
+				IntPtr exception = IntPtr.Zero;
+				IntPtr str = DirectCalls.Callp(this, Selector.Description, ref exception);
+				if (exception != IntPtr.Zero)
+					CocoaException.Raise(exception);
+
+				IntPtr utf8 = DirectCalls.Callp(str, Selector.UTF8String, ref exception);
+				if (exception != IntPtr.Zero)
+					CocoaException.Raise(exception);
+					
+				return Marshal.PtrToStringAuto(utf8);
 			}
 			else
 				return "nil";
@@ -79,21 +97,37 @@ namespace MObjc
 		public int hash()
 		{
 			Trace.Assert(!m_deallocated, "ref count is zero");
+			
+			int hash = 0;
 				
 			if (m_instance != IntPtr.Zero)
-				return unchecked((int) Call("hash"));
-			else
-				return 0;
+			{
+				IntPtr exception = IntPtr.Zero;
+				hash = DirectCalls.Calli(this, Selector.Hash, ref exception);
+				if (exception != IntPtr.Zero)
+					CocoaException.Raise(exception);
+			}
+
+			return hash;
 		}
 		
 		public bool isEqual(NSObject rhs)
 		{
 			Trace.Assert(!m_deallocated, "ref count is zero");
-				
-			if (m_instance != IntPtr.Zero)
-				return (sbyte) Call("isEqual:", rhs) != 0;
-			else
-				return (IntPtr) rhs == IntPtr.Zero;
+			
+			bool equal = m_instance == (IntPtr) rhs;
+			
+			if (!equal && m_instance != IntPtr.Zero)
+			{
+				IntPtr exception = IntPtr.Zero;
+				byte result = DirectCalls.CallCp(this, Selector.IsEqual, rhs, ref exception);
+				if (exception != IntPtr.Zero)
+					CocoaException.Raise(exception);
+					
+				equal = result != 0;
+			}
+			
+			return equal;
 		}
 		
 		public bool isKindOfClass(NSObject rhs)
@@ -140,7 +174,7 @@ namespace MObjc
 			uint oldCount = retainCount();
 				
 			IntPtr exception = IntPtr.Zero;
-			Unused.Value = DirectCalls.Callp(m_instance, srelease, ref exception);
+			Unused.Value = DirectCalls.Callp(m_instance, Selector.Release, ref exception);
 			if (exception != IntPtr.Zero)
 				CocoaException.Raise(exception);
 				
@@ -169,7 +203,7 @@ namespace MObjc
 			Trace.Assert(!m_deallocated, "ref count is zero");
 				
 			IntPtr exception = IntPtr.Zero;
-			Unused.Value = DirectCalls.Callp(m_instance, sretain, ref exception);
+			Unused.Value = DirectCalls.Callp(m_instance, Selector.Retain, ref exception);
 			if (exception != IntPtr.Zero)
 				CocoaException.Raise(exception);
 				
@@ -185,7 +219,7 @@ namespace MObjc
 			if (m_instance != IntPtr.Zero)
 			{
 				IntPtr exception = IntPtr.Zero;
-				count = unchecked((uint) DirectCalls.Calli(m_instance, sretainCount, ref exception));
+				count = unchecked((uint) DirectCalls.Calli(m_instance, Selector.RetainCount, ref exception));
 				if (exception != IntPtr.Zero)
 					CocoaException.Raise(exception);
 			}

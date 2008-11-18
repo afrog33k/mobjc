@@ -84,11 +84,11 @@ namespace MObjc
 				// dumping objects much easier because we can safely do it even when ref
 				// counts are zero.
 				IntPtr exception = IntPtr.Zero;
-				m_class = DirectCalls.Callp(m_instance, sclass, ref exception);
+				m_class = DirectCalls.Callp(m_instance, Selector.Class, ref exception);
 				if (exception != IntPtr.Zero)
 					CocoaException.Raise(exception);
 	
-				m_baseClass = DirectCalls.Callp(m_class, ssuperclass, ref exception);
+				m_baseClass = DirectCalls.Callp(m_class, Selector.SuperClass, ref exception);
 				if (exception != IntPtr.Zero)
 					CocoaException.Raise(exception);
 	
@@ -122,11 +122,11 @@ namespace MObjc
 			Class klass = new Class(name);
 
 			IntPtr exception = IntPtr.Zero;
-			IntPtr instance = DirectCalls.Callp(klass, salloc, ref exception);
+			IntPtr instance = DirectCalls.Callp(klass, Selector.Alloc, ref exception);
 			if (exception != IntPtr.Zero)
 				CocoaException.Raise(exception);
 			
-			instance = DirectCalls.Callp(instance, sinit, ref exception);
+			instance = DirectCalls.Callp(instance, Selector.Init, ref exception);
 			if (exception != IntPtr.Zero)
 				CocoaException.Raise(exception);
 			
@@ -338,7 +338,7 @@ namespace MObjc
 			else if (rhs.IsDeallocated())
 				return false;
 			
-			return (sbyte) lhs.Call("isEqual:", rhs) != 0;
+			return lhs.isEqual(rhs);
 		}
 		
 		public static bool operator!=(NSObject lhs, NSObject rhs)
@@ -348,17 +348,7 @@ namespace MObjc
 		
 		public override int GetHashCode()
 		{
-			int hash = 47;
-			
-			unchecked
-			{
-				if (IsDeallocated())
-					hash += base.GetHashCode();
-				else
-					hash += 23 * (int) Call("hash");
-			}
-			
-			return hash;
+			return hash();
 		}
     
 		internal static void Register(Type klass, string nativeName)
@@ -440,14 +430,6 @@ namespace MObjc
 #if DEBUG
 		private static WeakList<NSObject> ms_refs = new WeakList<NSObject>(64);
 #endif
-
-		private static readonly Selector salloc = new Selector("alloc");
-		private static readonly Selector sclass = new Selector("class");
-		private static readonly Selector sinit = new Selector("init");
-		private static readonly Selector srelease = new Selector("release");
-		private static readonly Selector sretain = new Selector("retain");
-		private static readonly Selector sretainCount = new Selector("retainCount");
-		private static readonly Selector ssuperclass = new Selector("superclass");
 		#endregion
 	}
 }

@@ -112,13 +112,32 @@ namespace MObjc
 			return m_name.GetHashCode();
 		}
 
+		#region Selectors -----------------------------------------------------
+		internal static readonly Selector Alloc = new Selector("alloc");
+		internal static readonly Selector Autorelease = new Selector("autorelease");
+		internal static readonly Selector Class = new Selector("class");
+		internal static readonly Selector Description = new Selector("description");
+		internal static readonly Selector Hash = new Selector("hash");
+		internal static readonly Selector Init = new Selector("init");
+		internal static readonly Selector IsEqual = new Selector("isEqual:");
+		internal static readonly Selector Release = new Selector("release");
+		internal static readonly Selector Retain = new Selector("retain");
+		internal static readonly Selector RetainCount = new Selector("retainCount");
+		internal static readonly Selector SuperClass = new Selector("superclass");
+		internal static readonly Selector UTF8String = new Selector("UTF8String");
+		#endregion
+
+		#region P/Invokes -----------------------------------------------------
  		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr sel_registerName(string name);
 
    		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr sel_getName(IntPtr selector);
+		#endregion
 		
+		#region Fields --------------------------------------------------------
 		private IntPtr m_selector;
 		private string m_name;
+		#endregion
 	}
 }

@@ -24,7 +24,7 @@ using MObjc;
 using System;
 using System.Diagnostics;
 
-#if true				
+#if false				
 [TestFixture]
 public class TimingTest 	
 {

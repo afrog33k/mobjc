@@ -297,9 +297,7 @@ namespace MObjc
 		
 		private void DoGetDescString(StringBuilder builder)
 		{
-			NSObject text = (NSObject) Call("description");
-			string s = (string) text.Call("UTF8String");
-
+			string s = description();
 			builder.Append(s);
 		}
 		
