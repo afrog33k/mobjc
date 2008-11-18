@@ -91,6 +91,8 @@ namespace MObjc
 		
 		public void SetArgs(params object[] args)
 		{	
+			Trace.Assert(args != null, "args is null");
+
 			if (m_disposed)        
             	throw new ObjectDisposedException(GetType().Name);
 

@@ -278,7 +278,7 @@ namespace MObjc
 		#endregion
 		
 		#region Private Types -------------------------------------------------
-		private class ClassEntry : IEquatable<ClassEntry>
+		private sealed class ClassEntry : IEquatable<ClassEntry>
 		{        
 			public ClassEntry(Type type, ExportClassAttribute attr)
 			{

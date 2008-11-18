@@ -59,12 +59,16 @@ namespace MObjc
 		
 		public static implicit operator IntPtr(Selector value) 
 		{
+			Trace.Assert(value != null, "value is null");
+
 			return value.m_selector;
 		}
 	
 		// Need this for languages like VB that don't support operator overloading.
 		public static IntPtr ToIntPtrType(Selector value)
 		{
+			Trace.Assert(value != null, "value is null");
+
 			return value.m_selector;
 		}
     

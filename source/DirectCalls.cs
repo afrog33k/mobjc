@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace MObjc
 {
+	[DisableRule("S1020", "VisiblePInvoke")]	// these have to be visible so mcocoa's fast path can get at them
 	public static class DirectCalls
 	{
 		// nullary

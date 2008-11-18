@@ -38,6 +38,7 @@ namespace MObjc
 	[DisableRule("D1007", "UseBaseTypes")]
 	public partial class NSObject : IFormattable, IEquatable<NSObject>
 	{		
+		[DisableRuleAttribute("D1038", "DontExit2")]
 		static NSObject()
 		{
 			try
@@ -193,12 +194,16 @@ namespace MObjc
 				
 		public static implicit operator IntPtr(NSObject value) 
 		{				
+			Trace.Assert(value != null, "value is null");
+			
 			return value.m_instance;
 		}
 		
 		// Need this for languages like VB that don't support operator overloading.
 		public static IntPtr ToIntPtrType(NSObject value)
 		{				
+			Trace.Assert(value != null, "value is null");
+
 			return value.m_instance;
 		}
     

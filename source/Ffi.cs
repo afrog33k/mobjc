@@ -450,6 +450,9 @@ namespace MObjc
 			return buffer2;
 		}
 
+		// TODO: this is probably a bit over-elaborate for the bridge (and a bit silly
+		// because it supports stuff like float[] arguments, but not double[]). We should
+		// probably get rid of most of this and let mcocoa take care of the marshaling.
 		private static bool DoFillPtrBuffer(string encoding, object value, IntPtr buffer, ref IntPtr buffer2, List<GCHandle> handles)
 		{
 			bool done = false;
@@ -469,7 +472,7 @@ namespace MObjc
 					throw new InvalidCallException("Don't know how to marshal " + value.GetType() + " to " + encoding + ".");
 				done = true;
 			}
-			else if (encoding.Length >= 3 && encoding[0] == 'r' && encoding[1] == '^' && encoding[2] == 'f')	// TODO: need double[] too
+			else if (encoding.Length >= 3 && encoding[0] == 'r' && encoding[1] == '^' && encoding[2] == 'f')
 			{
 				if (value == null)
 				{

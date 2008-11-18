@@ -27,7 +27,7 @@ using System.Security.Permissions;
 namespace MObjc
 {			
 	[Serializable]
-	public class AssertException : Exception
+	public sealed class AssertException : Exception
 	{
 		public AssertException(string text) : base(text) 
 		{
@@ -48,6 +48,8 @@ namespace MObjc
 	// (and even that has to be explicitly enabled). We want asserts to be very
 	// visible events so what we do is provide this listener which will throw an 
 	// exception on asserts.
+	[Serializable]
+	[DisableRule("D1062", "Disposable")]	// all of our methods work even if we are disposed
 	public sealed class AssertListener : TraceListener
 	{
 		public static void Install()
