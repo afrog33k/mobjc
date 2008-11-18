@@ -1,74 +1,29 @@
 set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-console.exe -fixture=BaseClassTests -nologo bin/tests.dll
-
-				case "I@:i":
-				case "I@:l":
-				case "L@:i":
-				case "L@:l":
-					result = unchecked((uint) DirectCalls.Callii(instance, selector, arg, ref exception));
-					if (exception != IntPtr.Zero)
-						CocoaException.Raise(exception);
-					break;
-															
-				case "@@:i":
-				case "@@:l":
-					ip = DirectCalls.Callpi(instance, selector, arg, ref exception);
-					if (exception != IntPtr.Zero)
-						CocoaException.Raise(exception);
-	
-					result = NSObject.Lookup(ip);
-					break;
-
-				case "#@:i":
-				case "#@:l":
-					ip = DirectCalls.Callpi(instance, selector, arg, ref exception);
-					if (exception != IntPtr.Zero)
-						CocoaException.Raise(exception);
-	
-					result = new Class(ip);
-					break;
-
-				case ":@:i":
-				case ":@:l":
-					ip = DirectCalls.Callpi(instance, selector, arg, ref exception);
-					if (exception != IntPtr.Zero)
-						CocoaException.Raise(exception);
-	
-					result = new Selector(ip);
-					break;
 					
+Render Verbose  draw          0.16
 
-							fast path	attr cache	factory
-@:@			3.0 secs								2.5
-i@:			2.1 secs		0.3			0.4			0.3
-@@:			4.5 secs		2.0			1.2			0.9
-Native @@:	1.6 secs
-
-managed 0.0 secs
-native  7.4 secs
-
-				if (name == "alloc" && args.Length == 0)	// need this so we can create an auto release pool without leaking NSMethodSignature
-				{
-					IntPtr exception = IntPtr.Zero;
-					IntPtr ip = DirectCalls.Callp(m_instance, salloc, ref exception);
-					if (exception != IntPtr.Zero)
-						CocoaException.Raise(exception);
-
-					result = NSObject.Lookup(ip);
-				}
-				else
-				{					
-					using (Native native = new Native(m_instance, new Selector(name)))
-					{
-						native.SetArgs(args);			
-						result = native.Invoke();
-					}
-				}
-
-* Generate fast path code:
-	- Native.Call needs to do the above again, or use fast path
+* Release checklist:
+	- search for TODO
+	- run smoke
+	- run gendarme
+	- make sure tests work in debug
+	- make sure app works in debug
+	- make sure mcocoa and sa work
+	- make RELEASE=1 check
+	- make RELEASE=1 app
+	- make sure app memory test is OK
+	- review tar target
+	- make sure everything is checked in
+	- use svn log -r 1:HEAD > CHANGE_LOG
+	- update CHANGES file
+	- update version and build numbers 
+	- install
+	- update README and wiki (discussion on Native usage should mention fast path)
+	- upload a new version to googlecode
+	- send an announcement
+	- make sure everything is checked in
 * Rename IVar IBOutlet.
 * Change [Register("awakeFromNib")] syntax to [IBAction("awakeFromNib")]?
-* Do a release
 * Should be able to marshal Objc3.NSObject[] to ^r@ (NSArray ctor)
 * Smoke target has a bad prereq on sample.exe
 * Should be able to call arbitrary .net code from native code.

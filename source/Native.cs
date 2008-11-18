@@ -131,14 +131,26 @@ namespace MObjc
 		{
 			Trace.Assert(instance != IntPtr.Zero, "instance is zero");
 			
-			Selector selector = new Selector(name);
-			MethodSignature sig = new MethodSignature(instance, (IntPtr) selector);
-			
 			object result;
-			using (Native native = new Native(instance, selector, sig))
+			if (name == "alloc" && args.Length == 0)	// need this so we can create an auto release pool without leaking NSMethodSignature
 			{
-				native.SetArgs(args);			
-				result = native.Invoke();
+				IntPtr exception = IntPtr.Zero;
+				IntPtr ip = DirectCalls.Callp(instance, salloc, ref exception);
+				if (exception != IntPtr.Zero)
+					CocoaException.Raise(exception);
+
+				result = NSObject.Lookup(ip);
+			}
+			else
+			{					
+				Selector selector = new Selector(name);
+				MethodSignature sig = new MethodSignature(instance, (IntPtr) selector);
+			
+				using (Native native = new Native(instance, selector, sig))
+				{
+					native.SetArgs(args);			
+					result = native.Invoke();
+				}
 			}
 			
 			return result;
@@ -263,6 +275,8 @@ namespace MObjc
 		private PtrArray m_argBuffers;
 		private List<GCHandle> m_handles = new List<GCHandle>();
 		private List<IntPtr> m_buffers = new List<IntPtr>();
+
+		private static readonly Selector salloc = new Selector("alloc");
 		#endregion
 	}
 }
