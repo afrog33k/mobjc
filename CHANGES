@@ -1,3 +1,17 @@
+-- Version 0.4.0.0 (r40) ----
+
+* Renamed IVar IBOutlet.
+* DirectCall p/invokes are now externally visible so mcocoa can use them for
+  its fast path.
+* Optimized object creation and a few other commonly used methods.
+* Fixed the registration of types so that we look at the attributes on the
+  type alone, not the type and its bases.
+* Type registration was not sorting the types quite right so it failed with
+  complex exported hierarchies.
+* Replaced DBC asserts with Trace.Assert. Unfortunately these default to doing
+  nothing. To get asserts to throw you can call the new AssertListener.Install
+  method.
+
 -- Version 0.3.0.0 (r16) ----
 
 * Simplified the library:

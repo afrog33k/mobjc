@@ -2,17 +2,6 @@ set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-cons
 
 mono ../mono-tools/gendarme/bin/gendarme.exe --config ../mono-tools/gendarme/rules/rules.xml --html tmp.html bin/mobjc.dll
 
-* Release checklist:
-	- review tar target
-	- make sure everything is checked in
-	- use svn log -r 1:HEAD > CHANGE_LOG
-	- update CHANGES file
-	- update version and build numbers 
-	- install
-	- update README and wiki (discussion on Native usage should mention fast path)
-	- upload a new version to googlecode
-	- send an announcement
-	- make sure everything is checked in
 * Change [Register("awakeFromNib")] syntax to [IBAction("awakeFromNib")]?
 * Should be able to marshal Objc3.NSObject[] to ^r@ (NSArray ctor)
 * Smoke target has a bad prereq on sample.exe
@@ -81,7 +70,8 @@ mono ../mono-tools/gendarme/bin/gendarme.exe --config ../mono-tools/gendarme/rul
 	- make sure everything is checked in
 	- use svn log -r 1:HEAD > CHANGE_LOG
 	- update CHANGES file
-	- update version and build numbers 
+	- update version number
+	- remove build_num file 
 	- install
 	- update README and wiki (discussion on Native usage should mention fast path)
 	- upload a new version to googlecode
