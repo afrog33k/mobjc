@@ -54,41 +54,28 @@ namespace MObjc
 			Trace.Assert(selector != null, "selector is null");
 			Trace.Assert(target == IntPtr.Zero || imp != IntPtr.Zero, "imp is null");
 						
-			// Save the target, the method we need to call, and the method's signature.
 			m_target = target;
 
 			if (m_target != IntPtr.Zero)
 			{
+				if (ms_stackFrames == null)
+					ms_stackFrames = new Dictionary<MethodSignature, StackFrame>();	// note that we have to do this here so each thread gets its own dictionary
+			
 				m_selector = selector;
 				m_imp = imp;
 				m_sig = sig ?? new MethodSignature(target, (IntPtr) selector);
 				
-				// Get ffi_type*'s and allocate buffers for the return and argument values.
-				m_returnEncoding = m_sig.GetReturnEncoding();
-				IntPtr resultType = Ffi.GetFfiType(m_returnEncoding);
-				m_resultBuffer = Ffi.CreateBuffer(m_returnEncoding);
-							
-				int numArgs = m_sig.GetNumArgs();
-				m_argTypes = new PtrArray(numArgs + 1);
-				m_argBuffers = new PtrArray(numArgs);
-				
-				for (int i = 0; i < numArgs; ++i)
+				if (!ms_stackFrames.TryGetValue(m_sig, out m_stackFrame))
 				{
-					string encoding = m_sig.GetArgEncoding(i);
-					m_argTypes[i] = Ffi.GetFfiType(encoding);
-					m_argBuffers[i] = Ffi.CreateBuffer(encoding);
+					m_stackFrame = new StackFrame(m_sig);
+					ms_stackFrames.Add(m_sig, m_stackFrame);
 				}
-				
-				m_argTypes[numArgs] = IntPtr.Zero;
-				
-				Unused.Value = Ffi.FillBuffer(m_argBuffers[0], target, "@", m_handles);
-				Unused.Value = Ffi.FillBuffer(m_argBuffers[1], m_selector, ":", m_handles);
-	
-				// Allocate the ffi_cif*.
-				m_cif = Ffi.AllocCif(resultType, m_argTypes);
+																			
+				Unused.Value = Ffi.FillBuffer(m_stackFrame.ArgBuffers[0], target, "@", m_handles);
+				Unused.Value = Ffi.FillBuffer(m_stackFrame.ArgBuffers[1], m_selector, ":", m_handles);
 			}
 		}
-		
+				
 		public void SetArgs(params object[] args)
 		{	
 			Trace.Assert(args != null, "args is null");
@@ -106,7 +93,7 @@ namespace MObjc
 				for (int i = 0; i < args.Length; ++i)
 				{
 					string encoding = m_sig.GetArgEncoding(i + 2);
-					IntPtr buffer = Ffi.FillBuffer(m_argBuffers[i + 2], args[i], encoding, m_handles);
+					IntPtr buffer = Ffi.FillBuffer(m_stackFrame.ArgBuffers[i + 2], args[i], encoding, m_handles);
 					if (buffer != IntPtr.Zero)
 						m_buffers.Add(buffer);
 				}
@@ -122,8 +109,8 @@ namespace MObjc
 			
 			if (m_target != IntPtr.Zero)
 			{
-				Ffi.Call(m_cif, m_imp, m_resultBuffer, m_argBuffers);
-				result = Ffi.DrainReturnBuffer(m_resultBuffer, m_returnEncoding);
+				Ffi.Call(m_stackFrame.Cif, m_imp, m_stackFrame.ResultBuffer, m_stackFrame.ArgBuffers);
+				result = Ffi.DrainReturnBuffer(m_stackFrame.ResultBuffer, m_stackFrame.ReturnEncoding);
 			}
 			
 			return result;
@@ -137,7 +124,7 @@ namespace MObjc
 			if (name == "alloc" && args.Length == 0)	// need this so we can create an auto release pool without leaking NSMethodSignature
 			{
 				IntPtr exception = IntPtr.Zero;
-				IntPtr ip = DirectCalls.Callp(instance, salloc, ref exception);
+				IntPtr ip = DirectCalls.Callp(instance, Selector.Alloc, ref exception);
 				if (exception != IntPtr.Zero)
 					CocoaException.Raise(exception);
 
@@ -182,24 +169,13 @@ namespace MObjc
 			{
 				if (m_target != IntPtr.Zero)
 				{
-					if (m_argBuffers != null)		// check everything for null in case one of our ctors threw
-						m_argBuffers.Free();
-
-					if (m_argTypes != null)
-						m_argTypes.FreeBuffer();
 					DoFreeBuffers();
-	
-					if (m_resultBuffer != IntPtr.Zero)
-						Marshal.FreeHGlobal(m_resultBuffer);
-				
-					if (m_cif != IntPtr.Zero)
-						Ffi.FreeCif(m_cif);
 				}
 	
 				m_disposed = true;
 			}
 		}
-
+		
 		private void DoFreeBuffers()
 		{
 			if (m_handles != null)
@@ -234,9 +210,8 @@ namespace MObjc
 			IntPtr method = class_getInstanceMethod(klass, (IntPtr) selector);
 
 			if (method == IntPtr.Zero)
-			{
 				method = class_getClassMethod(klass, (IntPtr) selector);
-			}
+				
 			if (method == IntPtr.Zero)
 				throw new InvalidCallException(string.Format("Couldn't get the method for {0} {1}", new NSObject(target).Class, selector));
 
@@ -249,6 +224,60 @@ namespace MObjc
 		}
 		#endregion
 				
+		#region Private Types -------------------------------------------------
+		private struct StackFrame
+		{
+			public StackFrame(MethodSignature sig)
+			{
+				m_returnEncoding = sig.GetReturnEncoding();
+
+				IntPtr resultType = Ffi.GetFfiType(m_returnEncoding);
+				m_resultBuffer = Ffi.CreateBuffer(m_returnEncoding);
+
+				int numArgs = sig.GetNumArgs();
+				m_argBuffers = new PtrArray(numArgs);
+				m_argTypes = new PtrArray(numArgs + 1);
+				
+				for (int i = 0; i < numArgs; ++i)
+				{
+					string encoding = sig.GetArgEncoding(i);
+					m_argBuffers[i] = Ffi.CreateBuffer(encoding);
+					m_argTypes[i] = Ffi.GetFfiType(encoding);
+				}
+
+				m_argTypes[numArgs] = IntPtr.Zero;
+
+				m_cif = Ffi.AllocCif(resultType, m_argTypes);
+			}
+			
+			public IntPtr Cif
+			{
+				get {return m_cif;}
+			}
+			
+			public string ReturnEncoding
+			{
+				get {return m_returnEncoding;}
+			}
+			
+			public IntPtr ResultBuffer
+			{
+				get {return m_resultBuffer;}
+			}
+			
+			public PtrArray ArgBuffers
+			{
+				get {return m_argBuffers;}
+			}
+						
+			private string m_returnEncoding;
+			private IntPtr m_resultBuffer;
+			private PtrArray m_argBuffers;
+			private PtrArray m_argTypes;
+			private IntPtr m_cif;
+		}
+		#endregion
+
 		#region P/Invokes -----------------------------------------------------
 		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr class_getInstanceMethod(IntPtr klass, IntPtr selector);
@@ -268,17 +297,19 @@ namespace MObjc
 		private Selector m_selector;
 		private MethodSignature m_sig;
 		private IntPtr m_imp;
-		private IntPtr m_cif;
+//		private IntPtr m_cif;
 		private bool m_disposed;
 	
-		private string m_returnEncoding;
-		private IntPtr m_resultBuffer;
-		private PtrArray m_argTypes;
-		private PtrArray m_argBuffers;
+//		private string m_returnEncoding;
+//		private IntPtr m_resultBuffer;
+//		private PtrArray m_argTypes;
+//		private PtrArray m_argBuffers;
+		private StackFrame m_stackFrame;
 		private List<GCHandle> m_handles = new List<GCHandle>();
 		private List<IntPtr> m_buffers = new List<IntPtr>();
 
-		private static readonly Selector salloc = new Selector("alloc");
+		[ThreadStatic]
+		private static Dictionary<MethodSignature, StackFrame> ms_stackFrames;
 		#endregion
 	}
 }
