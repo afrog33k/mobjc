@@ -54,7 +54,7 @@ public class InstanceTests
 
 		// If alloc, new, or copy aren't used then the pool owns the object.
 		Class nsString = new Class("NSString");
-		NSObject str = (NSObject) nsString.Call("stringWithUTF8String:", "hello");
+		NSObject str = (NSObject) nsString.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hello"));
 		Assert.AreEqual(1L, str.retainCount());
 
 		// We can have two managed instances on the same native instance
@@ -122,9 +122,9 @@ public class InstanceTests
 		NSObject pool = new NSObject(NSObject.CreateNative("NSAutoreleasePool"));
 
 		Class nsString = new Class("NSMutableString");
-		NSObject str = (NSObject) nsString.Call("alloc").Call("initWithUTF8String:", "chained!");
+		NSObject str = (NSObject) nsString.Call("alloc").Call("initWithUTF8String:", Marshal.StringToHGlobalAuto("chained!"));
 
-		string result = (string) str.Call("UTF8String");
+		string result = Marshal.PtrToStringAuto((IntPtr) str.Call("UTF8String"));
 		Assert.AreEqual("chained!", result);
 
 		pool.release();

@@ -176,14 +176,23 @@ namespace MObjc
 		[DisableRule("D1047", "TooManyArgs")]
 		private static void DoAddMethod(string name, MethodInfo info, string selName, IntPtr klass, Class superClass)
 		{
-			string encoding = DoGetEncoding(info);
-			Managed method = new Managed(info, encoding);
-			ManagedImp mimp = method.Call;					
-
-			Selector selector = new Selector(selName);
-			
-			IntPtr cif = DoCreateCif(info);
-			int result = AddMethod(superClass, klass, (IntPtr) selector, encoding, mimp, cif);
+			ManagedImp mimp = null;
+			int result = 0;
+ 			Selector selector = new Selector(selName);
+ 			
+			try
+			{
+				string encoding = DoGetEncoding(info);
+				Managed method = new Managed(info, encoding);
+				mimp = method.Call;					
+				
+				IntPtr cif = DoCreateCif(info);
+				result = AddMethod(superClass, klass, (IntPtr) selector, encoding, mimp, cif);
+			}
+			catch (Exception e)
+			{
+				throw new ArgumentException(string.Format("Couldn't register {0}::{1}. {2}", name, selector.Name, e.Message));
+			}
 			
 			if (result != 0)
 				if (result == 0xADDF)

@@ -23,6 +23,7 @@ using MObjc;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 [ExportClass("DebugController", "NSObject")]
@@ -108,9 +109,9 @@ internal sealed class DebugController : NSObject
 			lock (m_lock)
 			{
 				if (m_checkingMemory)
-					text = (NSObject) new Class("NSString").Call("stringWithUTF8String:", "Stop Memory Test");
+					text = (NSObject) new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("Stop Memory Test"));
 				else
-					text = (NSObject) new Class("NSString").Call("stringWithUTF8String:", "Start Memory Test");
+					text = (NSObject) new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("Start Memory Test"));
 			}
 			
 			menuItem.Call("setTitle:", text);

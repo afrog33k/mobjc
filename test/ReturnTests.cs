@@ -227,21 +227,21 @@ public class ReturnTests
 	{
 		Class klass = new Class("NSString");
 		
-		NSObject str = klass.Call("stringWithUTF8String:", "hey").To<NSObject>();
-		string result = str.Call("UTF8String").To<string>();
+		NSObject str = klass.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hey")).To<NSObject>();
+		string result = Marshal.PtrToStringAuto((IntPtr) str.Call("UTF8String"));
 		Assert.AreEqual("hey", result);
 		
 		const char omega = '\x3AA';
 		const char ellipsis = '\x2027';
 		string u32 = new string(new char[]{omega, ellipsis});
 
-		str = klass.Call("alloc").Call("initWithCharacters:length:", u32, 2U).To<NSObject>();
-		string s = str.Call("UTF8String").To<string>();
+		str = klass.Call("alloc").Call("initWithCharacters:length:", Marshal.StringToHGlobalUni(u32), 2U).To<NSObject>();
+		string s = Marshal.PtrToStringAuto((IntPtr) str.Call("UTF8String"));
 		Assert.AreEqual((int) omega, (int) s[0]);
 		Assert.AreEqual((int) ellipsis, (int) s[1]);
 
-		str = klass.Call("stringWithUTF8String:", u32).To<NSObject>();
-		s = str.Call("UTF8String").To<string>();
+		str = klass.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto(u32)).To<NSObject>();
+		s = Marshal.PtrToStringAuto((IntPtr) str.Call("UTF8String"));
 		Assert.AreEqual((int) omega, (int) s[0]);
 		Assert.AreEqual((int) ellipsis, (int) s[1]);
 	}
@@ -251,21 +251,21 @@ public class ReturnTests
 	{
 		Class klass = new Class("NSString");
 		
-		NSObject str = klass.Call("stringWithUTF8String:", "hey").To<NSObject>();
-		string result = (string) str.Call("UTF8String");
+		NSObject str = klass.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hey")).To<NSObject>();
+		string result = Marshal.PtrToStringAuto((IntPtr) str.Call("UTF8String"));
 		Assert.AreEqual("hey", result);
 		
 		const char omega = '\x3AA';
 		const char ellipsis = '\x2027';
 		string u32 = new string(new char[]{omega, ellipsis});
 
-		str = klass.Call("alloc").Call("initWithCharacters:length:", u32, 2U).To<NSObject>();
-		string s = (string) str.Call("UTF8String");
+		str = klass.Call("alloc").Call("initWithCharacters:length:", Marshal.StringToHGlobalUni(u32), 2U).To<NSObject>();
+		string s = Marshal.PtrToStringAuto((IntPtr) str.Call("UTF8String"));
 		Assert.AreEqual((int) omega, (int) s[0]);
 		Assert.AreEqual((int) ellipsis, (int) s[1]);
 
-		str = klass.Call("stringWithUTF8String:", u32).To<NSObject>();
-		s = (string) str.Call("UTF8String");
+		str = klass.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto(u32)).To<NSObject>();
+		s = Marshal.PtrToStringAuto((IntPtr) str.Call("UTF8String"));
 		Assert.AreEqual((int) omega, (int) s[0]);
 		Assert.AreEqual((int) ellipsis, (int) s[1]);
 	}
@@ -274,12 +274,12 @@ public class ReturnTests
 	public void Void1() 
 	{
 		NSObject str1 = new Class("NSMutableString").Call("stringWithCapacity:", 12U).To<NSObject>();
-		NSObject str2 = new Class("NSString").Call("stringWithUTF8String:", "hey").To<NSObject>();
+		NSObject str2 = new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hey")).To<NSObject>();
 		
 		object result = str1.Call("appendString:", str2);
 		Assert.AreEqual(null, result);
 		
-		string s = (string) str1.Call("UTF8String");
+		string s = Marshal.PtrToStringAuto((IntPtr) str1.Call("UTF8String"));
 		Assert.AreEqual("hey", s);
 	}
 	
@@ -287,7 +287,7 @@ public class ReturnTests
 	public void Void2() 
 	{
 		NSObject str1 = new Class("NSMutableString").Call("stringWithCapacity:", 12U).To<NSObject>();
-		NSObject str2 = new Class("NSString").Call("stringWithUTF8String:", "hey").To<NSObject>();
+		NSObject str2 = new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hey")).To<NSObject>();
 		
 		NSObject result = str1.Call("appendString:", str2).To<NSObject>();
 		Assert.IsTrue(result.IsNil());
@@ -395,8 +395,8 @@ public class ReturnTests
 	public void StructWithTo() 
 	{
 		Class klass = new Class("NSString");
-		NSObject str = (NSObject) klass.Call("stringWithUTF8String:", "the quick brown fox");
-		NSObject quick = (NSObject) klass.Call("stringWithUTF8String:", "quick");
+		NSObject str = (NSObject) klass.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("the quick brown fox"));
+		NSObject quick = (NSObject) klass.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("quick"));
 		
 		NSRange result = str.Call("rangeOfString:", quick).To<NSRange>();
 		Assert.AreEqual(4, result.location);
@@ -407,8 +407,8 @@ public class ReturnTests
 	public void StructWithCast() 
 	{
 		Class klass = new Class("NSString");
-		NSObject str = (NSObject) klass.Call("stringWithUTF8String:", "the quick brown fox");
-		NSObject quick = (NSObject) klass.Call("stringWithUTF8String:", "quick");
+		NSObject str = (NSObject) klass.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("the quick brown fox"));
+		NSObject quick = (NSObject) klass.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("quick"));
 		
 		NSRange result = (NSRange) str.Call("rangeOfString:", quick);
 		Assert.AreEqual(4, result.location);

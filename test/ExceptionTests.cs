@@ -22,12 +22,11 @@
 using NUnit.Framework;
 using MObjc;
 using System;
-using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
-#if false				
 [TestFixture]
-public class TimingTest 	
+public class ExceptionTests 	
 {
 	[TestFixtureSetUp]
 	public void Init()
@@ -48,52 +47,57 @@ public class TimingTest
 		}
 	}
 	
-	[Test]
-	public void Time()	 
+	[SetUp]
+	public void Setup()
 	{
-		Class klass = new Class("NSString");
-		NSObject str1 = (NSObject) klass.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hello world"));
-		NSObject str2 = (NSObject) klass.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("100"));
-		NSObject str3 = (NSObject) klass.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("foo"));
-		
-		Stopwatch timer = Stopwatch.StartNew();
-		for (int i = 0; i < 10000; ++i)
+		GC.Collect(); 				
+		GC.WaitForPendingFinalizers();
+	}
+	
+	[Test]
+	public void FromNative()	 
+	{
+		NSObject s = new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hello")).To<NSObject>();
+	
+		try
 		{
-			str3.Call("hasPrefix:", str1);
+			s.Call("stringByAppendingString:", IntPtr.Zero);
+			Assert.Fail("should have been an exception");
 		}
-		Console.WriteLine("{0}	{1:0.0} secs", new Native(str3, new Selector("hasPrefix:")), timer.ElapsedMilliseconds/1000.0);
-		
-		timer = Stopwatch.StartNew();
-		for (int i = 0; i < 10000; ++i)
+		catch (CocoaException e)
 		{
-			str2.Call("intValue");
+			Assert.IsTrue(e.Message.Contains("NSInvalidArgumentException"));
+			Assert.IsTrue(e.Message.Contains("nil argument"));
 		}
-		Console.WriteLine("{0}	{1:0.0} secs", new Native(str2, new Selector("intValue")), timer.ElapsedMilliseconds/1000.0);
-				
-		timer = Stopwatch.StartNew();
-		for (int i = 0; i < 10000; ++i)
-		{
-			str1.Call("uppercaseString");
-		}
-		Console.WriteLine("{0}	{1:0.0} secs", new Native(str1, new Selector("uppercaseString")), timer.ElapsedMilliseconds/1000.0);
-		
-		Native native = new Native(str1, new Selector("uppercaseString"));
-		timer = Stopwatch.StartNew();
-		for (int i = 0; i < 10000; ++i)
-		{
-			native.Invoke();
-		}
-		Console.WriteLine("Native {0}	{1:0.0} secs", native, timer.ElapsedMilliseconds/1000.0);
+	}
 
-		string s = "hello world";
-		timer = Stopwatch.StartNew();
-		for (int i = 0; i < 10000; ++i)
+	[Test]
+	public void FromManaged()	 
+	{
+		NSObject s = new Class("Subclass1").Call("alloc").Call("init").To<NSObject>();
+	
+		try
 		{
-			s.ToUpper();
+			Managed.LogException = (e) => {};
+			s.Call("BadValue");
+			Assert.Fail("should have been an exception");
 		}
-		Console.WriteLine("Managed ToUpper: {0:0.0} secs", timer.ElapsedMilliseconds/1000.0);
-	}	
+		catch (TargetInvocationException e)
+		{
+			Assert.IsTrue(e.Message.Contains("Exception has been thrown by the target of an Objective-C method call"));
+			Assert.IsNotNull(e.InnerException);
+			
+			ArgumentException ae = e.InnerException as ArgumentException;
+			Assert.IsNotNull(ae);
+			Assert.IsTrue(ae.Message.Contains("my error"));
+			Assert.IsTrue(ae.Message.Contains("alpha"));
+			Assert.AreEqual("alpha", ae.ParamName);
+		}
+		finally
+		{
+			Managed.LogException = null;
+		}
+	}
 
 	private NSObject m_pool;
 }
-#endif

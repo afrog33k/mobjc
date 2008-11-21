@@ -71,7 +71,10 @@ namespace MObjc
 
 				if (userInfo != null && (IntPtr) userInfo != IntPtr.Zero)
 				{
-					NSObject key = (NSObject) new Class("NSString").Call("alloc").Call("initWithUTF8String:", ".NET exception");					
+					IntPtr keyBuffer = Marshal.StringToHGlobalAuto(".NET exception");
+					NSObject key = (NSObject) new Class("NSString").Call("alloc").Call("initWithUTF8String:", keyBuffer);					
+					Marshal.FreeHGlobal(keyBuffer);
+
 					NSObject data = (NSObject) userInfo.Call("objectForKey:", key);
 					if (data != null && !data.IsNil())
 					{
@@ -108,12 +111,12 @@ namespace MObjc
 			
 			if (instance.isMemberOfClass(new Class("NSException")))
 			{
-				text = (string) instance.Call("name").Call("UTF8String");
+				text = Marshal.PtrToStringAuto((IntPtr) instance.Call("name").Call("UTF8String"));
 				text += ". ";
-				text += (string) instance.Call("reason").Call("UTF8String");
+				text += Marshal.PtrToStringAuto((IntPtr) instance.Call("reason").Call("UTF8String"));
 			}
 			else
-				text = (string) instance.Call("description").Call("UTF8String");
+				text = Marshal.PtrToStringAuto((IntPtr) instance.Call("description").Call("UTF8String"));
 				
 			return text;
 		}

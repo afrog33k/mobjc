@@ -21,6 +21,7 @@
 
 using MObjc;
 using System;
+using System.Runtime.InteropServices;
 
 // http://developer.apple.com/documentation/Cocoa/Reference/ApplicationKit/Classes/NSApplication_Class/Reference/Reference.html
 internal sealed class App 
@@ -33,12 +34,12 @@ internal sealed class App
 		// The C# SimpleLayoutView will be created the first time Objective-C calls one of the
 		// methods SimpleLayoutView added or overrode.
 		NSObject dict = new Class("NSMutableDictionary").Call("alloc").Call("init").To<NSObject>();
-		NSObject key = new Class("NSString").Call("stringWithUTF8String:", "NSOwner").To<NSObject>();
+		NSObject key = new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("NSOwner")).To<NSObject>();
 		dict.Call("setObject:forKey:", app, key);
 
 		NSObject bundle = new Class("NSBundle").Call("mainBundle").To<NSObject>();
 
-		NSObject nib = new Class("NSString").Call("stringWithUTF8String:", nibName).To<NSObject>();
+		NSObject nib = new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto(nibName)).To<NSObject>();
 		sbyte loaded = (sbyte) bundle.Call("loadNibFile:externalNameTable:withZone:", nib, dict, null);
 		if (loaded != 1)
 			throw new InvalidOperationException("Couldn't load the nib file");

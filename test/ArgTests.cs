@@ -165,21 +165,21 @@ public class ArgTests
 	[Test]
 	public void CString()	 
 	{
-		NSObject s = new Class("NSString").Call("stringWithUTF8String:", "hello").To<NSObject>();
+		NSObject s = new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hello")).To<NSObject>();
 		Assert.AreEqual("hello", s.description());
 	}
 	
 	[Test]
 	public void UnicharString()	 
 	{
-		NSObject s = new Class("NSString").Call("stringWithCharacters:length:", "hello", (uint) "hello".Length).To<NSObject>();
+		NSObject s = new Class("NSString").Call("stringWithCharacters:length:", Marshal.StringToHGlobalUni("hello"), (uint) "hello".Length).To<NSObject>();
 		Assert.AreEqual("hello", s.description());
 	}
 	
 	[Test]
 	public void Object1()	 
 	{
-		NSObject s = new Class("NSString").Call("stringWithUTF8String:", "hello").To<NSObject>();
+		NSObject s = new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hello")).To<NSObject>();
 		NSObject t = new Class("NSString").Call("stringWithString:", s).To<NSObject>();
 		Assert.AreEqual("hello", t.description());
 	}
@@ -187,7 +187,7 @@ public class ArgTests
 	[Test]
 	public void Object2()	 
 	{
-		NSObject s = new Class("NSString").Call("stringWithUTF8String:", "hello").To<NSObject>();
+		NSObject s = new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hello")).To<NSObject>();
 		NSObject t = new Class("NSString").Call("stringWithString:", (IntPtr) s).To<NSObject>();
 		Assert.AreEqual("hello", t.description());
 	}
@@ -199,7 +199,7 @@ public class ArgTests
 		Class strClass = new Class("NSString");
 		Class numClass = new Class("NSNumber");
 
-		NSObject s = strClass.Call("stringWithUTF8String:", "hello").To<NSObject>();
+		NSObject s = strClass.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hello")).To<NSObject>();
 
 		sbyte b = (sbyte) s.Call("isKindOfClass:", strClass);
 		Assert.AreEqual(1, b);
@@ -218,7 +218,7 @@ public class ArgTests
 		Class strClass = new Class("NSString");
 		Class numClass = new Class("NSNumber");
 
-		NSObject s = strClass.Call("stringWithUTF8String:", "hello").To<NSObject>();
+		NSObject s = strClass.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hello")).To<NSObject>();
 
 		sbyte b = (sbyte) s.Call("isKindOfClass:", (IntPtr) strClass);
 		Assert.AreEqual(1, b);
@@ -233,7 +233,7 @@ public class ArgTests
 	[Test]
 	public void Selector1()	 
 	{
-		NSObject s = new Class("NSString").Call("stringWithUTF8String:", "hello").To<NSObject>();
+		NSObject s = new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hello")).To<NSObject>();
 
 		sbyte b = (sbyte) s.Call("respondsToSelector:", new Selector("getCharacters:"));
 		Assert.AreEqual(1, b);
@@ -245,7 +245,7 @@ public class ArgTests
 	[Test]
 	public void Selector2()	 
 	{
-		NSObject s = new Class("NSString").Call("stringWithUTF8String:", "hello").To<NSObject>();
+		NSObject s = new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hello")).To<NSObject>();
 
 		sbyte b = (sbyte) s.Call("respondsToSelector:", (IntPtr) new Selector("getCharacters:"));
 		Assert.AreEqual(1, b);
@@ -257,18 +257,27 @@ public class ArgTests
 	[Test]
 	public void Struct() 
 	{
-		NSObject str = new Class("NSString").Call("stringWithUTF8String:", "the quick brown fox").To<NSObject>();
+		NSObject str = new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("the quick brown fox")).To<NSObject>();
 		
 		NSRange range = new NSRange();
 		range.location = 4;
 		range.length = 5;
 		
 		NSObject iresult = (NSObject) str.Call("substringWithRange:", range);
-		string sresult = (string) iresult.Call("UTF8String");
+		string sresult = Marshal.PtrToStringAuto((IntPtr) iresult.Call("UTF8String"));
 		
 		Assert.AreEqual("quick", sresult);
 	}
 
+	[Test]
+	[ExpectedException(typeof(InvalidCallException))]
+	public void BadStruct() 
+	{
+		NSObject str = new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("the quick brown fox")).To<NSObject>();
+		
+		NSRect r = new NSRect();
+		str.Call("substringWithRange:", r);
+	}
 
 	[Test]
 	[ExpectedException(typeof(InvalidCallException))]

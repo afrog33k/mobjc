@@ -75,11 +75,10 @@ namespace MObjc
 			return buffer;
 		}
 		
-		// Copy value into the buffer according to the specified encoding. Note
-		// that this may return a secondary buffer which must be retained.
-		public static IntPtr FillBuffer(IntPtr buffer, object value, string encoding, List<GCHandle> handles)
+		// Copy value into the buffer according to the specified encoding.
+		public static void FillBuffer(IntPtr buffer, object value, string encoding)
 		{
-			return DoFillBuffer(buffer, value, encoding, handles);
+			DoFillBuffer(buffer, value, encoding);
 		}
 	
 		// Call imp where args points to buffers containing the arguments and result
@@ -156,17 +155,7 @@ namespace MObjc
 				case "Vv":
 					result = null;
 					break;
-					
-				case "r*":
-					IntPtr s = Marshal.ReadIntPtr(buffer);
-					result = Marshal.PtrToStringAnsi(s);
-					break;
-					
-				case "r^S":
-					IntPtr u = Marshal.ReadIntPtr(buffer);
-					result = Marshal.PtrToStringUni(u);
-					break;
-					
+										
 				case "@":
 					IntPtr ip = Marshal.ReadIntPtr(buffer);
 					result = NSObject.Lookup(ip);
@@ -259,11 +248,23 @@ namespace MObjc
 			return result;
 		}
 		
+		private static char DoGetEncodingType(string encoding)
+		{
+			char type = encoding[0];
+
+			int i = 0;
+			while (i < encoding.Length && "rnNoORV".IndexOf(type) >= 0)
+				type = encoding[++i];
+				
+			return type;
+		}
+
 		private static object DoDrainPtrBuffer(IntPtr buffer, string encoding)
 		{
 			object result = null;
 			
-			if ((encoding.Length > 0 && encoding[0] == '^') || (encoding.Length > 1 && encoding[0] == 'r' && encoding[1] == '^'))
+			char type = DoGetEncodingType(encoding);			
+			if (type == '^' || type == '*' || type == '[' || type == '(')	// xxx*, char*, array, union
 			{
 				result = Marshal.ReadIntPtr(buffer);
 			}
@@ -275,7 +276,8 @@ namespace MObjc
 		{
 			object result = null;
 			
-			if (encoding.Length > 0 && encoding[0] == '{')
+			char type = DoGetEncodingType(encoding);			
+			if (type == '{')
 			{
 				int i = encoding.IndexOf('=');
 				if (i >= 0)
@@ -293,10 +295,8 @@ namespace MObjc
 		}
 		
 		[DisableRuleAttribute("D1002", "MethodTooComplex")]
-		private static IntPtr DoFillBuffer(IntPtr buffer, object value, string encoding, List<GCHandle> handles)
+		private static void DoFillBuffer(IntPtr buffer, object value, string encoding)
 		{
-			IntPtr buffer2 = IntPtr.Zero;
-			
 			Type type = value != null ? value.GetType() : null;
 			switch (encoding)	
 			{
@@ -383,22 +383,7 @@ namespace MObjc
 
 					Marshal.StructureToPtr(d, buffer, false);
 					break;
-					
-				case "r*":		
-					string s = value as string;
-					if (s != null)
-					{
-						buffer2 = Marshal.StringToHGlobalAuto(s);
-						Marshal.WriteIntPtr(buffer, buffer2);
-					}
-					else if (value == null)
-					{
-						Marshal.WriteIntPtr(buffer, IntPtr.Zero);
-					}
-					else
-						throw new InvalidCallException(string.Format("Expected a string but got a {0}. You may need to use an NSString.", type));
-					break;
-					
+										
 				case "@":
 					if (value == null)
 					{
@@ -442,68 +427,35 @@ namespace MObjc
 					break;
 			
 				default:
-					if (!DoFillPtrBuffer(encoding, value, buffer, ref buffer2, handles) && !DoFillStructBuffer(encoding, value, buffer))
+					if (!DoFillPtrBuffer(encoding, value, buffer) && !DoFillStructBuffer(encoding, value, buffer))
 						throw new InvalidCallException("Don't know how to marshal " + encoding + " to a native type.");
 					break;
 			}
-			
-			return buffer2;
 		}
 
-		// TODO: this is probably a bit over-elaborate for the bridge (and a bit silly
-		// because it supports stuff like float[] arguments, but not double[]). We should
-		// probably get rid of most of this and let mcocoa take care of the marshaling.
-		private static bool DoFillPtrBuffer(string encoding, object value, IntPtr buffer, ref IntPtr buffer2, List<GCHandle> handles)
+		private static bool DoFillPtrBuffer(string encoding, object value, IntPtr buffer)
 		{
 			bool done = false;
 			
-			if (encoding.Length >= 3 && encoding[0] == 'r' && encoding[1] == '^' && encoding[2] == 'S')
-			{
-				if (value == null)
-				{
-					Marshal.WriteIntPtr(buffer, IntPtr.Zero);
-				}
-				else if (value.GetType() == typeof(string))
-				{
-					buffer2 = Marshal.StringToHGlobalUni((string) value);						
-					Marshal.WriteIntPtr(buffer, buffer2);
-				}
-				else
-					throw new InvalidCallException("Don't know how to marshal " + value.GetType() + " to " + encoding + ".");
-				done = true;
-			}
-			else if (encoding.Length >= 3 && encoding[0] == 'r' && encoding[1] == '^' && encoding[2] == 'f')
-			{
-				if (value == null)
-				{
-					Marshal.WriteIntPtr(buffer, IntPtr.Zero);
-				}
-				else if (value.GetType() == typeof(float[]))
-				{
-					float[] values = (float[]) value;	
-					
-					GCHandle handle = GCHandle.Alloc(values, GCHandleType.Pinned);
-					handles.Add(handle);
-					Marshal.WriteIntPtr(buffer, handle.AddrOfPinnedObject());
-				}
-				else
-					throw new InvalidCallException("Don't know how to marshal " + value.GetType() + " to " + encoding + ".");
-				done = true;
-			}
-			else if ((encoding.Length > 1 && encoding[0] == '^') || (encoding.Length > 2 && encoding[0] == 'r' && encoding[1] == '^'))
-			{
-				if (value == null)
-				{
-					Marshal.WriteIntPtr(buffer, IntPtr.Zero);
-				}
-				else if (value.GetType() == typeof(IntPtr))
-				{
-					Marshal.WriteIntPtr(buffer, (IntPtr) value);
-				}
-				else
-					throw new InvalidCallException("Don't know how to marshal " + value.GetType() + " to " + encoding + ".");
-				done = true;
-			}
+			char type = DoGetEncodingType(encoding);			
+			if (type == '^' || type == '*' || type == '[' || type == '(')	// xxx*, char*, array, union
+ 			{
+ 				if (value == null)
+ 				{
+ 					Marshal.WriteIntPtr(buffer, IntPtr.Zero);
+					done = true;
+ 				}
+ 				else if (value.GetType() == typeof(IntPtr))
+ 				{
+ 					Marshal.WriteIntPtr(buffer, (IntPtr) value);
+					done = true;
+ 				}
+ 				else
+					// For r^S use Marshal.StringToHGlobalUni(str) or GCHandle.Alloc(value, GCHandleType.Pinned).
+					// For r* use Marshal.StringToHGlobalAuto(str).
+					// For the others you can usually use GCHandle.Alloc(value, GCHandleType.Pinned).
+ 					throw new InvalidCallException("Don't know how to marshal " + value.GetType() + " to " + encoding + ".");
+ 			}
 			
 			return done;
 		}
@@ -512,8 +464,12 @@ namespace MObjc
 		{
 			bool done = false;
 			
-			if (encoding.Length > 0 && encoding[0] == '{')
+			char type = DoGetEncodingType(encoding);			
+			if (type == '{')
 			{
+				if (value == null)
+					throw new InvalidCallException("Can't marshal null to a struct type.");
+				
 				int i = encoding.IndexOf('=');
 				if (i >= 0)
 				{
@@ -521,11 +477,16 @@ namespace MObjc
 					Type stype;
 					if (TypeEncoder.TryGetStruct(sname, out stype))
 					{
-						Marshal.StructureToPtr(value, buffer, false);
-						done = true;
+						if (value.GetType() == stype)
+						{
+							Marshal.StructureToPtr(value, buffer, false);
+							done = true;
+						}
+						else
+							throw new InvalidCallException("Can't marshal " + value.GetType() + " to " + stype + ".");
 					}
 					else
-						throw new InvalidCallException("Don't know how to marshal " + sname + " to a native type. Is it marked with RegisterAttribute?");
+						throw new InvalidCallException("Don't know how to marshal " + sname + " from a native buffer. Is it marked with RegisterAttribute?");
 				}
 			}
 			
@@ -538,7 +499,8 @@ namespace MObjc
 
 			if (code == '\x0')
 			{
-				if (encoding.Length > 0 && encoding[0] == '{')
+				char t = DoGetEncodingType(encoding);			
+				if (t == '{')
 					return DoGetStructFfiType(encoding);
 				else
 					throw new ArgumentException("Don't know how to get ffi type for: " + encoding);
@@ -639,8 +601,6 @@ namespace MObjc
 					code = encoding[0];
 					break;
 														
-				case "*":
-				case "r*":
 				case "@":
 				case "#":
 				case ":":
@@ -652,9 +612,8 @@ namespace MObjc
 					break;
 													
 				default:
-					if (encoding.Length > 1 && encoding[0] == '^')
-						code = 'p';
-					else if (encoding.Length > 2 && encoding[0] == 'r' && encoding[1] == '^')
+					char type = DoGetEncodingType(encoding);			
+					if (type == '^' || type == '*' || type == '[' || type == '(')	// xxx*, char*, array, union
 						code = 'p';
 					break;
 			}
@@ -704,8 +663,6 @@ namespace MObjc
 					buffer = IntPtr.Zero;
 					break;
 					
-				case "*":		
-				case "r*":		
 				case "@":
 				case "#":
 				case ":":
@@ -713,11 +670,12 @@ namespace MObjc
 					break;
 					
 				default:
-					if ((encoding.Length > 1 && encoding[0] == '^') || (encoding.Length > 2 && encoding[0] == 'r' && encoding[1] == '^'))
+					char type = DoGetEncodingType(encoding);			
+					if (type == '^' || type == '*' || type == '[' || type == '(')	// xxx*, char*, array, union
 					{
 						buffer = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(IntPtr)));
 					}
-					else if (encoding.Length > 0 && encoding[0] == '{')
+					else if (type == '{')
 					{
 						int i = encoding.IndexOf('=');
 						if (i >= 0)

@@ -72,7 +72,7 @@ public class MemoryTests
 		long bytes = DoGetMemory();
 
 		Class nsString = new Class("NSString");
-		NSObject str = (NSObject) nsString.Call("stringWithUTF8String:", "hello world");
+		NSObject str = (NSObject) nsString.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hello world"));
 
 		for (int j = 1; j < 100; ++j)
 		{

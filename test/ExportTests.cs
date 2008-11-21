@@ -106,7 +106,7 @@ public class ExportTests
 		Assert.AreEqual(33, value);
 
 		NSObject istr = (NSObject) data.Call("description");
-		string str = (string) istr.Call("UTF8String");
+		string str = Marshal.PtrToStringAuto((IntPtr) istr.Call("UTF8String"));
 		Assert.AreEqual("pretty: <>", str);
 	}
 	
@@ -116,7 +116,7 @@ public class ExportTests
 	{
 		NSObject data = (NSObject) new Class("PrettyData").Call("alloc").Call("init");
 
-		data.Call("initWithUTF8String::", "hey");
+		data.Call("initWithUTF8String::", Marshal.StringToHGlobalAuto("hey"));
 	}
 
 	[Test]
@@ -174,7 +174,7 @@ public class ExportTests
 		
 		// ivars can be set
 		Class klass = new Class("NSString");
-		NSObject str = (NSObject) klass.Call("stringWithUTF8String:", "hello");
+		NSObject str = (NSObject) klass.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hello"));
 		long count = str.retainCount();
 		
 		instance["myData"] = str;
@@ -221,8 +221,8 @@ public class ExportTests
 	{	
 		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");
 
-		string n = (string) instance.Call("TakeString", "hmm");
-		Assert.AreEqual("hmmhmm", n);
+		NSString n = (NSString) instance.Call("TakeString", NSString.Create("hmm"));
+		Assert.AreEqual("hmmhmm", n.ToString());
 	}
 	
 	[Test]
@@ -249,7 +249,7 @@ public class ExportTests
 	public void DerivedArg() 
 	{	
 		Subclass1 x = Subclass1.make(13);
-		NSString s = NSString.stringWithString("hey");
+		NSString s = NSString.Create("hey");
 
 		NSString t = x.Call("concat", s, s).To<NSString>();
 		Assert.AreEqual("heyhey", t.description());
@@ -301,7 +301,7 @@ public class ExportTests
 		r.size.height = 4.0f;
 		
 		NSObject istr = (NSObject) instance.Call("MungeRect", r);
-		string str = (string) istr.Call("UTF8String");
+		string str = Marshal.PtrToStringAuto((IntPtr) istr.Call("UTF8String"));
 		Assert.AreEqual("1234", str);
 	}
 

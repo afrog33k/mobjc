@@ -86,3 +86,9 @@ mono ../mono-tools/gendarme/bin/gendarme.exe --config ../mono-tools/gendarme/rul
 	
 
 
+Marshal.StringToHGlobalAuto(str);
+GCHandle.Alloc(array, GCHandleType.Pinned);
+Marshal.StructureToPtr(struct, buffer, false);
+
+Marshal.PtrToStringAuto((IntPtr) p)
+

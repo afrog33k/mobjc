@@ -26,7 +26,7 @@ using System.Reflection;
 
 namespace MObjc
 {	
-	// http://developer.apple.com/documentation/Cocoa/Conceptual/ObjectiveC/Articles/chapter_13_section_9.html#//apple_ref/doc/uid/TP30001163-CH9-TPXREF165
+	// http://developer.apple.com/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/chapter_7_section_1.html
 	[DisableRuleAttribute("C1026", "NoStaticRemove")]
 	internal static class TypeEncoder
 	{
@@ -77,7 +77,7 @@ namespace MObjc
 				return "d";
 			
 			else if (type == typeof(string))
-				return "r^S";
+				throw new ArgumentException("Use NSString instead of string.");
 			
 			else if (type == typeof(void))
 				return "v";

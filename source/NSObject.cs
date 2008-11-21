@@ -248,11 +248,9 @@ namespace MObjc
 
 			if (m_instance != IntPtr.Zero)
 			{
-				using (Native native = new Native(m_instance, new Selector(name), Class.BaseClass))
-				{
-					native.SetArgs(args);			
-					result = native.Invoke();
-				}
+				Native native = new Native(m_instance, new Selector(name), Class.BaseClass);
+				native.SetArgs(args);			
+				result = native.Invoke();
 			}
 			
 			return result;

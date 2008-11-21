@@ -27,16 +27,10 @@ using System.Runtime.InteropServices;
 
 namespace MObjc
 {
-	[DisableRuleAttribute("S1003", "KeepAlive")]
 	[DisableRuleAttribute("D1041", "CircularReference")]
 	[DisableRuleAttribute("D1067", "PreferSafeHandle")]
-	public sealed class Native : IDisposable
+	public sealed class Native
 	{
-		~Native()        
-		{                    
-			DoDispose(false);
-		}
-
 		public Native(IntPtr target, Selector selector) : this(target, selector, DoGetImp(target, selector, IntPtr.Zero), null)
 		{
 		}
@@ -71,8 +65,8 @@ namespace MObjc
 					ms_stackFrames.Add(m_sig, m_stackFrame);
 				}
 																			
-				Unused.Value = Ffi.FillBuffer(m_stackFrame.ArgBuffers[0], target, "@", m_handles);
-				Unused.Value = Ffi.FillBuffer(m_stackFrame.ArgBuffers[1], m_selector, ":", m_handles);
+				Ffi.FillBuffer(m_stackFrame.ArgBuffers[0], target, "@");
+				Ffi.FillBuffer(m_stackFrame.ArgBuffers[1], m_selector, ":");
 			}
 		}
 				
@@ -80,31 +74,21 @@ namespace MObjc
 		{	
 			Trace.Assert(args != null, "args is null");
 
-			if (m_disposed)        
-            	throw new ObjectDisposedException(GetType().Name);
-
 			if (m_target != IntPtr.Zero)
 			{	
 				if (m_sig.GetNumArgs() != 2 + args.Length)
 					throw new InvalidCallException(string.Format("{0} takes {1} arguments but was called with {2} arguments", m_selector, m_sig.GetNumArgs() - 2, args.Length));
-
-				DoFreeBuffers();
 				
 				for (int i = 0; i < args.Length; ++i)
 				{
 					string encoding = m_sig.GetArgEncoding(i + 2);
-					IntPtr buffer = Ffi.FillBuffer(m_stackFrame.ArgBuffers[i + 2], args[i], encoding, m_handles);
-					if (buffer != IntPtr.Zero)
-						m_buffers.Add(buffer);
+					Ffi.FillBuffer(m_stackFrame.ArgBuffers[i + 2], args[i], encoding);
 				}
 			}
 		}
 								
 		public object Invoke()	
 		{			
-			if (m_disposed)        
-            	throw new ObjectDisposedException(GetType().Name);
-
 			object result = new NSObject(IntPtr.Zero);
 			
 			if (m_target != IntPtr.Zero)
@@ -135,68 +119,20 @@ namespace MObjc
 				Selector selector = new Selector(name);
 				MethodSignature sig = new MethodSignature(instance, (IntPtr) selector);
 			
-				using (Native native = new Native(instance, selector, sig))
-				{
-					native.SetArgs(args);			
-					result = native.Invoke();
-				}
+				Native native = new Native(instance, selector, sig);
+				native.SetArgs(args);			
+				result = native.Invoke();
 			}
 			
 			return result;
 		}
-																										
-		public void Dispose()
-		{
-			DoDispose(true);
-	
-			GC.SuppressFinalize(this);
-		}
-		
+																												
 		public override string ToString()
 		{
-			if (m_disposed)        
-            	throw new ObjectDisposedException(GetType().Name);
-
 			return m_sig.ToString();
 		}
 
 		#region Private Methods -----------------------------------------------
-		private void DoDispose(bool disposing)
-		{
-			Unused.Value = disposing;
-			
-			if (!m_disposed)
-			{
-				if (m_target != IntPtr.Zero)
-				{
-					DoFreeBuffers();
-				}
-	
-				m_disposed = true;
-			}
-		}
-		
-		private void DoFreeBuffers()
-		{
-			if (m_handles != null)
-			{
-				foreach (GCHandle handle in m_handles)	
-				{
-					handle.Free();
-				}
-				m_handles.Clear();
-			}
-			
-			if (m_buffers != null)
-			{
-				foreach (IntPtr buffer in m_buffers)
-				{
-					Marshal.FreeHGlobal(buffer);
-				}
-				m_buffers.Clear();
-			}
-		}
-		
 		private static IntPtr DoGetImp(IntPtr target, Selector selector, IntPtr klass)
 		{
 			if (target == IntPtr.Zero)
@@ -297,16 +233,7 @@ namespace MObjc
 		private Selector m_selector;
 		private MethodSignature m_sig;
 		private IntPtr m_imp;
-//		private IntPtr m_cif;
-		private bool m_disposed;
-	
-//		private string m_returnEncoding;
-//		private IntPtr m_resultBuffer;
-//		private PtrArray m_argTypes;
-//		private PtrArray m_argBuffers;
 		private StackFrame m_stackFrame;
-		private List<GCHandle> m_handles = new List<GCHandle>();
-		private List<IntPtr> m_buffers = new List<IntPtr>();
 
 		[ThreadStatic]
 		private static Dictionary<MethodSignature, StackFrame> ms_stackFrames;

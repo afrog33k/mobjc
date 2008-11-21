@@ -59,11 +59,9 @@ namespace MObjc
 				}
 				else
 				{
-					using (Native invoke = new Native(ptr, selector))
-					{
-						invoke.SetArgs(args);			
-						result = invoke.Invoke();
-					}
+					Native invoke = new Native(ptr, selector);
+					invoke.SetArgs(args);			
+					result = invoke.Invoke();
 				}
 			}
 			

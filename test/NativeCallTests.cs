@@ -100,7 +100,7 @@ public class NativeCallTests
 	{
 		NSObject array = (NSObject) new Class("NSMutableArray").Call("alloc").Call("init");
 
-		array.Call("initWithUTF8String::", "hey");
+		array.Call("initWithUTF8String::", Marshal.StringToHGlobalAuto("hey"));
 	}
 
 	[Test]
@@ -118,7 +118,7 @@ public class NativeCallTests
 	{
 		NSObject array = (NSObject) new Class("NSMutableArray").Call("alloc").Call("init");
 
-		array.Call("initWithUTF8String::", "hey", 2, 3, 4);
+		array.Call("initWithUTF8String::", Marshal.StringToHGlobalAuto("hey"), 2, 3, 4);
 	}
 
 	[Test]
@@ -145,8 +145,8 @@ public class NativeCallTests
 	public void SlowTooFewArgs() 
 	{
 		Class klass = new Class("NSString");
-		NSObject str = (NSObject) klass.Call("stringWithUTF8String:", "hello world");
-		NSObject padding = (NSObject) klass.Call("stringWithUTF8String:", " ");
+		NSObject str = (NSObject) klass.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hello world"));
+		NSObject padding = (NSObject) klass.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto(" "));
 
 		str.Call("stringByPaddingToLength:withString:startingAtIndex:", 10, padding);
 	}
@@ -156,8 +156,8 @@ public class NativeCallTests
 	public void SlowBadArg() 
 	{
 		Class klass = new Class("NSString");
-		NSObject str = (NSObject) klass.Call("stringWithUTF8String:", "hello world");
-		NSObject padding = (NSObject) klass.Call("stringWithUTF8String:", " ");
+		NSObject str = (NSObject) klass.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hello world"));
+		NSObject padding = (NSObject) klass.Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto(" "));
 
 		str.Call("stringByPaddingToLength:withString:startingAtIndex:", 10, padding, padding);
 	}

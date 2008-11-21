@@ -96,18 +96,12 @@ namespace MObjc
 				encoding = m_signature.GetReturnEncoding();
 				if (encoding == "c" || encoding == "C" || encoding == "s" || encoding == "S")	// per 'man ffi_call' small results must be stuffed into "storage that is sizeof(long) or larger"
 				{
-					if (ms_buffer != IntPtr.Zero)
-						Marshal.FreeHGlobal(ms_buffer);
-					
 					int r = Convert.ToInt32(value);
-					ms_buffer = Ffi.FillBuffer(resultBuffer, r, "l", null);
+					Ffi.FillBuffer(resultBuffer, r, "l");
 				}
 				else if (encoding != "v" && encoding != "Vv")
 				{
-					if (ms_buffer != IntPtr.Zero)
-						Marshal.FreeHGlobal(ms_buffer);
-					
-					ms_buffer = Ffi.FillBuffer(resultBuffer, value, encoding, null);
+					Ffi.FillBuffer(resultBuffer, value, encoding);
 				}
 			}
 			catch (TargetInvocationException ie)
@@ -149,35 +143,54 @@ namespace MObjc
 		
 		private static NSObject DoCreateNativeException(Exception e)
 		{
-			// Create the name, reason, and userInfo objects.
-			NSObject name = (NSObject) new Class("NSString").Call("alloc").Call("initWithUTF8String:", e.GetType().ToString());
-			NSObject reason = (NSObject) new Class("NSString").Call("alloc").Call("initWithUTF8String:", e.Message);			
-			NSObject userInfo = (NSObject) new Class("NSMutableDictionary").Call("alloc").Call("init");
+			NSObject native;
+
+			IntPtr nameBuffer = Marshal.StringToHGlobalAuto(e.GetType().ToString());
+			IntPtr reasonBuffer = Marshal.StringToHGlobalAuto(e.Message);
+			IntPtr keyBuffer = Marshal.StringToHGlobalAuto(".NET exception");
+			GCHandle handle = new GCHandle();
 			
-			// Add the original System.Exception to userInfo.
-			NSObject key = (NSObject) new Class("NSString").Call("alloc").Call("initWithUTF8String:", ".NET exception");
 			try
 			{
-				MemoryStream stream = new MemoryStream();
-				BinaryFormatter formatter = new BinaryFormatter();
-				formatter.Serialize(stream, e);
-			
-				byte[] data = stream.ToArray();
-				GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
-				NSObject buffer = (NSObject) new Class("NSData").Call("dataWithBytes:length:", handle.AddrOfPinnedObject(), (uint) stream.Length);
-				Unused.Value = userInfo.Call("setObject:forKey:", buffer, key);
-			}
-			catch (Exception ee)
-			{
-				// Typically this will happen if e is not serializable.
-				Console.Error.WriteLine(ee.Message);
-				Console.Error.WriteLine(ee.StackTrace);
-				Console.Error.Flush();
-			}
-
-			// Create the NSException.
-			NSObject native = (NSObject) new Class("NSException").Call("exceptionWithName:reason:userInfo:", name, reason, userInfo);
+				// Create the name, reason, and userInfo objects.
+				NSObject name = (NSObject) new Class("NSString").Call("alloc").Call("initWithUTF8String:", nameBuffer);
+				NSObject reason = (NSObject) new Class("NSString").Call("alloc").Call("initWithUTF8String:", reasonBuffer);			
+				NSObject userInfo = (NSObject) new Class("NSMutableDictionary").Call("alloc").Call("init");
 				
+				// Add the original System.Exception to userInfo.
+				NSObject key = (NSObject) new Class("NSString").Call("alloc").Call("initWithUTF8String:", keyBuffer);
+				try
+				{
+					MemoryStream stream = new MemoryStream();
+					BinaryFormatter formatter = new BinaryFormatter();
+					formatter.Serialize(stream, e);
+				
+					byte[] data = stream.ToArray();
+					handle = GCHandle.Alloc(data, GCHandleType.Pinned);
+					NSObject buffer = (NSObject) new Class("NSData").Call("dataWithBytes:length:", handle.AddrOfPinnedObject(), (uint) stream.Length);
+					Unused.Value = userInfo.Call("setObject:forKey:", buffer, key);
+				}
+				catch (Exception ee)
+				{
+					// Typically this will happen if e is not serializable.
+					Console.Error.WriteLine(ee.Message);
+					Console.Error.WriteLine(ee.StackTrace);
+					Console.Error.Flush();
+				}
+	
+				// Create the NSException.
+				native = (NSObject) new Class("NSException").Call("exceptionWithName:reason:userInfo:", name, reason, userInfo);
+			}
+			finally
+			{
+				Marshal.FreeHGlobal(nameBuffer);
+				Marshal.FreeHGlobal(reasonBuffer);
+				Marshal.FreeHGlobal(keyBuffer);
+				
+				if (handle.IsAllocated)
+					handle.Free();
+ 			}
+			
 			return native;
 		}
 		#endregion
@@ -185,9 +198,6 @@ namespace MObjc
 		#region Fields --------------------------------------------------------
 		private MethodInfo m_info;
 		private MethodSignature m_signature;
-		
-		[ThreadStatic]
-		private static IntPtr ms_buffer;
 		#endregion
 	}
 }

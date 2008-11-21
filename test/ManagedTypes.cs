@@ -60,14 +60,14 @@ public class NSString : NSObject
 	{
 	}
 	
-	public static NSString stringWithString(string str)
+	public static NSString Create(string str)
 	{
-		return (NSString) new Class("NSString").Call("stringWithUTF8String:", str);
+		return (NSString) new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto(str));
 	}
 	
 	public override string ToString()
 	{
-		return (string) Call("UTF8String");
+		return Marshal.PtrToStringAuto((IntPtr) Call("UTF8String"));
 	}
 }
 
@@ -99,7 +99,7 @@ public class Subclass1 : NSObject
 	[Register]		
 	public NSString concat(NSString lhs, NSString rhs) 
 	{
-		return NSString.stringWithString(lhs.ToString() + rhs.ToString());
+		return NSString.Create(lhs.ToString() + rhs.ToString());
 	}
 	
 	[Register]		
@@ -177,9 +177,9 @@ public class Subclass1 : NSObject
 	}
 		
 	[Register]		
-	public string TakeString(string s) 
+	public NSString TakeString(NSString s) 
 	{
-		return s + s;
+		return (NSString) s.Call("stringByAppendingString:", s);
 	}
 		
 	[Register]		
@@ -203,7 +203,7 @@ public class Subclass1 : NSObject
 	public string Data
 	{
 		get {return m_data.Value.ToString();}
-		set {m_data.Value = NSString.stringWithString(value);}
+		set {m_data.Value = NSString.Create(value);}
 	}
 		
 	protected override void OnDealloc()
@@ -216,7 +216,7 @@ public class Subclass1 : NSObject
 	{
 		Class nsString = new Class("NSMutableString");
 		NSObject str = (NSObject) nsString.Call("alloc");
-		return (NSObject) str.Call("initWithUTF8String:", s);
+		return (NSObject) str.Call("initWithUTF8String:", Marshal.StringToHGlobalAuto(s));
 	}
 		
 	private int m_value;
@@ -249,7 +249,7 @@ public class PrettyData : NSObject
 	{
 		Class nsString = new Class("NSMutableString");
 		NSObject str = (NSObject) nsString.Call("alloc");
-		str = (NSObject) str.Call("initWithUTF8String:", "pretty: ");
+		str = (NSObject) str.Call("initWithUTF8String:", Marshal.StringToHGlobalAuto("pretty: "));
 
 		NSObject ss = (NSObject) SuperCall("description");
 		str.Call("appendString:", ss);
@@ -282,7 +282,7 @@ public class MyBase : NSObject
 	{
 		Class nsString = new Class("NSMutableString");
 		NSObject str = (NSObject) nsString.Call("alloc");
-		str = (NSObject) str.Call("initWithUTF8String:", "base");
+		str = (NSObject) str.Call("initWithUTF8String:", Marshal.StringToHGlobalAuto("base"));
 	
 		return str;
 	}
@@ -318,7 +318,7 @@ public class MyDerived : MyBase
 	{
 		Class nsString = new Class("NSMutableString");
 		NSObject str = (NSObject) nsString.Call("alloc");
-		str = (NSObject) str.Call("initWithUTF8String:", "derived");
+		str = (NSObject) str.Call("initWithUTF8String:", Marshal.StringToHGlobalAuto("derived"));
 	
 		return str;
 	}
