@@ -161,7 +161,7 @@ namespace MObjc
 		#endregion
 				
 		#region Private Types -------------------------------------------------
-		private struct StackFrame
+		private struct StackFrame		// TODO: it should be possible to use a single stack frame for all calls
 		{
 			public StackFrame(MethodSignature sig)
 			{

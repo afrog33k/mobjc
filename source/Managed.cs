@@ -125,9 +125,9 @@ namespace MObjc
 		}
 		
 		#region Private Methods -----------------------------------------------
-		private static void DoLogException(Exception e)
+		private void DoLogException(Exception e)
 		{
-			Console.Error.WriteLine("Exception was thrown from managed code:");
+			Console.Error.WriteLine("Managed exception: {0}", m_info);
 			
 			Exception ee = e;
 			while (ee != null)

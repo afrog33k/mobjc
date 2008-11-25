@@ -193,18 +193,14 @@ namespace MObjc
 		}
 				
 		public static implicit operator IntPtr(NSObject value) 
-		{				
-			Trace.Assert(value != null, "value is null");
-			
-			return value.m_instance;
+		{							
+			return value != null ? value.m_instance : IntPtr.Zero;
 		}
 		
 		// Need this for languages like VB that don't support operator overloading.
 		public static IntPtr ToIntPtrType(NSObject value)
 		{				
-			Trace.Assert(value != null, "value is null");
-
-			return value.m_instance;
+			return value != null ? value.m_instance : IntPtr.Zero;
 		}
     
 		public static bool IsNullOrNil(NSObject o)
