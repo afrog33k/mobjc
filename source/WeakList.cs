@@ -61,7 +61,7 @@ namespace MObjc
 				foreach (WeakReference wr in m_list)
 				{
 					T o = (T) wr.Target;
-					if (o != null && elements.IndexOf(o) < 0)
+					if (o != null && !elements.Exists(e => ReferenceEquals(e, o)))
 						elements.Add(o);
 				}
 			}

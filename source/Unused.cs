@@ -23,7 +23,7 @@ using System;
 
 namespace MObjc
 {			
-	public static class Unused	// thread safe
+	internal static class Unused	// thread safe
 	{
 		public static object Value 
 		{
