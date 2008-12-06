@@ -155,13 +155,20 @@ namespace MObjc
 				{
 					RegisterAttribute attr = Attribute.GetCustomAttribute(info, typeof(RegisterAttribute), false) as RegisterAttribute;
 					if (attr != null) 
+					{
 						DoAddMethod(name, info, attr.Name ?? info.Name, klass, superClass);
-				
-					else if (info.GetParameters().Length == 0 && char.IsLower(info.Name[0]))
-						DoAddMethod(name, info, info.Name, klass, superClass);
+					}
+					else if (char.IsLower(info.Name[0]))
+					{
+						if (info.GetParameters().Length == 0)
+							DoAddMethod(name, info, info.Name, klass, superClass);
 
-					else if (info.GetParameters().Length == 1 && char.IsLower(info.Name[0]))
-						DoAddMethod(name, info, info.Name + ":", klass, superClass);
+						else if (info.GetParameters().Length == 1)
+							DoAddMethod(name, info, info.Name + ":", klass, superClass);
+
+						else if (info.GetParameters().Length >= 2 && info.Name.Contains("_"))
+							DoAddMethod(name, info, info.Name.Replace("_", ":") + ":", klass, superClass);
+					}
 				}
 			}
 
