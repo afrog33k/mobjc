@@ -284,11 +284,36 @@ namespace MObjc
 				
 				if (m_instance != IntPtr.Zero)
 				{
-					IntPtr v = (IntPtr) value;
-					IntPtr ivar = object_setInstanceVariable(m_instance, ivarName, v);
-			
+					// Retain the new value (if any).
+					IntPtr exception = IntPtr.Zero, dummy = IntPtr.Zero;
+					if (!NSObject.IsNullOrNil(value))
+					{
+						Unused.Value = DirectCalls.Callp(value, Selector.Retain, ref exception);
+						if (exception != IntPtr.Zero)
+							CocoaException.Raise(exception);
+					}
+
+					// Release the old value (if any).
+					IntPtr oldValue = IntPtr.Zero;
+					IntPtr ivar = object_getInstanceVariable(m_instance, ivarName, ref oldValue);				
 					if (ivar == IntPtr.Zero)
+					{
+						Unused.Value = DirectCalls.Callp(value, Selector.Release, ref dummy);
 						throw new ArgumentException(ivarName + " isn't a valid instance variable");
+					}
+
+					if (oldValue != IntPtr.Zero)
+					{
+						Unused.Value = DirectCalls.Callp(oldValue, Selector.Release, ref exception);
+						if (exception != IntPtr.Zero)
+						{
+							Unused.Value = DirectCalls.Callp(value, Selector.Release, ref dummy);
+							CocoaException.Raise(exception);
+						}
+					}
+		
+					// Set the value.
+					ivar = object_setInstanceVariable(m_instance, ivarName, value);
 				}
 			}
 		}
