@@ -94,6 +94,10 @@ namespace MObjc
 			Type type = value.GetType();
 			if (type == typeof(T))							
 				return (T) value;
+				
+			// If T is bool then allow value to be an sbyte.
+			if (typeof(T) == typeof(bool) && type == typeof(sbyte))
+				return (T) (object) ((sbyte) value != 0);
 			
 			// If T is NSObject, a derived class, or IntPtr then do a lookup and
 			// return the correct managed class.
