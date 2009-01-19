@@ -132,7 +132,7 @@ namespace MObjc
 				
 		private void DoGetClassMethodsString(StringBuilder builder, bool includePrivate)
 		{
-			Class klass = new Class(object_getClass((IntPtr) Class));
+			Class klass = new Class(object_getClass(m_class));
 
 			bool needNewLine = false;
 			while (klass != null && (IntPtr) klass != IntPtr.Zero)
@@ -176,7 +176,7 @@ namespace MObjc
 		
 		private void DoGetIvarString(StringBuilder builder, bool includePrivate)
 		{
-			Class klass = Class;
+			Class klass = class_();
 			while (klass != null && (IntPtr) klass != IntPtr.Zero)
 			{
 				int count = 0;
@@ -203,7 +203,7 @@ namespace MObjc
 		
 		private void DoGetPropsString(StringBuilder builder)
 		{
-			Class klass = Class;
+			Class klass = class_();
 			while (klass != null && (IntPtr) klass != IntPtr.Zero)
 			{
 				int count = 0;
@@ -229,7 +229,7 @@ namespace MObjc
 		
 		private void DoGetInstanceMethodsString(StringBuilder builder, bool includePrivate)
 		{
-			Class klass = Class;
+			Class klass = class_();
 			bool needNewLine = false;
 			while (klass != null && (IntPtr) klass != IntPtr.Zero)
 			{

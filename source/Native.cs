@@ -149,12 +149,12 @@ namespace MObjc
 				method = class_getClassMethod(klass, (IntPtr) selector);
 				
 			if (method == IntPtr.Zero)
-				throw new InvalidCallException(string.Format("Couldn't get the method for {0} {1}", new NSObject(target).Class, selector));
+				throw new InvalidCallException(string.Format("Couldn't get the method for {0} {1}", new NSObject(target).class_(), selector));
 
 			IntPtr imp = method_getImplementation(method);
 
 			if (imp == IntPtr.Zero)
-				throw new InvalidCallException(string.Format("Couldn't get the method for {0} {1}", new NSObject(target).Class, selector));
+				throw new InvalidCallException(string.Format("Couldn't get the method for {0} {1}", new NSObject(target).class_(), selector));
 
 			return imp;
 		}

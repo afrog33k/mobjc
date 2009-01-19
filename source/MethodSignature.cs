@@ -264,7 +264,7 @@ namespace MObjc
 				
 			if (instance == IntPtr.Zero)
 			{
-				string cn = new NSObject(target).Class.Name;
+				string cn = new NSObject(target).class_().Name;
 				string sn = new Selector(selector).Name;
 				throw new InvalidCallException(string.Format("Couldn't find the method signature for {0} {1}", cn, sn));
 			}				

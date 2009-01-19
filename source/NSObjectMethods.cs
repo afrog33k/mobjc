@@ -209,7 +209,7 @@ namespace MObjc
 				
 			return this;
 		}
-						
+		
 		public uint retainCount()
 		{
 			Trace.Assert(!m_deallocated, "ref count is zero");
@@ -226,7 +226,12 @@ namespace MObjc
 
 			return count;
 		}
-						
+		
+		public Class class_()
+		{
+			return new Class(m_class);
+		}
+		
 		public Class superclass()
 		{
 			Trace.Assert(!m_deallocated, "ref count is zero");

@@ -110,8 +110,12 @@ namespace MObjc
 					instance = (IntPtr) (NSObject) value;
 					
 				NSObject obj = NSObject.Lookup(instance);
-				if (obj == null || typeof(T).IsAssignableFrom(obj.GetType()))
+				if (obj == null)
+					return default(T);
+				else if (typeof(T).IsAssignableFrom(obj.GetType()))
 					return (T) (object) obj;
+				else
+					throw new InvalidCastException("Can't cast from " + obj.class_().Name + " to " + typeof(T) + ".");
 			}
 			
 			throw new InvalidCastException("Can't cast from " + type + " to " + typeof(T) + ".");

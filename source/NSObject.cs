@@ -116,8 +116,8 @@ namespace MObjc
 #endif
 			}
 		}
-														
-		public static IntPtr CreateNative(string name)
+		
+		public static IntPtr AllocNative(string name)
 		{
 			Class klass = new Class(name);
 
@@ -133,19 +133,22 @@ namespace MObjc
 			return instance;
 		}
 
-		public static NSObject Create()
+		// It's quite handy to have a retain method that returns the correct type
+		// but we don't want to call it retain because it will be registered as an
+		// override for exported classes which tends to cause problems.
+		public NSObject Retain()
 		{
-			NSObject result = (NSObject) alloc().init();
-			result.autorelease();
-			return result;
+			retain();
+			return this;
 		}
 
-		// Note that the class of a class is itself.
-		public Class Class
+		// Note that this is the static NSObject class type. To get the dynamic type
+		// of an instance use the class_() method.
+		public static Class Class
 		{
-			get {return new Class(m_class);}
+			get {return ms_class;}
 		}
-		
+
 		public static NSObject Lookup(IntPtr instance)	// thread safe
 		{
 			NSObject managed = null;
@@ -212,9 +215,11 @@ namespace MObjc
 		{				
 			return m_instance == IntPtr.Zero;
 		}
-
-		// This is for testing. It will always be set correctly for exported classes
-		// and for other classes where Release was used, but not if release was used.
+		
+		// This should only be used for debugging and testing. It will be set
+		// correctly for types exported with ExportClassAttribute and for instances
+		// released using the managed release method, but will not be set for
+		// non-exported instances released from unmanaged code.
 		public bool IsDeallocated()
 		{
 			return m_deallocated;
@@ -244,7 +249,7 @@ namespace MObjc
 
 			if (m_instance != IntPtr.Zero)
 			{
-				Native native = new Native(m_instance, new Selector(name), Class.BaseClass);
+				Native native = new Native(m_instance, new Selector(name), class_().BaseClass);
 				native.SetArgs(args);			
 				result = native.Invoke();
 			}
@@ -384,7 +389,8 @@ namespace MObjc
 		}
 		 						
 		#region Protected Methods ---------------------------------------------
-		// Only called for exported types. Derived classes must call the base class implementation.
+		// Only called for exported types. Derived classes must call the base class 
+		// implementation.
 		protected virtual void OnDealloc()
 		{
 			bool removed = ms_instances.Remove(m_instance);
