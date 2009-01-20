@@ -59,7 +59,7 @@ other-files := $(shell echo $(other-resources) | sed "s/,/ /g")
 
 $(app-path): $(exe-path) Info.plist $(other-files) $(localized-files) $(PACK)
 	@echo "building $(app-path)"
-	$(PACK) --app=$(app-path) --exe=$(exe-path) --mono-flags=$(MONO_FLAGS) --plist=Info.plist           \
+	$(PACK) --app=$(app-path) --exe=$(exe-path) --mono-flags='$(MONO_FLAGS)' --plist=Info.plist           \
 	--resources=$(gmcs-resources),$(other-resources) --resources=English.lproj:$(localized-resources) \
 	--vars=APPNAME:$(app-name),VERSION:$(version),BUILDNUM:$(build-num)
 
