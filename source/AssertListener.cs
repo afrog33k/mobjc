@@ -29,6 +29,11 @@ namespace MObjc
 	[Serializable]
 	public sealed class AssertException : Exception
 	{
+		// Need this for XML serialization.
+		public AssertException()
+		{
+		}
+
 		public AssertException(string text) : base(text) 
 		{
 		}

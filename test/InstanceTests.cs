@@ -41,7 +41,7 @@ public class InstanceTests
 	[Test]
 	public void RefCount1Test()	
 	{
-		NSObject pool = new NSObject(NSObject.CreateNative("NSAutoreleasePool"));
+		NSObject pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
 
 		// If we use alloc the object will have a ref count of one.
 		NSObject instance = (NSObject) new Class("NSHashTable").Call("alloc").Call("init");
@@ -76,7 +76,7 @@ public class InstanceTests
 	[Test]
 	public void RefCount2Test()
 	{
-		NSObject pool = new NSObject(NSObject.CreateNative("NSAutoreleasePool"));
+		NSObject pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
 
 		// No copy, new, or alloc so ref count is one and it's owned by the pool.
 		PrettyData direct = PrettyData.makeDefault();
@@ -101,7 +101,7 @@ public class InstanceTests
 	[Test]
 	public void RefCount3Test()	
 	{
-		NSObject pool = new NSObject(NSObject.CreateNative("NSAutoreleasePool"));
+		NSObject pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
 
 		Class klass = new Class("NSHashTable");
 		NSObject instance1 = (NSObject) klass.Call("alloc").Call("init");
@@ -119,7 +119,7 @@ public class InstanceTests
 	[Test]
 	public void ChainedCallTest()
 	{
-		NSObject pool = new NSObject(NSObject.CreateNative("NSAutoreleasePool"));
+		NSObject pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
 
 		Class nsString = new Class("NSMutableString");
 		NSObject str = (NSObject) nsString.Call("alloc").Call("initWithUTF8String:", Marshal.StringToHGlobalAuto("chained!"));
@@ -133,7 +133,7 @@ public class InstanceTests
 	[Test]
 	public void NilCallTest()
 	{
-		NSObject pool = new NSObject(NSObject.CreateNative("NSAutoreleasePool"));
+		NSObject pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
 
 		NSObject nil = new NSObject(IntPtr.Zero);
 		
@@ -159,7 +159,7 @@ public class InstanceTests
 	[Test]
 	public void ThreadedTest()
 	{
-		NSObject pool = new NSObject(NSObject.CreateNative("NSAutoreleasePool"));
+		NSObject pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
 
 		sbyte threaded = (sbyte) new Class("NSThread").Call("isMultiThreaded");
 		Assert.AreEqual(1, threaded);
@@ -170,7 +170,7 @@ public class InstanceTests
 	[Test]
 	public void DeallocTest()
 	{
-		NSObject pool = new NSObject(NSObject.CreateNative("NSAutoreleasePool"));
+		NSObject pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
 
 		Subclass1 instance = (Subclass1) new Class("Subclass1").Call("alloc").Call("init");
 		Assert.AreEqual(1L, instance.retainCount());

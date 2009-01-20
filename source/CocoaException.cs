@@ -25,6 +25,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Permissions;
 
 namespace MObjc
 {
@@ -33,12 +34,18 @@ namespace MObjc
 	[DisableRuleAttribute("R1000", "DisposableFields")]
 	public sealed class CocoaException : Exception
 	{
-		// For serialization.
-		internal CocoaException()
+		// This should not normally be used but is present so the class
+		// works with XML serialization.
+		public CocoaException()
 		{
 			m_instance = new NSObject(IntPtr.Zero);
 		}
 
+		public CocoaException(NSObject instance, Exception innerException) : base(DoGetMessage(instance), innerException)
+		{
+			m_instance = instance;
+		}
+		
 		private CocoaException(NSObject instance) : base(DoGetMessage(instance))
 		{
 			m_instance = instance;
@@ -50,6 +57,7 @@ namespace MObjc
 			m_instance = new NSObject(new IntPtr(value));
 		}
 
+		[SecurityPermission(SecurityAction.LinkDemand, SerializationFormatter = true)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			if (info == null)
@@ -87,11 +95,13 @@ namespace MObjc
 						Marshal.Copy(ptr, buffer, 0, (int) bytes);
 	
 						// and raise the original exception.
-						MemoryStream stream = new MemoryStream(buffer);
-						BinaryFormatter formatter = new BinaryFormatter();
-						Exception e = (Exception) formatter.Deserialize(stream);
+						using (MemoryStream stream = new MemoryStream(buffer))
+						{
+							BinaryFormatter formatter = new BinaryFormatter();
+							Exception e = (Exception) formatter.Deserialize(stream);
 	
-						throw new TargetInvocationException("Exception has been thrown by the target of an Objective-C method call.", e);	// yes TargetInvocationException sucks, but it preserves the original stack crawl...
+							throw new TargetInvocationException("Exception has been thrown by the target of an Objective-C method call.", e);	// yes TargetInvocationException sucks, but it preserves the original stack crawl...
+						}
 					}
 				}
 			}

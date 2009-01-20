@@ -132,7 +132,7 @@ namespace MObjc
 			return m_sig.ToString();
 		}
 
-		#region Private Methods -----------------------------------------------
+		#region Private Methods
 		private static IntPtr DoGetImp(IntPtr target, Selector selector, IntPtr klass)
 		{
 			if (target == IntPtr.Zero)
@@ -160,7 +160,8 @@ namespace MObjc
 		}
 		#endregion
 				
-		#region Private Types -------------------------------------------------
+		#region Private Types
+		[DisableRuleAttribute("R1001", "DisposeNativeResources")]		// These are used as a per thread cache for each method signature used and are not released so we don't need to cleanup m_cif. 
 		private struct StackFrame		// TODO: it should be possible to use a single stack frame for all calls
 		{
 			public StackFrame(MethodSignature sig)
@@ -214,7 +215,7 @@ namespace MObjc
 		}
 		#endregion
 
-		#region P/Invokes -----------------------------------------------------
+		#region P/Invokes
 		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr class_getInstanceMethod(IntPtr klass, IntPtr selector);
 
@@ -228,7 +229,7 @@ namespace MObjc
 		private extern static IntPtr object_getClass(IntPtr obj);
 		#endregion
 
-		#region Fields --------------------------------------------------------
+		#region Fields
 		private IntPtr m_target;
 		private Selector m_selector;
 		private MethodSignature m_sig;

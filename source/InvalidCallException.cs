@@ -27,12 +27,13 @@ namespace MObjc
 	// This will be thrown if an Objective-C method is called with bad arguments.
 	[Serializable]
 	public sealed class InvalidCallException : Exception
-	{
-		internal InvalidCallException()
+	{	
+		// Need this for XML serialization.
+		public InvalidCallException()
 		{
 		}
 
-		internal InvalidCallException(string text) : base(text)
+		public InvalidCallException(string text) : base(text)
 		{
 		}
 		

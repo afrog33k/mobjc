@@ -161,14 +161,16 @@ namespace MObjc
 				NSObject key = (NSObject) new Class("NSString").Call("alloc").Call("initWithUTF8String:", keyBuffer);
 				try
 				{
-					MemoryStream stream = new MemoryStream();
-					BinaryFormatter formatter = new BinaryFormatter();
-					formatter.Serialize(stream, e);
-				
-					byte[] data = stream.ToArray();
-					handle = GCHandle.Alloc(data, GCHandleType.Pinned);
-					NSObject buffer = (NSObject) new Class("NSData").Call("dataWithBytes:length:", handle.AddrOfPinnedObject(), (uint) stream.Length);
-					Unused.Value = userInfo.Call("setObject:forKey:", buffer, key);
+					using (MemoryStream stream = new MemoryStream())
+					{
+						BinaryFormatter formatter = new BinaryFormatter();
+						formatter.Serialize(stream, e);
+					
+						byte[] data = stream.ToArray();
+						handle = GCHandle.Alloc(data, GCHandleType.Pinned);
+						NSObject buffer = (NSObject) new Class("NSData").Call("dataWithBytes:length:", handle.AddrOfPinnedObject(), (uint) stream.Length);
+						Unused.Value = userInfo.Call("setObject:forKey:", buffer, key);
+					}
 				}
 				catch (Exception ee)
 				{

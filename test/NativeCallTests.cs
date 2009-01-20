@@ -33,7 +33,7 @@ public class NativeCallTests
 		AssertListener.Install();
 
 		Registrar.CanInit = true;
-		m_pool = new NSObject(NSObject.CreateNative("NSAutoreleasePool"));
+		m_pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
 	}
 	
 	[TestFixtureTearDown]

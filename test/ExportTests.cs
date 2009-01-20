@@ -34,7 +34,7 @@ public class ExportTests
 		AssertListener.Install();
 
 		Registrar.CanInit = true;
-		m_pool = new NSObject(NSObject.CreateNative("NSAutoreleasePool"));
+		m_pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
 	}
 	
 	[TestFixtureTearDown]
@@ -179,9 +179,9 @@ public class ExportTests
 		
 		instance["myData"] = str;
 		
-		// the ref count of the value should not change when it is
+		// the ref count of the value should be incremented when it is
 		// assigned to an ivar
-		Assert.AreEqual(count, str.retainCount());		
+		Assert.AreEqual(count + 1, str.retainCount());		
 
 		// and we can get the value we set
 		NSObject result = instance["myData"];

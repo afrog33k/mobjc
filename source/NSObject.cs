@@ -138,7 +138,7 @@ namespace MObjc
 		// override for exported classes which tends to cause problems.
 		public NSObject Retain()
 		{
-			retain();
+			Unused.Value = retain();
 			return this;
 		}
 

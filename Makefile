@@ -4,6 +4,8 @@ TEST1 ?= ReturnTests
 CSC ?= gmcs
 GCC ?= gcc
 NUNIT ?= nunit-console2
+MONO ?= mono
+GENDARME ?= /usr/local/bin/gendarme/gendarme.exe
 
 ifdef RELEASE
 	# Note that -debug+ just generates an mdb file.
@@ -84,8 +86,13 @@ smokey_flags += -exclude-check:P1003	# AvoidBoxing
 smokey_flags += -exclude-check:P1004	# AvoidUnboxing
 smokey_flags += -exclude-check:P1005	# StringConcat
 smokey_flags += -exclude-check:R1039	# ThreadSafeAttr
+smokey_flags += -exclude-check:S1020	# VisiblePInvoke (mcocoa needs these for the fast path)
 smoke: bin/mobjc.dll
 	@-smoke $(smokey_flags) bin/mobjc.dll
+	
+gendarme_flags := --severity all --confidence all --ignore gendarme.ignore --quiet
+gendarme: bin/mobjc.dll
+	@-$(MONO) "$(GENDARME)" $(gendarme_flags) bin/mobjc.dll
 	
 clean:
 	-rm -rf bin/Sample.app

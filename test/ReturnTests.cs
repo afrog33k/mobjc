@@ -33,7 +33,7 @@ public class ReturnTests
 		AssertListener.Install();
 
 		Registrar.CanInit = true;
-		m_pool = new NSObject(NSObject.CreateNative("NSAutoreleasePool"));
+		m_pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
 	}
 	
 	[TestFixtureTearDown]
@@ -63,6 +63,18 @@ public class ReturnTests
 		
 		sbyte result = num.Call("boolValue").To<sbyte>();
 		Assert.AreEqual(1, result);
+	}
+
+	[Test]
+	public void BoolWithTo2() 
+	{
+		Class klass = new Class("NSNumber");
+		
+		NSObject num = klass.Call("alloc").To<NSObject>();
+		num = num.Call("initWithBool:", (sbyte) 1).To<NSObject>();
+		
+		bool b = num.Call("boolValue").To<bool>();	// To special cases sbyte to bool
+		Assert.AreEqual(true, b);
 	}
 
 	[Test]
@@ -413,18 +425,6 @@ public class ReturnTests
 		NSRange result = (NSRange) str.Call("rangeOfString:", quick);
 		Assert.AreEqual(4, result.location);
 		Assert.AreEqual(5, result.length);
-	}
-
-	[Test]
-	[ExpectedException(typeof(InvalidCastException))]
-	public void BadBoolWithTo() 
-	{
-		Class klass = new Class("NSNumber");
-		
-		NSObject num = klass.Call("alloc").To<NSObject>();
-		num = num.Call("initWithBool:", (sbyte) 1).To<NSObject>();
-		
-		num.Call("boolValue").To<bool>();
 	}
 
 	[Test]
