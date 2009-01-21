@@ -158,5 +158,6 @@ uninstall:
 	-rm $(pc_file)
 	
 tar:
-	tar --create --compress --exclude \*/.svn --exclude \*/.svn/\* --file=mobjc-$(version).tar.gz cocoa-pack CHANGES CHANGE_LOG MIT.X11 Makefile README gen_direct.py gen_version.sh get_version.sh glue sample source test 
+	tar --create --compress --exclude \*/.svn --exclude \*/.svn/\* --file=mobjc-$(version).tar.gz \
+		CHANGES CHANGE_LOG MIT.X11 Makefile README cocoa-pack gen_direct.py gendarme.ignore gen_version.sh get_version.sh glue sample source test 
 
