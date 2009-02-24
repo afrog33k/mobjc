@@ -8,13 +8,13 @@ import string
 import sys
 
 def copyDebugFile(file, dst):
-	if os.path.exists(file): 
+	if os.path.exists(file):
 		shutil.copy(file, dst)
 
 # There is a shutil.copytree, but it copies the .svn directories inside
 # nib bundles.
 def copyTree(src, dst):
-	if os.path.exists(src) and os.path.basename(src)[0] != '.': 
+	if os.path.exists(src) and os.path.basename(src)[0] != '.':
 		dstPath = os.path.join(dst, os.path.basename(src))
 		os.mkdir(dstPath)
 		
@@ -26,14 +26,14 @@ def copyTree(src, dst):
 			break
 
 parser = OptionParser()
-parser.add_option("--app", 												help="path to the bundle which will be created")
-parser.add_option("--exe", 			 									help="path to the executable assembly")
-parser.add_option("--mono-flags",	default="", 						help="flags to use with mono")
+parser.add_option("--app", 											help="path to the bundle which will be created")
+parser.add_option("--exe", 			 								help="path to the executable assembly")
+parser.add_option("--mono-flags",	default="", 			help="flags to use with mono")
 parser.add_option("--plist", 		 									help="path to the Info.plist to copy")
-parser.add_option("--resources", 	action="append", 					help="files to copy into the resources dir")
+parser.add_option("--resources", 	action="append", 		help="files to copy into the resources dir")
 parser.add_option("--vars", 		 									help="{name}s to expand in the plist")
 parser.add_option("--usage", 		action="store_true", default=False,	help="prints usage info and exit")
-                  
+
 (options, args) = parser.parse_args()
 
 if options.usage:
@@ -50,7 +50,7 @@ else:
 	resourcesPath = contentsPath + "/Resources"
 	
 	# Remove the old bundle.
-	if os.path.exists(options.app): 
+	if os.path.exists(options.app):
 		shutil.rmtree(options.app)
 	
 	# Create the directories for the new bundle.
@@ -82,7 +82,7 @@ else:
 				os.mkdir(dstPath)
 
 		for resource in resources.split(','):
-			if os.path.isfile(resource): 
+			if os.path.isfile(resource):
 				shutil.copy(resource, dstPath)
 				if "--debug" in options.mono_flags:
 					copyDebugFile(resource + ".mdb", dstPath)
@@ -105,7 +105,7 @@ else:
 	
 	# Create a little script to run our assembly using mono. Note that we can't simply
 	# run mono from its normal location or nibs won't load.
-	script = """\
+	script = """
 #!/bin/sh
 APP_PATH=`echo \x240 | awk '{split(\x240,patharr,\"/\"); idx=1; while(patharr[idx+3] != \"\") { if (patharr[idx] != \"/\") {printf(\"%s/\", patharr[idx]); idx++ }} }'`
 cd ${APP_PATH}/Contents/MacOS

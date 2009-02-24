@@ -310,3 +310,162 @@ Added gen_direct.py to tar target.
 
 
 ------------------------------------------------------------------------
+r42 | jesjones@mindspring.com | 2008-11-20 11:41:40 -0800 (Thu, 20 Nov 2008) | 3 lines
+
+Updated change logs and version number.
+
+
+------------------------------------------------------------------------
+r43 | jesjones@mindspring.com | 2008-11-20 12:28:27 -0800 (Thu, 20 Nov 2008) | 3 lines
+
+Index: source/Native.cs
+* Cache the buffers used by libffi. This aproximately doubles the speed of the slow path.
+
+------------------------------------------------------------------------
+r44 | jesjones@mindspring.com | 2008-11-21 13:07:32 -0800 (Fri, 21 Nov 2008) | 15 lines
+
+* Cleaned up pointer marshaling:
+    - If the native type is a char* or a unichar* you now must pass in null or an IntPtr:
+      System.String will no longer be auto-marshaled to or from const char buffers.
+    - There is no longer a special case for float arrays: instead higher level code must
+      pass in an IntPtr. 
+    - Marshaling of arbitrary arrays and of unions should work (as long as you pass in 
+      null or an IntPtr).
+* Cleaned up struct marshaling:
+    - There is now a better exception if null is passed in.
+    - An exception is now thrown if the managed and native structs do not match.
+* If an exception is thrown while trying to register an exported method Registrar will
+  now include the class and method name in the exception message.
+* Native is no longer IDisposable.
+
+
+------------------------------------------------------------------------
+r45 | jesjones@mindspring.com | 2008-11-24 17:14:55 -0800 (Mon, 24 Nov 2008) | 7 lines
+
+Index: source/NSObject.cs
+* Fixed the IntPtr conversion operator so that it works with null objects.
+
+Index: source/Managed.cs
+* Exception logger now includes the managed method being called.
+
+
+------------------------------------------------------------------------
+r46 | jesjones@mindspring.com | 2008-12-01 22:37:43 -0800 (Mon, 01 Dec 2008) | 11 lines
+
+Index: source/WeakList.cs
+* Use ReferenceEquals when taking a snapshot so we can avoid calling Equals
+  on an object which may have been released.
+  
+Index: source/ObjectExtensions.cs
+* Don't throw a NRE if NSObject.Lookup returns null.
+
+Index: source/Unused.cs
+* Made Unused internal.
+
+
+------------------------------------------------------------------------
+r47 | jesjones@mindspring.com | 2008-12-02 13:31:01 -0800 (Tue, 02 Dec 2008) | 3 lines
+
+Added sample/Unused.cs.
+
+
+------------------------------------------------------------------------
+r48 | jesjones@mindspring.com | 2008-12-05 22:02:47 -0800 (Fri, 05 Dec 2008) | 3 lines
+
+No longer need to explicitly register methods like "readFromData_ofType_error".
+
+
+------------------------------------------------------------------------
+r49 | jesjones@mindspring.com | 2008-12-07 16:57:48 -0800 (Sun, 07 Dec 2008) | 4 lines
+
+Index: source/NSObject.cs
+* Ivar setter now releases the old value and retains the new value.
+
+
+------------------------------------------------------------------------
+r50 | jesjones@mindspring.com | 2008-12-14 23:20:26 -0800 (Sun, 14 Dec 2008) | 3 lines
+
+Index: source/Selector.cs
+* Fixed so that the IntPtr conversion operators work if the selector is null.
+
+------------------------------------------------------------------------
+r51 | jesjones@mindspring.com | 2008-12-26 00:33:58 -0800 (Fri, 26 Dec 2008) | 3 lines
+
+Index: source/ObjectExtensions.cs
+* Can now use To to convert an sbyte into a bool.
+
+------------------------------------------------------------------------
+r52 | jesjones@mindspring.com | 2009-01-19 05:42:38 -0800 (Mon, 19 Jan 2009) | 21 lines
+
+Index: source/NSObject.cs
+Index: source/Registrar.cs
+* Renamed CreateNative AllocNative because the caller assumes ownership of the result.
+* Removed Create (there's no real point to this method because it just created an instance of the root NSObject).
+* Added Retain to allow clients to retain objects with covariant returns (mcocoa used to declare retain
+  methods for this, but that caused problems with exported types because the Registrar thought the
+  types were overriding retain).
+* Added a static Class property to return the root NSObject class (and to be consistent with the NSObject
+   derived classes in mcocoa).
+
+Index: source/NSObjectMethods.cs
+Index: source/NSObjectString.cs
+Index: source/Native.cs
+Index: source/MethodSignature.cs
+* Replaced the instance NSObject.Class property with a class_() method.
+
+Index: source/ObjectExtensions.cs
+* To throws a more informative exception when Lookup returns an object that cannot be cast
+  to the target type.
+
+
+------------------------------------------------------------------------
+r53 | jesjones@mindspring.com | 2009-01-19 23:33:35 -0800 (Mon, 19 Jan 2009) | 3 lines
+
+Quote MONO_FLAGS so that multiple flags work.
+
+
+------------------------------------------------------------------------
+r54 | jesjones@mindspring.com | 2009-01-20 03:46:52 -0800 (Tue, 20 Jan 2009) | 29 lines
+
+Index: test/ReturnTests.cs
+* To now special cases sbyte to bool.
+
+Index: test/ExportTests.cs
+* IVar setter now adjusts reference counts.
+
+Index: source/InvalidCallException.cs
+Index: source/CocoaException.cs
+Index: source/AssertListener.cs
+* Added public default ctors so the exceptions may be serialized with XML.
+
+Index: source/Managed.cs
+* Added some using blocks for MemoryStreams.
+
+Index: test/NativeCallTests.cs
+Index: test/InstanceTests.cs
+Index: test/TimingTest.cs
+Index: sample/Program.cs
+Index: test/DerivedTest.cs
+Index: test/ArgTests.cs
+Index: test/ExceptionTests.cs
+Index: test/MemoryTests.cs
+* Use AllocNative instead of CreateNative.
+
+Index: Makefile
+Index: gendarme.ignore
+* Added a gendarme target.
+
+
+------------------------------------------------------------------------
+r55 | jesjones@mindspring.com | 2009-01-20 23:51:32 -0800 (Tue, 20 Jan 2009) | 3 lines
+
+Index: Makefile
+* Added gendarme.ignore to the tar target.
+
+------------------------------------------------------------------------
+r56 | jesjones@mindspring.com | 2009-01-20 23:51:50 -0800 (Tue, 20 Jan 2009) | 3 lines
+
+Renamed NOTES TODO.
+
+
+------------------------------------------------------------------------

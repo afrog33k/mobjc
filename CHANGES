@@ -1,3 +1,33 @@
+-- Version 0.5.0.0 (r56) ----
+
+* Methods that start with a lower case letter are now automagically registered with Cocoa.
+* Cache the buffers used by libffi. This aproximately doubles the speed of the slow path.
+* The ivar setter now releases the old value and retains the new value.
+* Renamed NSObject::CreateNative AllocNative because the caller assumes ownership 
+  of the result.
+* Removed NSObject::Create (there's no real point to this method because it just 
+   created an instance of the root NSObject).
+* Added NSObject::Retain to allow clients to retain objects with covariant returns 
+   (mcocoa used to declare retain methods for this, but that caused problems with 
+   exported types because the Registrar thought the types were overriding retain).
+* Added a static NSObject::Class property to return the root NSObject class (and to be
+   consistent with the NSObject derived classes in mcocoa).
+* Cleaned up pointer marshaling:
+    - If the native type is a char* or a unichar* you now must pass in null or an IntPtr:
+      System.String will no longer be auto-marshaled to or from const char buffers.
+    - There is no longer a special case for float arrays: instead higher level code must
+      pass in an IntPtr. 
+    - Marshaling of arbitrary arrays and of unions should work (as long as you pass in 
+      null or an IntPtr).
+* Cleaned up struct marshaling:
+    - There is now a better exception if null is passed in.
+    - An exception is now thrown if the managed and native structs do not match.
+* If an exception is thrown while trying to register an exported method Registrar will
+  now include the class and method name in the exception message.
+* Fixed the NSObject IntPtr conversion operator so that it works with null objects.
+* Fixed the To method so it no longer sometimes throws a NRE and has a better
+   exception message for one of the cases.
+
 -- Version 0.4.0.0 (r40) ----
 
 * Renamed IVar IBOutlet.

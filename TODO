@@ -2,17 +2,17 @@ set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-cons
 
 mono ../mono-tools/gendarme/bin/gendarme.exe --config ../mono-tools/gendarme/rules/rules.xml --html tmp.html bin/mobjc.dll
 
-* Release checklist:
-	- make sure everything is checked in
-	- use svn log -r 1:HEAD > CHANGE_LOG	 dd
-	- update CHANGES file
-	- update version number
-	- remove build_num file 
-	- install
-	- update README and wiki (discussion on Native usage should mention fast path)
-	- upload a new version to googlecode
-	- send an announcement
-	- make sure everything is checked in
+	/Users/jessejones/Source/mono-tools/gendarme/rules/Gendarme.Rules.Portability/MoMAWebService.cs(≈39)
+
+		public NSRange Balance(string text, NSRange range)
+
+	unbalanced (foo (bar)
+	
+	zero length () thing
+	
+* Don't use that silly -------- Outer Exception -------- custom code.
+* Might want to enable the gendarme smells.
+* Need to always generate response files.
 * Should be able to call arbitrary .net code from native code.
 * Experiment with using the native GC:
 	- mono doesn't seem to be able to p/invoke dll's compiled with -fobjc-gc-only...
@@ -24,16 +24,16 @@ mono ../mono-tools/gendarme/bin/gendarme.exe --config ../mono-tools/gendarme/rul
 	- get rid of NSObject::Create
 	- get rid of the doRetain ctors
 	- get rid of retaincount
-	- nsobject should probably not be disposable	IDisposable
+	- nsobject should probably not be disposable	IList
 	- look at memory unit tests
 	- look at app memory test
 
-	static NSCountedSet* s_objects = nil;
+	static NSCountedSet* s_objects = nil;		ISerializable	string
 	static NSLock* s_lock = nil;
 	
 	void InitGC()
 	{
-		s_objects = [[NSCountedSet alloc] initWithCapacity:100];
+		s_objects = [[NSCountedSet alloc] initWithCapacity:100];	StringBuilder
 		s_lock = [[NSLock alloc] init];
 	}
 	
@@ -79,9 +79,10 @@ mono ../mono-tools/gendarme/bin/gendarme.exe --config ../mono-tools/gendarme/rul
 	- use svn log -r 1:HEAD > CHANGE_LOG
 	- update CHANGES file
 	- update version number
-	- remove build_num file 
+	- remove build_num file
+	- build debug 
 	- install
-	- update README and wiki (discussion on Native usage should mention fast path)
+	- update README and wiki
 	- upload a new version to googlecode
 	- send an announcement
 	- make sure everything is checked in
