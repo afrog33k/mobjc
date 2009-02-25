@@ -20,7 +20,7 @@ INSTALL_DIR ?= /usr/local
 
 # ------------------
 # Internal variables
-dummy1 := $(shell mkdir bin 2> /dev/null)			
+dummy1 := $(shell mkdir bin 2> /dev/null)
 dummy2 := $(shell if [[ "$(CSC_FLAGS)" != `cat bin/csc_flags 2> /dev/null` ]]; then echo "$(CSC_FLAGS)" > bin/csc_flags; fi)
 dummy3 := $(shell if [[ "$(GCC_FLAGS)" != `cat bin/gcc_flags 2> /dev/null` ]]; then echo "$(GCC_FLAGS)" > bin/gcc_flags; fi)
 
@@ -53,7 +53,7 @@ test: bin/tests.dll bin/mobjc-glue.dylib
 # TODO: if mono ever ships an nunit that isn't a thousand years old we can
 # use -run instead of -fixture which is a bit more flexible.
 test1: bin/tests.dll bin/mobjc-glue.dylib
-	cd bin && "$(NUNIT)" -nologo -fixture=$(TEST1) tests.dll 
+	cd bin && "$(NUNIT)" -nologo -fixture=$(TEST1) tests.dll
 
 app: libs
 	cd sample && make app
@@ -67,15 +67,21 @@ bin/mobjc.dll: keys bin/csc_flags source/*.cs
 	@./gen_version.sh $(version) source/AssemblyVersion.cs
 	$(CSC) -out:bin/mobjc.dll $(CSC_FLAGS) -keyfile:keys -target:library source/*.cs
 
-bin/mobjc-glue.dylib: bin/gcc_flags glue/*.m
-	$(GCC) -o bin/mobjc-glue.dylib $(GCC_FLAGS) -framework Foundation -dynamiclib -l$(ffi_lib) -I $(ffi_include) glue/*.m
+bin/mobjc-glue-ppc.dylib: bin/gcc_flags glue/*.m
+	$(GCC) -o bin/mobjc-glue-ppc.dylib $(GCC_FLAGS) -arch ppc -framework Foundation -dynamiclib -l$(ffi_lib) -I $(ffi_include) glue/*.m
+
+bin/mobjc-glue-i386.dylib: bin/gcc_flags glue/*.m
+	$(GCC) -o bin/mobjc-glue-i386.dylib $(GCC_FLAGS) -arch i386 -framework Foundation -dynamiclib -l$(ffi_lib) -I $(ffi_include) glue/*.m
+
+bin/mobjc-glue.dylib: bin/mobjc-glue-ppc.dylib bin/mobjc-glue-i386.dylib
+	lipo -create -output bin/mobjc-glue.dylib bin/mobjc-glue-ppc.dylib bin/mobjc-glue-i386.dylib
 
 bin/tests.dll: bin/csc_flags bin/mobjc.dll test/*.cs
 	$(CSC) -out:bin/tests.dll $(CSC_FLAGS) -pkg:mono-nunit -r:bin/mobjc.dll -target:library test/*.cs
 
 # ------------------
 # Misc targets
-keys: 
+keys:
 	sn -k keys
 	
 smokey_flags := --not-localized -set:naming:jurassic
