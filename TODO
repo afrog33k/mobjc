@@ -9,7 +9,8 @@ mono ../mono-tools/gendarme/bin/gendarme.exe --config ../mono-tools/gendarme/rul
 	unbalanced (foo (bar)
 	
 	zero length () thing
-	
+
+* Need to set PKG_CONFIG_PATH to /usr/lib/pkgconfig
 * Don't use that silly -------- Outer Exception -------- custom code.
 * Might want to enable the gendarme smells.
 * Need to always generate response files.

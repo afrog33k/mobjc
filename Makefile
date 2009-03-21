@@ -5,7 +5,7 @@ CSC ?= gmcs
 GCC ?= gcc
 NUNIT ?= nunit-console2
 MONO ?= mono
-GENDARME ?= /usr/local/bin/gendarme/gendarme.exe
+GENDARME ?= /usr/bin/gendarme/gendarme.exe
 
 ifdef RELEASE
 	# Note that -debug+ just generates an mdb file.
@@ -16,7 +16,7 @@ else
 	GCC_FLAGS ?= -ggdb -Wall -Werror -D DEBUG
 endif
 
-INSTALL_DIR ?= /usr/local
+INSTALL_DIR ?= /usr
 
 # ------------------
 # Internal variables
@@ -32,7 +32,7 @@ export version
 # use the libffi that ships with leopard
 ffi_include := /usr/include
 ffi_lib := ffi
-#ffi_include := /usr/local/lib/libffi-3.0.5/include	# the newer libffi
+#ffi_include := /usr/lib/libffi-3.0.5/include	# the newer libffi
 #ffi_lib := ffi.5
 
 pkg_config_dir := $(INSTALL_DIR)/lib/pkgconfig
