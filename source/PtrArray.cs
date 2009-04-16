@@ -19,6 +19,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using MObjc.Helpers;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -32,7 +33,7 @@ namespace MObjc
 		public PtrArray(int count)
 		{
 			Trace.Assert(count >= 0, "count is negative");
-				
+			
 			m_array = Marshal.AllocHGlobal(count * Marshal.SizeOf(typeof(IntPtr)));
 			m_count = count;
 		}
@@ -41,7 +42,7 @@ namespace MObjc
 		{
 			Trace.Assert(count >= 0, "count is negative");
 			Trace.Assert(array != IntPtr.Zero, "array is nil");	// always require an array (simplifies error checking)
-				
+			
 			m_array = array;
 			m_count = count;
 		}
@@ -67,18 +68,18 @@ namespace MObjc
 				Marshal.WriteIntPtr(m_array, index * Marshal.SizeOf(typeof(IntPtr)), value);
 			}
 		}
- 
- 		public static explicit operator IntPtr(PtrArray value) 
+		
+		public static explicit operator IntPtr(PtrArray value)
 		{
-			if (value.m_array == IntPtr.Zero)							
+			if (value.m_array == IntPtr.Zero)	
 				throw new ArgumentException("array is null");
-
+			
 			return value.m_array;
 		}
 		
 		public void Free()
 		{
-			if (m_array != IntPtr.Zero)							
+			if (m_array != IntPtr.Zero)
 			{
 				for (int i = 0; i < m_count; ++i)
 					Marshal.FreeHGlobal(this[i]);
@@ -87,16 +88,16 @@ namespace MObjc
 				m_array = IntPtr.Zero;
 			}
 		}
-												
+		
 		public void FreeBuffer()
 		{
-			if (m_array != IntPtr.Zero)							
-			{				
+			if (m_array != IntPtr.Zero)
+			{
 				Marshal.FreeHGlobal(m_array);
 				m_array = IntPtr.Zero;
 			}
 		}
-												
+		
 		private IntPtr m_array;
 		private int m_count;
 	}

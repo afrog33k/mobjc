@@ -23,8 +23,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace MObjc
-{			
+namespace MObjc.Helpers
+{
 	// Compacting list of System.WeakReference<T>.
 	public sealed class WeakList<T> where T : class		// thread safe
 	{
@@ -44,7 +44,7 @@ namespace MObjc
 				{
 					if (m_list.Count >= m_capacity)
 						DoCompact();
-
+					
 					m_list.Add(new WeakReference(o));
 				}
 			}
@@ -57,7 +57,7 @@ namespace MObjc
 			lock (m_lock)
 			{
 				elements = new List<T>(m_list.Count);
-
+				
 				foreach (WeakReference wr in m_list)
 				{
 					T o = (T) wr.Target;

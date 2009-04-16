@@ -19,6 +19,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using MObjc.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,7 +31,7 @@ namespace MObjc
 {
 	internal sealed class SignatureInfo
 	{
-		public SignatureInfo(IntPtr sig) 
+		public SignatureInfo(IntPtr sig)
 		{
 			Trace.Assert(sig != IntPtr.Zero, "sig is nil");
 			
@@ -39,7 +40,7 @@ namespace MObjc
 			IntPtr buffer = DirectCalls.Callp(sig, methodReturnType, ref exception);
 			if (exception != IntPtr.Zero)
 				CocoaException.Raise(exception);
-
+			
 			m_return = Marshal.PtrToStringAnsi(buffer);
 			
 			// Get the number of arguments.
@@ -54,11 +55,11 @@ namespace MObjc
 				buffer = DirectCalls.Callpi(sig, getArgumentTypeAtIndex, i, ref exception);
 				if (exception != IntPtr.Zero)
 					CocoaException.Raise(exception);
-	
+				
 				m_args[i] = Marshal.PtrToStringAnsi(buffer);
 			}
 		}
-				
+		
 		public string GetReturnEncoding()
 		{
 			return m_return;
@@ -70,7 +71,7 @@ namespace MObjc
 		}
 		
 		public string GetArgEncoding(int index)	
-		{			
+		{
 			return m_args[index];
 		}
 		
@@ -82,14 +83,14 @@ namespace MObjc
 			
 			foreach (string arg in m_args)
 				result.Append(arg);
-								
+			
 			return result.ToString();
 		}
-						
+		
 		private static readonly Selector getArgumentTypeAtIndex = new Selector("getArgumentTypeAtIndex:");
 		private static readonly Selector methodReturnType = new Selector("methodReturnType");
 		private static readonly Selector numberOfArguments = new Selector("numberOfArguments");
-
+		
 		private string m_return;
 		private string[] m_args;
 	}
@@ -98,11 +99,11 @@ namespace MObjc
 	internal sealed class MethodSignature : IEquatable<MethodSignature>
 	{
 		public MethodSignature(string encoding) 
-		{		
+		{
 			Trace.Assert(!string.IsNullOrEmpty(encoding), "encoding is null or empty");
 			m_info = DoEncodingToSig(encoding);	
 		}
-				
+		
 		public MethodSignature(IntPtr target, IntPtr selector) 
 		{
 			Trace.Assert(target != IntPtr.Zero, "target is nil");
@@ -112,7 +113,7 @@ namespace MObjc
 			if (m_info == null)
 				m_info = DoInstanceSelectorToSig(target, selector);	
 		}
-				
+		
 		public string GetReturnEncoding()
 		{
 			return m_info.GetReturnEncoding();
@@ -125,7 +126,7 @@ namespace MObjc
 		}
 		
 		public string GetArgEncoding(int index)	
-		{					
+		{
 			return m_info.GetArgEncoding(index);
 		}
 		
@@ -133,21 +134,21 @@ namespace MObjc
 		{
 			return m_info.ToString();
 		}
-				
+		
 		public override bool Equals(object rhsObj)
 		{
-			if (rhsObj == null)         
+			if (rhsObj == null)
 				return false;
 			
 			MethodSignature rhs = rhsObj as MethodSignature;
 			return this == rhs;
 		}
-			
-		public bool Equals(MethodSignature rhs)   
+		
+		public bool Equals(MethodSignature rhs)
 		{
 			return this == rhs;
 		}
-	
+		
 		public static bool operator==(MethodSignature lhs, MethodSignature rhs)
 		{
 			if (object.ReferenceEquals(lhs, rhs))
@@ -187,9 +188,9 @@ namespace MObjc
 			
 			return hash;
 		}
-    
+		
 		private static SignatureInfo DoEncodingToSig(string encoding)
-		{		
+		{
 			SignatureInfo info;
 			
 			lock (ms_lock)
@@ -197,7 +198,7 @@ namespace MObjc
 				if (!ms_encodedTable.TryGetValue(encoding, out info))	
 				{
 					Class klass = new Class("NSMethodSignature");
-
+					
 					IntPtr exception = IntPtr.Zero;
 					IntPtr instance = DirectCalls.Callpp(klass, signatureWithObjCTypes, Marshal.StringToHGlobalAnsi(encoding), ref exception);
 					if (exception != IntPtr.Zero)
@@ -254,9 +255,9 @@ namespace MObjc
 			
 			return info;
 		}
-
+		
 		private static SignatureInfo DoInstanceSelectorToSig(IntPtr target, IntPtr selector)
-		{			
+		{
 			IntPtr exception = IntPtr.Zero;
 			IntPtr instance = DirectCalls.Callpp(target, methodSignatureForSelector, selector, ref exception);
 			if (exception != IntPtr.Zero)
@@ -267,7 +268,7 @@ namespace MObjc
 				string cn = new NSObject(target).class_().Name;
 				string sn = new Selector(selector).Name;
 				throw new InvalidCallException(string.Format("Couldn't find the method signature for {0} {1}", cn, sn));
-			}				
+			}
 			
 			return new SignatureInfo(instance);
 		}
@@ -276,7 +277,7 @@ namespace MObjc
 		private static Dictionary<string, SignatureInfo> ms_encodedTable = new Dictionary<string, SignatureInfo>();
 		private static Dictionary<KeyValuePair<IntPtr, IntPtr>, SignatureInfo> ms_selectorTable = new Dictionary<KeyValuePair<IntPtr, IntPtr>, SignatureInfo>();
 		private static object ms_lock = new object();
-
+		
 		private static readonly Selector klass = new Selector("class");
 		private static readonly Selector instanceMethodSignatureForSelector = new Selector("instanceMethodSignatureForSelector:");
 		private static readonly Selector signatureWithObjCTypes = new Selector("signatureWithObjCTypes:");

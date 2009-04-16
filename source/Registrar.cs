@@ -19,6 +19,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using MObjc.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -27,7 +28,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 namespace MObjc
-{	
+{
 	// Iterates through all types in the loaded assemblies and handles any that
 	// are marked with ExportClassAttribute or RegisterAttribute.
 	[DisableRuleAttribute("C1026", "NoStaticRemove")]
@@ -43,7 +44,7 @@ namespace MObjc
 				NSObject pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
 				
 				DoInit();
-		
+				
 				// NSAutoreleasePool cannot be used within Posix threads unless Cocoa
 				// is switched to "multithreading mode". We always have at least two
 				// threads (the main thread and the finalizer thread) so we'll switch
@@ -51,7 +52,7 @@ namespace MObjc
 				Selector selector = new Selector("foo");
 				NSObject thread = new Class("NSThread").Call("alloc").Call("initWithTarget:selector:object:", null, selector, null).To<NSObject>();
 				Unused.Value = thread.Call("start");
-		
+				
 				ms_inited = true;
 				pool.release();
 			}
@@ -68,13 +69,13 @@ namespace MObjc
 			get {return ms_canInit;}
 			set {ms_canInit = value;}
 		}
-
+		
 		internal static bool TryGetType(string name, out Type type)
 		{
 			return ms_typeNames.TryGetValue(name, out type);
 		}
-
-		#region Private Methods -----------------------------------------------
+		
+		#region Private Methods
 		private static void DoInit()
 		{
 			DoValidateTypes();
@@ -87,7 +88,7 @@ namespace MObjc
 					ExportClassAttribute attr = Attribute.GetCustomAttribute(type, typeof(ExportClassAttribute), false) as ExportClassAttribute;
 					if (attr != null)
 						exports.Add(new ClassEntry(type, attr));
-
+					
 					RegisterAttribute attr2 = Attribute.GetCustomAttribute(type, typeof(RegisterAttribute), false) as RegisterAttribute;
 					if (attr2 != null)
 					{
@@ -148,13 +149,13 @@ namespace MObjc
 						throw new ArgumentException(string.Format("Couldn't add outlet {0} to {1}. Is there already an outlet with that name?", ivname, name));
 				}
 			}
-
+			
 			foreach (MethodInfo info in type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)) 
 			{
 				if (!info.IsSpecialName && info.DeclaringType.Name != "NSObject")
 				{
 					RegisterAttribute attr = Attribute.GetCustomAttribute(info, typeof(RegisterAttribute), false) as RegisterAttribute;
-					if (attr != null) 
+					if (attr != null)
 					{
 						DoAddMethod(name, info, attr.Name ?? info.Name, klass, superClass);
 					}
@@ -162,19 +163,19 @@ namespace MObjc
 					{
 						if (info.GetParameters().Length == 0)
 							DoAddMethod(name, info, info.Name, klass, superClass);
-
+						
 						else if (info.GetParameters().Length == 1)
 							DoAddMethod(name, info, info.Name + ":", klass, superClass);
-
+						
 						else if (info.GetParameters().Length >= 2 && info.Name.Contains("_"))
 							DoAddMethod(name, info, info.Name.Replace('_', ':') + ":", klass, superClass);
 					}
 				}
 			}
-
+			
 			MethodInfo info2 = typeof(NSObject).GetMethod("OnDealloc", BindingFlags.Instance | BindingFlags.NonPublic);
 			DoAddMethod(name, info2, "dealloc", klass, superClass);
-
+			
 			RegisterClass(klass, ref exception);
 			if (exception != IntPtr.Zero)
 				CocoaException.Raise(exception);
@@ -185,13 +186,13 @@ namespace MObjc
 		{
 			ManagedImp mimp = null;
 			int result = 0;
- 			Selector selector = new Selector(selName);
- 			
+			Selector selector = new Selector(selName);
+			
 			try
 			{
 				string encoding = DoGetEncoding(info);
 				Managed method = new Managed(info, encoding);
-				mimp = method.Call;					
+				mimp = method.Call;
 				
 				IntPtr cif = DoCreateCif(info);
 				result = AddMethod(superClass, klass, (IntPtr) selector, encoding, mimp, cif);
@@ -206,21 +207,21 @@ namespace MObjc
 					throw new ArgumentException(string.Format("Couldn't add {0}::{1}. Is the method already defined?", name, selector.Name));
 				else
 					throw new ArgumentException(string.Format("Couldn't create a closure for {0}::{1} ({2})", name, selector.Name, result));
-
+			
 			ms_imps.Add(mimp);
 		}
 		
 		private static IntPtr DoCreateCif(MethodInfo info)
 		{
 			IntPtr resultType = Ffi.GetFfiType(info.ReturnType);
-
+			
 			ParameterInfo[] parms = info.GetParameters();
 			int numArgs = parms.Length;
 			
 			PtrArray argTypes = new PtrArray(numArgs + 3);
 			argTypes[0] = Ffi.GetFfiType(typeof(NSObject));
 			argTypes[1] = Ffi.GetFfiType(typeof(Selector));
-
+			
 			for (int i = 0; i < numArgs; ++i)
 			{
 				Type type = parms[i].ParameterType;
@@ -231,7 +232,7 @@ namespace MObjc
 			
 			return Ffi.AllocCif(resultType, argTypes);		// note that we don't want to free argTypes
 		}
-
+		
 		private static string DoGetEncoding(MethodInfo info)
 		{
 			StringBuilder sig = new StringBuilder();
@@ -245,7 +246,7 @@ namespace MObjc
 				s = TypeEncoder.Encode(param.ParameterType);
 				sig.Append(s);
 			}
-						
+			
 			return sig.ToString();
 		}
 		
@@ -259,7 +260,7 @@ namespace MObjc
 				}
 			}
 		}
-
+		
 		private static void DoValidateType(Type type)
 		{
 			foreach (MethodInfo info in type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)) 
@@ -270,32 +271,32 @@ namespace MObjc
 					if (!typeof(NSObject).IsAssignableFrom(type))
 						throw new ArgumentException(string.Format("{0} uses ExportClassAttribute, but does not descend from NSObject.", type));
 				}
-
+				
 				DoValidateMethod(type, info);
 			}
 		}
-
+		
 		private static void DoValidateMethod(Type type, MethodInfo info)
 		{
 			ExportClassAttribute klassAttr = Attribute.GetCustomAttribute(type, typeof(ExportClassAttribute), false) as ExportClassAttribute;
 			RegisterAttribute methodAttr = Attribute.GetCustomAttribute(info, typeof(RegisterAttribute), false) as RegisterAttribute;
-
+			
 			if (klassAttr != null)
 			{
 			}
 			else
 			{
-				if (methodAttr != null) 
-				{					
+				if (methodAttr != null)
+				{
 					throw new ArgumentException(string.Format("{0} uses RegisterAttribute, but not ExportClassAttribute.", type));
 				}
 			}
 		}
 		#endregion
 		
-		#region Private Types -------------------------------------------------
+		#region Private Types
 		private sealed class ClassEntry : IEquatable<ClassEntry>
-		{        
+		{
 			public ClassEntry(Type type, ExportClassAttribute attr)
 			{
 				Type = type;
@@ -309,7 +310,7 @@ namespace MObjc
 			public Type Type {get; private set;}
 			
 			public ExportClassAttribute Attr {get; private set;}
-						
+			
 			public static bool LeftDerivesFromRight(ClassEntry lhs, ClassEntry rhs)
 			{
 				if (lhs.Attr.BaseName == rhs.Attr.DerivedName) 
@@ -323,21 +324,21 @@ namespace MObjc
 					
 				return false;
 			}
-		 
+			
 			public override bool Equals(object rhsObj)
 			{
-				if (rhsObj == null)           
+				if (rhsObj == null)
 					return false;
 				
 				ClassEntry rhs = rhsObj as ClassEntry;
 				return this == rhs;
 			}
-				
-			public bool Equals(ClassEntry rhs)    
+			
+			public bool Equals(ClassEntry rhs)
 			{
 				return this == rhs;
 			}
-		
+			
 			public static bool operator==(ClassEntry lhs, ClassEntry rhs)
 			{
 				if (object.ReferenceEquals(lhs, rhs))
@@ -353,7 +354,7 @@ namespace MObjc
 			{
 				return !(lhs == rhs);
 			}
-    
+			
 			public override int GetHashCode()
 			{
 				int hash;
@@ -365,28 +366,28 @@ namespace MObjc
 				
 				return hash;
 			}
-
+			
 			private ClassEntry Base {get; set;}
 		}
-
+		
 		private delegate IntPtr ManagedImp(IntPtr dummy, IntPtr result, IntPtr args);
 		#endregion
 		
-		#region P/Invokes -----------------------------------------------------
-		[DllImport("mobjc-glue.dylib")] 
+		#region P/Invokes
+		[DllImport("mobjc-glue.dylib")]
 		private extern static IntPtr CreateClass(IntPtr superClass, string name, ref IntPtr exception);
 
-		[DllImport("mobjc-glue.dylib")] 
+		[DllImport("mobjc-glue.dylib")]
 		private extern static void RegisterClass(IntPtr klass, ref IntPtr exception);
 		
-		[DllImport("mobjc-glue.dylib")] 
+		[DllImport("mobjc-glue.dylib")]
 		private extern static int AddMethod(IntPtr superClass, IntPtr klass, IntPtr selector, string sig, ManagedImp imp, IntPtr cif);
 		
 		[DllImport("/usr/lib/libobjc.dylib")]		// use IntPtr for size because size_t has the same size as a pointer
 		private extern static byte class_addIvar(IntPtr cls, string name, IntPtr size, byte alignment, string encoding);
 		#endregion
-
-		#region Fields --------------------------------------------------------
+		
+		#region Fields
 		private static bool ms_canInit;
 		private static Dictionary<string, Type> ms_typeNames = new Dictionary<string, Type>();
 		private static Dictionary<Type, string> ms_classNames = new Dictionary<Type, string>();

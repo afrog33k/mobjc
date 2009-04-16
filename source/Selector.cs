@@ -19,6 +19,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using MObjc.Helpers;
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -37,7 +38,7 @@ namespace MObjc
 				
 			m_selector = sel_registerName(name);
 			m_name = name;
-
+			
 			if (m_selector == IntPtr.Zero)
 				throw new ArgumentException(name + " is not a known selector");
 		}
@@ -47,11 +48,11 @@ namespace MObjc
 			Trace.Assert(selector != IntPtr.Zero, "selector is nil");
 			
 			m_selector = selector;
-
+			
 			IntPtr ptr = sel_getName(m_selector);
 			m_name = Marshal.PtrToStringAnsi(ptr);
 		}
-				
+		
 		public string Name
 		{
 			get {return m_name;}
@@ -61,32 +62,32 @@ namespace MObjc
 		{
 			return value != null ? value.m_selector : IntPtr.Zero;
 		}
-	
+		
 		// Need this for languages like VB that don't support operator overloading.
 		public static IntPtr ToIntPtrType(Selector value)
 		{
 			return value != null ? value.m_selector : IntPtr.Zero;
 		}
-    
- 		public override string ToString()
+		
+		public override string ToString()
 		{
 			return m_name;
 		}
-						
+		
 		public override bool Equals(object rhsObj)
 		{
-			if (rhsObj == null)    
+			if (rhsObj == null)
 				return false;
 			
 			Selector rhs = rhsObj as Selector;
 			return this == rhs;
 		}
-			
-		public bool Equals(Selector rhs)  
+		
+		public bool Equals(Selector rhs)
 		{
 			return this == rhs;
 		}
-	
+		
 		public static bool operator==(Selector lhs, Selector rhs)
 		{
 			if (object.ReferenceEquals(lhs, rhs))
@@ -107,8 +108,8 @@ namespace MObjc
 		{
 			return m_name.GetHashCode();
 		}
-
-		#region Selectors -----------------------------------------------------
+		
+		#region Selectors
 		internal static readonly Selector Alloc = new Selector("alloc");
 		internal static readonly Selector Autorelease = new Selector("autorelease");
 		internal static readonly Selector Class = new Selector("class");
@@ -122,16 +123,16 @@ namespace MObjc
 		internal static readonly Selector SuperClass = new Selector("superclass");
 		internal static readonly Selector UTF8String = new Selector("UTF8String");
 		#endregion
-
-		#region P/Invokes -----------------------------------------------------
- 		[DllImport("/usr/lib/libobjc.dylib")]
+		
+		#region P/Invokes
+		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr sel_registerName(string name);
-
-   		[DllImport("/usr/lib/libobjc.dylib")]
+		
+		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr sel_getName(IntPtr selector);
 		#endregion
 		
-		#region Fields --------------------------------------------------------
+		#region Fields
 		private IntPtr m_selector;
 		private string m_name;
 		#endregion

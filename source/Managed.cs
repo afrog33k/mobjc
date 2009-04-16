@@ -19,6 +19,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using MObjc.Helpers;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -49,9 +50,9 @@ namespace MObjc
 			Unused.Value = dummy;
 			
 			IntPtr exception = IntPtr.Zero;
-	
+			
 			try
-			{			
+			{
 				// Get the this pointer for the method we're calling.
 				PtrArray argArray = new PtrArray(argBuffers, m_signature.GetNumArgs() + 2);
 				NSObject instance = (NSObject) Ffi.DrainBuffer(argArray[0], "@");
@@ -78,7 +79,7 @@ namespace MObjc
 					else if (ptype != typeof(NSObject) && typeof(NSObject).IsAssignableFrom(ptype))
 					{
 						IntPtr ip = (IntPtr) (NSObject) args[i];
-
+						
 						args[i] = NSObject.Lookup(ip);
 						if (args[i] == null && ip != IntPtr.Zero)
 							throw new InvalidCallException(string.Format("Couldn't create a {0} when calling {1}. Is {0} registered or exported?", ptype, m_info.Name));
@@ -88,7 +89,7 @@ namespace MObjc
 					if (args[i] != null && !ptype.IsAssignableFrom(args[i].GetType()))
 						throw new InvalidCallException(string.Format("Expected a {0} when calling {1} but have a {2}.", ptype, m_info.Name, args[i].GetType()));
 				}
-			
+				
 				// Call the method,
 				object value = m_info.Invoke(instance, args);
 				
@@ -124,7 +125,7 @@ namespace MObjc
 			return exception;
 		}
 		
-		#region Private Methods -----------------------------------------------
+		#region Private Methods
 		private void DoLogException(Exception e)
 		{
 			Console.Error.WriteLine("Managed exception: {0}", m_info);
@@ -136,7 +137,7 @@ namespace MObjc
 					Console.Error.WriteLine("-------- {0} Exception --------{1}", ee == e ? "Outer" : "Inner", Environment.NewLine);
 				Console.Error.WriteLine("{0}", ee.Message + Environment.NewLine);
 				Console.Error.WriteLine("{0}", ee.StackTrace + Environment.NewLine);
-
+				
 				ee = ee.InnerException;
 			}
 		}
@@ -144,7 +145,7 @@ namespace MObjc
 		private static NSObject DoCreateNativeException(Exception e)
 		{
 			NSObject native;
-
+			
 			IntPtr nameBuffer = Marshal.StringToHGlobalAuto(e.GetType().ToString());
 			IntPtr reasonBuffer = Marshal.StringToHGlobalAuto(e.Message);
 			IntPtr keyBuffer = Marshal.StringToHGlobalAuto(".NET exception");
@@ -179,7 +180,7 @@ namespace MObjc
 					Console.Error.WriteLine(ee.StackTrace);
 					Console.Error.Flush();
 				}
-	
+				
 				// Create the NSException.
 				native = (NSObject) new Class("NSException").Call("exceptionWithName:reason:userInfo:", name, reason, userInfo);
 			}
@@ -191,13 +192,13 @@ namespace MObjc
 				
 				if (handle.IsAllocated)
 					handle.Free();
- 			}
+			}
 			
 			return native;
 		}
 		#endregion
 		
-		#region Fields --------------------------------------------------------
+		#region Fields
 		private MethodInfo m_info;
 		private MethodSignature m_signature;
 		#endregion

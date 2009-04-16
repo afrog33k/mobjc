@@ -19,13 +19,14 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using MObjc.Helpers;
 using System;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 
 namespace MObjc
-{			
+{
 	[Serializable]
 	public sealed class AssertException : Exception
 	{
@@ -33,11 +34,11 @@ namespace MObjc
 		public AssertException()
 		{
 		}
-
+		
 		public AssertException(string text) : base(text) 
 		{
 		}
-
+		
 		public AssertException(string text, Exception inner) : base (text, inner)
 		{
 		}
@@ -65,12 +66,12 @@ namespace MObjc
 				ms_installed = true;
 			}
 		}
-				
+		
 		public override void Fail(string message)
 		{
 			throw new AssertException(message);
 		}
-	
+		
 		public override void Fail(string message, string details)
 		{
 			if (string.IsNullOrEmpty(details))
@@ -78,17 +79,17 @@ namespace MObjc
 			else
 				throw new AssertException(message + " --- " + details);
 		}
-	
+		
 		public override void Write(string message)
 		{
 			// need to override this, but we don't want to do anything
 		}
-	
+		
 		public override void WriteLine(string message)
 		{
 			// need to override this, but we don't want to do anything
 		}
-	
+		
 		private static bool ms_installed;
 	}
 }

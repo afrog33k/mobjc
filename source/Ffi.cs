@@ -20,23 +20,24 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // See <http://developer.apple.com/documentation/Cocoa/Conceptual/ObjectiveC/Articles/chapter_13_section_9.html#//apple_ref/doc/uid/TP30001163-CH9-TPXREF165>.
+using MObjc.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace MObjc
-{	
+{
 	[DisableRuleAttribute("C1026", "NoStaticRemove")]
-	internal static class Ffi 	
-	{					
+	internal static class Ffi
+	{
 		// Return an ffi_type* which will be used when values of the encoding
 		// type are marshaled through libffi.
 		public static IntPtr GetFfiType(string encoding)
-		{			
+		{
 			return DoGetFfiType(encoding);
 		}
-
+		
 		// Return an ffi_type* which will be used when values of the encoding
 		// type are marshaled through libffi.
 		public static IntPtr GetFfiType(Type type)
@@ -49,7 +50,7 @@ namespace MObjc
 		// pointer so we can't free it (and we can't use an IntPtr[] without explicity
 		// saving the array).
 		public static IntPtr AllocCif(IntPtr rtype, PtrArray atypes)
-		{						
+		{
 			if (atypes[atypes.Length - 1] != IntPtr.Zero)
 				throw new ArgumentException("atypes should be null terminated");
 				
@@ -59,7 +60,7 @@ namespace MObjc
 				throw new ArgumentException("FFI_BAD_TYPEDEF");
 			else if (cif.ToInt32() == 2)
 				throw new ArgumentException("FFI_BAD_ABI");
-							
+			
 			return cif;
 		}
 		
@@ -80,24 +81,24 @@ namespace MObjc
 		{
 			DoFillBuffer(buffer, value, encoding);
 		}
-	
+		
 		// Call imp where args points to buffers containing the arguments and result
 		// is a buffer where the result will be written. 
 		public static void Call(IntPtr cif, IntPtr imp, IntPtr result, PtrArray args)
 		{
 			IntPtr exception = IntPtr.Zero;
-
+			
 			FfiCall(cif, imp, result, (IntPtr) args, ref exception);
-
+			
 			if (exception != IntPtr.Zero)
-				CocoaException.Raise(exception);				
+				CocoaException.Raise(exception);
 		}
-	
+		
 		// Reads and returns the value stored in buffer according to encoding.
 		public static object DrainBuffer(IntPtr buffer, string encoding)
 		{
 			object r = DoDrainArgBuffer(buffer, encoding);
-
+			
 			return r;
 		}
 		
@@ -107,16 +108,16 @@ namespace MObjc
 		public static object DrainReturnBuffer(IntPtr buffer, string encoding)
 		{
 			object r = DoDrainReturnBuffer(buffer, encoding);
-
+			
 			return r;
 		}
 		
-		#region Private Methods -----------------------------------------------
+		#region Private Methods
 		[DisableRuleAttribute("P1003", "AvoidBoxing")]
 		private static object DoDrainBuffer(IntPtr buffer, string encoding)
 		{
 			object result;
-						
+			
 			switch (encoding)
 			{
 				case "i":
@@ -155,31 +156,31 @@ namespace MObjc
 				case "Vv":
 					result = null;
 					break;
-										
+				
 				case "@":
 					IntPtr ip = Marshal.ReadIntPtr(buffer);
 					result = NSObject.Lookup(ip);
 					break;
-
+				
 				case "#":
 					result = new Class(Marshal.ReadIntPtr(buffer));
 					break;
-
+				
 				case ":":
 					result = new Selector(Marshal.ReadIntPtr(buffer));
 					break;
-
+				
 				default:
 					result = DoDrainPtrBuffer(buffer, encoding);
-
+					
 					if (result == null)
 						result = DoDrainStructBuffer(buffer, encoding);
-	
+						
 					if (result == null)
 						throw new ArgumentException("Don't know how to read buffer of: " + encoding);
 					break;
 			}
-						
+			
 			return result;
 		}
 		
@@ -188,31 +189,31 @@ namespace MObjc
 		private static object DoDrainArgBuffer(IntPtr buffer, string encoding)
 		{
 			object result;
-						
+			
 			switch (encoding)
 			{
 				case "c":
 					byte b = Marshal.ReadByte(buffer);
 					result = b == 0 ? false : true;
 					break;
-										
+				
 				case "s":
 					result = Marshal.ReadInt16(buffer);
 					break;
-										
+				
 				case "C":
 					result = Marshal.ReadByte(buffer);
 					break;
-										
+				
 				case "S":
 					result = unchecked((UInt16) Marshal.ReadInt16(buffer));
 					break;
-										
+				
 				default:
 					result = DoDrainBuffer(buffer, encoding);
 					break;
 			}
-						
+			
 			return result;
 		}
 		
@@ -221,49 +222,49 @@ namespace MObjc
 		private static object DoDrainReturnBuffer(IntPtr buffer, string encoding)
 		{
 			object result;
-						
+			
 			switch (encoding)
 			{
 				case "c":
 					result = unchecked((sbyte) Marshal.ReadInt32(buffer));
 					break;
-										
+				
 				case "s":
 					result = unchecked((Int16) Marshal.ReadInt32(buffer));
 					break;
-										
+				
 				case "C":
 					result = unchecked((byte) Marshal.ReadInt32(buffer));
 					break;
-										
+				
 				case "S":
 					result = unchecked((UInt16) Marshal.ReadInt32(buffer));
 					break;
-										
+				
 				default:
 					result = DoDrainBuffer(buffer, encoding);
 					break;
 			}
-						
+			
 			return result;
 		}
 		
 		private static char DoGetEncodingType(string encoding)
 		{
 			char type = encoding[0];
-
+			
 			int i = 0;
 			while (i < encoding.Length && "rnNoORV".IndexOf(type) >= 0)
 				type = encoding[++i];
 				
 			return type;
 		}
-
+		
 		private static object DoDrainPtrBuffer(IntPtr buffer, string encoding)
 		{
 			object result = null;
 			
-			char type = DoGetEncodingType(encoding);			
+			char type = DoGetEncodingType(encoding);
 			if (type == '^' || type == '*' || type == '[' || type == '(')	// xxx*, char*, array, union
 			{
 				result = Marshal.ReadIntPtr(buffer);
@@ -276,13 +277,13 @@ namespace MObjc
 		{
 			object result = null;
 			
-			char type = DoGetEncodingType(encoding);			
+			char type = DoGetEncodingType(encoding);
 			if (type == '{')
 			{
 				int i = encoding.IndexOf('=');
 				if (i >= 0)
 				{
-					string sname = encoding.Substring(1, i - 1);	
+					string sname = encoding.Substring(1, i - 1);
 					Type stype;
 					if (TypeEncoder.TryGetStruct(sname, out stype))
 						result = Marshal.PtrToStructure(buffer, stype);
@@ -301,9 +302,9 @@ namespace MObjc
 			switch (encoding)	
 			{
 				case "c":
-					if (type == typeof(bool))				
+					if (type == typeof(bool))
 						Marshal.WriteByte(buffer, ((bool) value) ? (byte) 1 : (byte) 0);
-					else if (type == typeof(sbyte))				
+					else if (type == typeof(sbyte))
 						Marshal.WriteByte(buffer, unchecked((byte) (sbyte) value));
 					else
 						throw new InvalidCallException(string.Format("Expected a Boolean or SByte but got a {0}.", type));
@@ -317,7 +318,7 @@ namespace MObjc
 					break;
 					
 				case "s":
-					if (type == typeof(Int16))				
+					if (type == typeof(Int16))
 						Marshal.WriteInt16(buffer, (Int16) value);
 					else
 						throw new InvalidCallException(string.Format("Expected an Int16 but got a {0}.", type));
@@ -334,7 +335,7 @@ namespace MObjc
 					
 				case "i":
 				case "l":
-					if (type == typeof(Int32))				
+					if (type == typeof(Int32))
 						Marshal.WriteInt32(buffer, (Int32) value);
 					else
 						throw new InvalidCallException(string.Format("Expected an Int32 but got a {0}.", type));
@@ -347,7 +348,7 @@ namespace MObjc
 					else
 						throw new InvalidCallException(string.Format("Expected a UInt32 but got a {0}.", type));
 					break;
-										
+				
 				case "q":
 					if (type == typeof(Int64))
 						Marshal.WriteInt64(buffer, (Int64) value);
@@ -356,19 +357,19 @@ namespace MObjc
 					break;
 					
 				case "Q":
-					if (type == typeof(UInt64))				
+					if (type == typeof(UInt64))
 						Marshal.WriteInt64(buffer, unchecked((Int64) (UInt64) value));
 					else
 						throw new InvalidCallException(string.Format("Expected a UInt64 but got a {0}.", type));
 					break;
-										
+				
 				case "f":
 					float f = 0.0f;
 					if (type == typeof(float))
 						f = (float) value;
 					else
 						throw new InvalidCallException(string.Format("Expected a float but got a {0}.", type));
-
+					
 					Marshal.StructureToPtr(f, buffer, false);
 					break;
 					
@@ -380,10 +381,10 @@ namespace MObjc
 						d = (double) value;
 					else
 						throw new InvalidCallException(string.Format("Expected a float or double but got a {0}.", type));
-
+					
 					Marshal.StructureToPtr(d, buffer, false);
 					break;
-										
+				
 				case "@":
 					if (value == null)
 					{
@@ -425,46 +426,46 @@ namespace MObjc
 					else
 						throw new InvalidCallException(string.Format("Expected a Selector but got a {0}.", type));
 					break;
-			
+				
 				default:
 					if (!DoFillPtrBuffer(encoding, value, buffer) && !DoFillStructBuffer(encoding, value, buffer))
 						throw new InvalidCallException("Don't know how to marshal " + encoding + " to a native type.");
 					break;
 			}
 		}
-
+		
 		private static bool DoFillPtrBuffer(string encoding, object value, IntPtr buffer)
 		{
 			bool done = false;
 			
-			char type = DoGetEncodingType(encoding);			
+			char type = DoGetEncodingType(encoding);
 			if (type == '^' || type == '*' || type == '[' || type == '(')	// xxx*, char*, array, union
- 			{
- 				if (value == null)
- 				{
- 					Marshal.WriteIntPtr(buffer, IntPtr.Zero);
+			{
+				if (value == null)
+				{
+					Marshal.WriteIntPtr(buffer, IntPtr.Zero);
 					done = true;
- 				}
- 				else if (value.GetType() == typeof(IntPtr))
- 				{
- 					Marshal.WriteIntPtr(buffer, (IntPtr) value);
+				}
+				else if (value.GetType() == typeof(IntPtr))
+				{
+					Marshal.WriteIntPtr(buffer, (IntPtr) value);
 					done = true;
- 				}
- 				else
+				}
+				else
 					// For r^S use Marshal.StringToHGlobalUni(str) or GCHandle.Alloc(value, GCHandleType.Pinned).
 					// For r* use Marshal.StringToHGlobalAuto(str).
 					// For the others you can usually use GCHandle.Alloc(value, GCHandleType.Pinned).
- 					throw new InvalidCallException("Don't know how to marshal " + value.GetType() + " to " + encoding + ".");
- 			}
+					throw new InvalidCallException("Don't know how to marshal " + value.GetType() + " to " + encoding + ".");
+			}
 			
 			return done;
 		}
-
+		
 		private static bool DoFillStructBuffer(string encoding, object value, IntPtr buffer)
 		{
 			bool done = false;
 			
-			char type = DoGetEncodingType(encoding);			
+			char type = DoGetEncodingType(encoding);
 			if (type == '{')
 			{
 				if (value == null)
@@ -473,7 +474,7 @@ namespace MObjc
 				int i = encoding.IndexOf('=');
 				if (i >= 0)
 				{
-					string sname = encoding.Substring(1, i - 1);	
+					string sname = encoding.Substring(1, i - 1);
 					Type stype;
 					if (TypeEncoder.TryGetStruct(sname, out stype))
 					{
@@ -492,14 +493,14 @@ namespace MObjc
 			
 			return done;
 		}
-
+		
 		private static IntPtr DoGetFfiType(string encoding)
 		{
 			char code = DoGetCode(encoding);
-
+		
 			if (code == '\x0')
 			{
-				char t = DoGetEncodingType(encoding);			
+				char t = DoGetEncodingType(encoding);
 				if (t == '{')
 					return DoGetStructFfiType(encoding);
 				else
@@ -512,12 +513,12 @@ namespace MObjc
 			
 			return type;
 		}
-
+		
 		private static IntPtr DoGetStructFfiType(string encoding)
 		{
 			IntPtr result;
-                                            
-			int i = encoding.IndexOf('=');	
+			
+			int i = encoding.IndexOf('=');
 			if (i >= 0)
 			{
 				string sname = encoding.Substring(1, i - 1);
@@ -537,22 +538,22 @@ namespace MObjc
 			
 			return result;
 		}
-
+		
 		private static IntPtr DoAllocStructFfiType(string sname, string pencoding)
-		{			
+		{
 			List<IntPtr> fieldTypes = new List<IntPtr>();
-	
+			
 			int index = 0;
 			while (index < pencoding.Length)
-			{										
-				if (pencoding[index] == '{')		
+			{
+				if (pencoding[index] == '{')	
 				{
-					int i = pencoding.IndexOf('=', index);	
-					int j = pencoding.IndexOf('}', index);	
+					int i = pencoding.IndexOf('=', index);
+					int j = pencoding.IndexOf('}', index);
 					string sname2 = pencoding.Substring(index + 1, i - index - 1);
 					string pencoding2 = pencoding.Substring(i + 1, j - i - 1);
 					fieldTypes.Add(DoAllocStructFfiType(sname2, pencoding2));
-
+					
 					index = j + 1;
 				}
 				else
@@ -560,13 +561,13 @@ namespace MObjc
 					char code = DoGetCode(pencoding[index++].ToString());
 					if (code == '\x0')
 						throw new InvalidCallException("Can only marshal structs whose fields are primitive types or structs with primitive types and " + sname + " isn't.");
-			
+					
 					fieldTypes.Add(GetFfiType(code));
 				}
 			}
 			
 			fieldTypes.Add(IntPtr.Zero);
-						
+			
 			// Note that we don't free these, but that should be OK since
 			// there should only be a limited number of structs we marshal
 			// and it doesn't hurt to cache the ffi_type* anyway.
@@ -575,44 +576,44 @@ namespace MObjc
 				ft[i] = fieldTypes[i];
 				
 			IntPtr result = AllocStructFfiType((IntPtr) ft);
-
+			
 			return result;
 		}
-
+		
 		private static char DoGetCode(string encoding)
 		{
 			char code = '\x0';
 			
 			switch (encoding)
 			{
-				case "c":			
-				case "C":			
-				case "d":			
-				case "f":			
-				case "i":			
-				case "I":			
-				case "l":			
-				case "L":			
-				case "q":			
-				case "Q":			
+				case "c":
+				case "C":
+				case "d":
+				case "f":
+				case "i":
+				case "I":
+				case "l":
+				case "L":
+				case "q":
+				case "Q":
 				case "s":
 				case "S":
 				case "v":
 					code = encoding[0];
 					break;
-														
+				
 				case "@":
 				case "#":
 				case ":":
 					code = 'p';
 					break;
-															
+				
 				case "Vv":
 					code = 'v';
 					break;
-													
+				
 				default:
-					char type = DoGetEncodingType(encoding);			
+					char type = DoGetEncodingType(encoding);
 					if (type == '^' || type == '*' || type == '[' || type == '(')	// xxx*, char*, array, union
 						code = 'p';
 					break;
@@ -620,36 +621,36 @@ namespace MObjc
 			
 			return code;
 		}
-
+		
 		[DisableRule("D1002", "MethodTooComplex")]
 		private static IntPtr DoCreateBuffer(string encoding)
 		{
 			IntPtr buffer;
-
+			
 			switch (encoding)	
 			{
 				case "c":
 				case "C":
 					buffer = Marshal.AllocHGlobal(4);	// note that libffi expects buffers to be at least as big as a word
 					break;
-										
+				
 				case "s":
 				case "S":
 					buffer = Marshal.AllocHGlobal(4);
 					break;
-										
+					
 				case "i":
 				case "I":
 				case "l":
 				case "L":
 					buffer = Marshal.AllocHGlobal(4);
 					break;
-															
+				
 				case "q":
 				case "Q":
 					buffer = Marshal.AllocHGlobal(8);
 					break;
-															
+				
 				case "f":
 					buffer = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(float)));
 					break;
@@ -670,7 +671,7 @@ namespace MObjc
 					break;
 					
 				default:
-					char type = DoGetEncodingType(encoding);			
+					char type = DoGetEncodingType(encoding);
 					if (type == '^' || type == '*' || type == '[' || type == '(')	// xxx*, char*, array, union
 					{
 						buffer = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(IntPtr)));
@@ -697,29 +698,29 @@ namespace MObjc
 						throw new InvalidCallException("Don't know how to marshal " + encoding + " to a native type.");
 					break;
 			}
-						
+			
 			return buffer;
 		}
 		#endregion	
 		
-		#region P/Invokes -----------------------------------------------------
+		#region P/Invokes
 		[DllImport("mobjc-glue.dylib")]
 		internal extern static IntPtr GetFfiType([MarshalAs(UnmanagedType.U1)] char code);
-
+		
 		[DllImport("mobjc-glue.dylib")]
 		internal extern static IntPtr AllocStructFfiType(IntPtr fieldTypes);
-
+		
 		[DllImport("mobjc-glue.dylib")]
 		internal extern static IntPtr AllocCif(int numArgs, IntPtr rtype, IntPtr atypes);
-
+		
 		[DllImport("mobjc-glue.dylib")]
 		internal extern static void FfiCall(IntPtr cif, IntPtr imp, IntPtr result, IntPtr args, ref IntPtr exception);
 
 //		[DllImport("mobjc-glue.dylib")]
 //		internal extern static void FreeStructType(IntPtr type);
 		#endregion
-
-		#region Fields --------------------------------------------------------
+		
+		#region Fields
 		private static Dictionary<string, IntPtr> ms_structs = new Dictionary<string, IntPtr>();
 		private static object ms_lock = new object();
 		#endregion

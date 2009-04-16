@@ -19,13 +19,14 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using MObjc.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 
 namespace MObjc
-{	
+{
 	// http://developer.apple.com/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/chapter_7_section_1.html
 	[DisableRuleAttribute("C1026", "NoStaticRemove")]
 	internal static class TypeEncoder
@@ -102,18 +103,18 @@ namespace MObjc
 				
 			throw new ArgumentException("Don't know how to translate " + type);
 		}
-								
-		#region Private Methods	-----------------------------------------------
+		
+		#region Private Methods
 		private static string DoGetStructEncoding(Type type)
 		{
-			string encoding = "{"; 
+			string encoding = "{";
 			
 			RegisterAttribute attr = Attribute.GetCustomAttribute(type, typeof(RegisterAttribute)) as RegisterAttribute;
 			encoding += attr.Name;
 			encoding += "=";
-
+			
 			FieldInfo[] fields = type.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-			foreach (FieldInfo info in fields)		
+			foreach (FieldInfo info in fields)
 			{
 				encoding += Encode(info.FieldType);
 			}
@@ -122,7 +123,7 @@ namespace MObjc
 		}
 		#endregion
 		
-		#region Fields --------------------------------------------------------		
+		#region Fields
 		private static Dictionary<string, Type> ms_structs = new Dictionary<string, Type>();
 		#endregion
 	}

@@ -19,6 +19,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using MObjc.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -58,7 +59,7 @@ namespace MObjc
 						Console.Error.WriteLine("--------- {0} Exception{1}", ee == e ? "Outer" : "Inner", Environment.NewLine);
 					Console.Error.WriteLine("{0}", ee.Message + Environment.NewLine);
 					Console.Error.WriteLine("{0}", ee.StackTrace + Environment.NewLine);
-
+					
 					ee = ee.InnerException;
 				}
 				Console.Out.Flush();
@@ -77,7 +78,7 @@ namespace MObjc
 		{
 			m_instance = instance;				// note that it's legal to send messages to nil
 			m_class = IntPtr.Zero;
-
+			
 			if (m_instance != IntPtr.Zero)
 			{
 				// It's a little inefficient to always grab this information, but it makes
@@ -87,11 +88,11 @@ namespace MObjc
 				m_class = DirectCalls.Callp(m_instance, Selector.Class, ref exception);
 				if (exception != IntPtr.Zero)
 					CocoaException.Raise(exception);
-	
+				
 				m_baseClass = DirectCalls.Callp(m_class, Selector.SuperClass, ref exception);
 				if (exception != IntPtr.Zero)
 					CocoaException.Raise(exception);
-	
+				
 				lock (ms_instancesLock)
 				{
 					bool exported;
@@ -120,7 +121,7 @@ namespace MObjc
 		public static IntPtr AllocNative(string name)
 		{
 			Class klass = new Class(name);
-
+			
 			IntPtr exception = IntPtr.Zero;
 			IntPtr instance = DirectCalls.Callp(klass, Selector.Alloc, ref exception);
 			if (exception != IntPtr.Zero)
@@ -132,7 +133,7 @@ namespace MObjc
 			
 			return instance;
 		}
-
+		
 		// It's quite handy to have a retain method that returns the correct type
 		// but we don't want to call it retain because it will be registered as an
 		// override for exported classes which tends to cause problems.
@@ -141,14 +142,14 @@ namespace MObjc
 			Unused.Value = retain();
 			return this;
 		}
-
+		
 		// Note that this is the static NSObject class type. To get the dynamic type
 		// of an instance use the class_() method.
 		public static Class Class
 		{
 			get {return ms_class;}
 		}
-
+		
 		public static NSObject Lookup(IntPtr instance)	// thread safe
 		{
 			NSObject managed = null;
@@ -162,14 +163,14 @@ namespace MObjc
 					// code. But we can't do this with nil because it has no class info.
 					// So, rather than returning an NSObject which will break marshaling
 					// we simply return null.
-					if (instance == IntPtr.Zero)		
+					if (instance == IntPtr.Zero)
 						return null;
-											
+					
 					// If we land here then we have a native instance with no associated
 					// managed instance. This will happen if the native instance isn't
 					// an exported type, or it is exported and it's calling a managed
 					// method for the first time.
-
+					
 					// First try to create an NSObject derived instance using the types
 					// which were registered or exported.
 					Type type = DoGetManagedClass(object_getClass(instance));
@@ -194,25 +195,25 @@ namespace MObjc
 			
 			return managed;
 		}
-				
+		
 		public static implicit operator IntPtr(NSObject value) 
-		{							
+		{
 			return value != null ? value.m_instance : IntPtr.Zero;
 		}
 		
 		// Need this for languages like VB that don't support operator overloading.
 		public static IntPtr ToIntPtrType(NSObject value)
-		{				
+		{
 			return value != null ? value.m_instance : IntPtr.Zero;
 		}
-    
+		
 		public static bool IsNullOrNil(NSObject o)
-		{				
+		{
 			return o == null || o.m_instance == IntPtr.Zero;
 		}
 		
 		public bool IsNil()
-		{				
+		{
 			return m_instance == IntPtr.Zero;
 		}
 		
@@ -220,7 +221,7 @@ namespace MObjc
 		// correctly for types exported with ExportClassAttribute and for instances
 		// released using the managed release method, but will not be set for
 		// non-exported instances released from unmanaged code.
-		public bool IsDeallocated() xxx
+		public bool IsDeallocated()
 		{
 			return m_deallocated;
 		}
@@ -231,7 +232,7 @@ namespace MObjc
 			Trace.Assert(!m_deallocated, "ref count is zero");
 			
 			object result;
-
+			
 			if (m_instance != IntPtr.Zero)
 				result = Native.Call(m_instance, name, args);
 			else
@@ -244,19 +245,19 @@ namespace MObjc
 		{
 			Trace.Assert(name != null, "name is null");
 			Trace.Assert(!m_deallocated, "ref count is zero");
-				
+			
 			object result = IntPtr.Zero;
-
+			
 			if (m_instance != IntPtr.Zero)
 			{
 				Native native = new Native(m_instance, new Selector(name), class_().BaseClass);
-				native.SetArgs(args);			
+				native.SetArgs(args);
 				result = native.Invoke();
 			}
 			
 			return result;
 		}
-				
+		
 		public NSObject this[string ivarName]
 		{
 			get
@@ -267,7 +268,7 @@ namespace MObjc
 				NSObject result;
 				
 				if (m_instance != IntPtr.Zero)
-				{					
+				{
 					IntPtr value = IntPtr.Zero;
 					IntPtr ivar = object_getInstanceVariable(m_instance, ivarName, ref value);
 				
@@ -297,7 +298,7 @@ namespace MObjc
 						if (exception != IntPtr.Zero)
 							CocoaException.Raise(exception);
 					}
-
+					
 					// Release the old value (if any).
 					IntPtr oldValue = IntPtr.Zero;
 					IntPtr ivar = object_getInstanceVariable(m_instance, ivarName, ref oldValue);				
@@ -306,7 +307,7 @@ namespace MObjc
 						Unused.Value = DirectCalls.Callp(value, Selector.Release, ref dummy);
 						throw new ArgumentException(ivarName + " isn't a valid instance variable");
 					}
-
+					
 					if (oldValue != IntPtr.Zero)
 					{
 						Unused.Value = DirectCalls.Callp(oldValue, Selector.Release, ref exception);
@@ -316,7 +317,7 @@ namespace MObjc
 							CocoaException.Raise(exception);
 						}
 					}
-		
+					
 					// Set the value.
 					ivar = object_setInstanceVariable(m_instance, ivarName, value);
 				}
@@ -334,18 +335,18 @@ namespace MObjc
 		
 		public override bool Equals(object rhsObj)
 		{
-			if (rhsObj == null)           
+			if (rhsObj == null)
 				return false;
 			
 			NSObject rhs = rhsObj as NSObject;
 			return this == rhs;
 		}
-			
-		public bool Equals(NSObject rhs)   
+		
+		public bool Equals(NSObject rhs)
 		{
 			return this == rhs;
 		}
-	
+		
 		[DisableRule("D1007", "UseBaseTypes")]
 		public static bool operator==(NSObject lhs, NSObject rhs)
 		{
@@ -374,7 +375,7 @@ namespace MObjc
 		{
 			return hash();
 		}
-    
+		
 		internal static void Register(Type klass, string nativeName)
 		{
 			if (!ms_registeredClasses.ContainsKey(nativeName))
@@ -387,28 +388,28 @@ namespace MObjc
 		{
 			return m_baseClass;
 		}
-		 						
-		#region Protected Methods ---------------------------------------------
+		
+		#region Protected Methods
 		// Only called for exported types. Derived classes must call the base class 
 		// implementation.
 		protected virtual void OnDealloc()
 		{
 			bool removed = ms_instances.Remove(m_instance);
 			Trace.Assert(removed, "dealloc was called but the instance is not in ms_instances");
-
+			
 			Unused.Value = SuperCall("dealloc");
 			m_deallocated = true;
 		}
 		#endregion
-				
-		#region Private Methods -----------------------------------------------
+		
+		#region Private Methods
 		private static Type DoGetManagedClass(IntPtr klass)
 		{
 			while (klass != IntPtr.Zero)
 			{
 				IntPtr ptr = class_getName(klass);
 				string name = Marshal.PtrToStringAnsi(ptr);
-			
+				
 				Type type;
 				if (Registrar.TryGetType(name, out type))
 					return type;
@@ -419,32 +420,32 @@ namespace MObjc
 			}
 			
 			return null;
-		}												
+		}
 		#endregion
-						
-		#region P/Invokes -----------------------------------------------------
+		
+		#region P/Invokes
 		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr object_getClass(IntPtr obj);
-
+		
 		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr class_getName(IntPtr klass);
-
+		
 		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr class_getSuperclass(IntPtr klass);
-
+		
 		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr object_getInstanceVariable(IntPtr obj, string name, ref IntPtr outValue);
-
+		
 		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr object_setInstanceVariable(IntPtr obj, string name, IntPtr value);
 		#endregion
-					
-		#region Fields --------------------------------------------------------
+		
+		#region Fields
 		private IntPtr m_instance;
 		private IntPtr m_class;
 		private IntPtr m_baseClass;
 		private bool m_deallocated;
-
+		
 		private static Dictionary<IntPtr, NSObject> ms_instances = new Dictionary<IntPtr, NSObject>();
 		private static object ms_instancesLock = new object();
 		private static Dictionary<string, Type> ms_registeredClasses = new Dictionary<string, Type>();

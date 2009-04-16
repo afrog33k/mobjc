@@ -21,13 +21,13 @@
 
 using System;
 
-namespace MObjc
-{			
-	internal static class Unused	// thread safe
+namespace MObjc.Helpers
+{
+	public static class Unused		// thread safe
 	{
-		public static object Value 
+		public static object Value
 		{
-			[DisableRule("C1022", "UseSetterValue")]    
+			[DisableRule("C1022", "UseSetterValue")]
 			set {}
 		}
 	}

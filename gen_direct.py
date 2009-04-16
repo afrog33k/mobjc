@@ -13,17 +13,17 @@ atypes = ["void*", "int", "short", "unsigned char"]
 
 labels = {
 	"int" : "i",
-	"short" : "s", 
-	"unsigned char" : "C", 
-	"void" : "v", 
-	"void*" : "p", 
+	"short" : "s",
+	"unsigned char" : "C",
+	"void" : "v",
+	"void*" : "p",
 }
 mtypes = {
 	"int" : "Int32",
-	"short" : "Int16", 
+	"short" : "Int16",
 	"unsigned char" : "Byte",
-	"void" : "void", 
-	"void*" : "IntPtr", 
+	"void" : "void",
+	"void*" : "IntPtr",
 }
 
 class GenerateCS:
@@ -32,6 +32,7 @@ class GenerateCS:
 		
 	def generate(self):
 		self.write("// Machine generated on %s" % datetime.date.today())
+		self.write("using MObjc.Helpers;")
 		self.write("using System;")
 		self.write("using System.Runtime.InteropServices;")
 		self.write("")
@@ -50,27 +51,27 @@ class GenerateCS:
 		for rtype in rtypes:
 			self.write("		[DllImport(\"mobjc-glue.dylib\")]")
 			self.write("		public extern static %s Call%s(IntPtr instance, IntPtr selector, ref IntPtr exception);" % (mtypes[rtype], labels[rtype]))
-			self.write("")
-
+			self.write("		")
+		
 		self.write("		// unary")
 		for rtype in rtypes:
 			for a0 in atypes:
 				self.write("		[DllImport(\"mobjc-glue.dylib\")]")
 				self.write("		public extern static %s Call%s%s(IntPtr instance, IntPtr selector, %s arg0, ref IntPtr exception);" % (mtypes[rtype], labels[rtype], labels[a0], mtypes[a0]))
-				self.write("")
-
+				self.write("		")
+		
 		self.write("		// binary")
 		for rtype in rtypes:
 			for a0 in atypes:
 				for a1 in atypes:
 					self.write("		[DllImport(\"mobjc-glue.dylib\")]")
 					self.write("		public extern static %s Call%s%s%s(IntPtr instance, IntPtr selector, %s arg0, %s arg1, ref IntPtr exception);" % (mtypes[rtype], labels[rtype], labels[a0], labels[a1], mtypes[a0], mtypes[a1]))
-					self.write("")
+					self.write("		")
 		
 	def write(self, s):
 		self.__file.write(s)
 		self.__file.write("\n")
-
+	
 class GenerateObjc:
 	def __init__(self, path):
 		self.__file = open(path, "w")

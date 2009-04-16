@@ -19,6 +19,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using MObjc.Helpers;
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -46,38 +47,38 @@ namespace MObjc
 			else
 				m_name = "(null)";
 		}
-							
+		
 		public NSObject Alloc()
 		{
 			IntPtr exception = IntPtr.Zero;
 			IntPtr instance = DirectCalls.Callp(this, Selector.Alloc, ref exception);
 			if (exception != IntPtr.Zero)
 				CocoaException.Raise(exception);
-
+			
 			return NSObject.Lookup(instance);
 		}
-
+		
 		public string Name
 		{
 			get {return m_name;}
 		}
-				
+		
 		// Base class of NSObject is null.
 		public Class BaseClass
 		{
 			get {return new Class(GetBaseClass());}
 		}
-												
+		
 		public override string ToString()
 		{
 			return m_name;
 		}
-						
-		#region Private Methods -----------------------------------------------
+		
+		#region Private Methods
 		private static IntPtr DoGetDefinition(string name)
 		{
 			Trace.Assert(!string.IsNullOrEmpty(name), "name is null or empty");
-				
+			
 			IntPtr klass = objc_getClass(name);
 			
 			if (klass == IntPtr.Zero)
@@ -87,15 +88,15 @@ namespace MObjc
 		}
 		#endregion
 		
-		#region P/Invokes -----------------------------------------------------
+		#region P/Invokes
 		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr objc_getClass(string name);
-
+		
 		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr class_getName(IntPtr klass);
 		#endregion
 		
-		#region Fields --------------------------------------------------------
+		#region Fields
 		private string m_name;
 		#endregion
 	}

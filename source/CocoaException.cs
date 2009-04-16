@@ -19,6 +19,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using MObjc.Helpers;
 using System;
 using System.IO;
 using System.Reflection;
@@ -40,7 +41,7 @@ namespace MObjc
 		{
 			m_instance = new NSObject(IntPtr.Zero);
 		}
-
+		
 		public CocoaException(NSObject instance, Exception innerException) : base(DoGetMessage(instance), innerException)
 		{
 			m_instance = instance;
@@ -56,7 +57,7 @@ namespace MObjc
 			long value = info.GetInt64("NSObject");
 			m_instance = new NSObject(new IntPtr(value));
 		}
-
+		
 		[SecurityPermission(SecurityAction.LinkDemand, SerializationFormatter = true)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
@@ -67,7 +68,7 @@ namespace MObjc
 			
 			info.AddValue("NSObject", ((IntPtr) m_instance).ToInt64());
 		}
-
+		
 		public static void Raise(IntPtr p)
 		{
 			NSObject instance = new NSObject(p);
@@ -76,13 +77,13 @@ namespace MObjc
 			{
 				// See if the userInfo contains a .NET exception.
 				NSObject userInfo = (NSObject) instance.Call("userInfo");
-
+				
 				if (userInfo != null && (IntPtr) userInfo != IntPtr.Zero)
 				{
 					IntPtr keyBuffer = Marshal.StringToHGlobalAuto(".NET exception");
 					NSObject key = (NSObject) new Class("NSString").Call("alloc").Call("initWithUTF8String:", keyBuffer);					
 					Marshal.FreeHGlobal(keyBuffer);
-
+					
 					NSObject data = (NSObject) userInfo.Call("objectForKey:", key);
 					if (data != null && !data.IsNil())
 					{
@@ -93,13 +94,13 @@ namespace MObjc
 						// copy them into a managed buffer,
 						byte[] buffer = new byte[bytes];
 						Marshal.Copy(ptr, buffer, 0, (int) bytes);
-	
+						
 						// and raise the original exception.
 						using (MemoryStream stream = new MemoryStream(buffer))
 						{
 							BinaryFormatter formatter = new BinaryFormatter();
 							Exception e = (Exception) formatter.Deserialize(stream);
-	
+							
 							throw new TargetInvocationException("Exception has been thrown by the target of an Objective-C method call.", e);	// yes TargetInvocationException sucks, but it preserves the original stack crawl...
 						}
 					}
@@ -130,7 +131,7 @@ namespace MObjc
 				
 			return text;
 		}
-				
+		
 		private NSObject m_instance;
 	}
 }

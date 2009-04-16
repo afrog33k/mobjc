@@ -63,9 +63,9 @@ run-app: libs
 
 # ------------------
 # Binary targets 
-bin/mobjc.dll: keys bin/csc_flags source/*.cs
+bin/mobjc.dll: keys bin/csc_flags source/*.cs source/helpers/*.cs
 	@./gen_version.sh $(version) source/AssemblyVersion.cs
-	$(CSC) -out:bin/mobjc.dll $(CSC_FLAGS) -keyfile:keys -target:library source/*.cs
+	$(CSC) -out:bin/mobjc.dll $(CSC_FLAGS) -keyfile:keys -target:library source/*.cs source/helpers/*.cs
 
 bin/mobjc-glue-ppc.dylib: bin/gcc_flags glue/*.m
 	$(GCC) -o bin/mobjc-glue-ppc.dylib $(GCC_FLAGS) -arch ppc -framework Foundation -dynamiclib -l$(ffi_lib) -I $(ffi_include) glue/*.m
