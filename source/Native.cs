@@ -46,8 +46,8 @@ namespace MObjc
 		
 		internal Native(IntPtr target, Selector selector, IntPtr imp, MethodSignature sig)
 		{
-			Trace.Assert(selector != null, "selector is null");
-			Trace.Assert(target == IntPtr.Zero || imp != IntPtr.Zero, "imp is null");
+			Contract.Requires(selector != null, "selector is null");
+			Contract.Requires(target == IntPtr.Zero || imp != IntPtr.Zero, "imp is null");
 			
 			m_target = target;
 			
@@ -73,7 +73,7 @@ namespace MObjc
 		
 		public void SetArgs(params object[] args)
 		{
-			Trace.Assert(args != null, "args is null");
+			Contract.Requires(args != null, "args is null");
 			
 			if (m_target != IntPtr.Zero)
 			{	
@@ -103,7 +103,7 @@ namespace MObjc
 		
 		internal static object Call(IntPtr instance, string name, object[] args)	// thread safe
 		{
-			Trace.Assert(instance != IntPtr.Zero, "instance is zero");
+			Contract.Requires(instance != IntPtr.Zero, "instance is zero");
 			
 			object result;
 			if (name == "alloc" && args.Length == 0)	// need this so we can create an auto release pool without leaking NSMethodSignature

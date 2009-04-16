@@ -77,7 +77,7 @@ namespace MObjc
 		#region Private Methods
 		private static IntPtr DoGetDefinition(string name)
 		{
-			Trace.Assert(!string.IsNullOrEmpty(name), "name is null or empty");
+			Contract.Requires(!string.IsNullOrEmpty(name), "name is null or empty");
 			
 			IntPtr klass = objc_getClass(name);
 			

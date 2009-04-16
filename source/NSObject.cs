@@ -228,8 +228,8 @@ namespace MObjc
 		
 		public object Call(string name, params object[] args)	// thread safe
 		{
-			Trace.Assert(name != null, "name is null");
-			Trace.Assert(!m_deallocated, "ref count is zero");
+			Contract.Requires(name != null, "name is null");
+			Contract.Requires(!m_deallocated, "ref count is zero");
 			
 			object result;
 			
@@ -243,8 +243,8 @@ namespace MObjc
 		
 		public object SuperCall(string name, params object[] args)
 		{
-			Trace.Assert(name != null, "name is null");
-			Trace.Assert(!m_deallocated, "ref count is zero");
+			Contract.Requires(name != null, "name is null");
+			Contract.Requires(!m_deallocated, "ref count is zero");
 			
 			object result = IntPtr.Zero;
 			
@@ -262,8 +262,8 @@ namespace MObjc
 		{
 			get
 			{
-				Trace.Assert(!string.IsNullOrEmpty(ivarName), "ivarName is null or empty");
-				Trace.Assert(!m_deallocated, "ref count is zero");
+				Contract.Requires(!string.IsNullOrEmpty(ivarName), "ivarName is null or empty");
+				Contract.Requires(!m_deallocated, "ref count is zero");
 				
 				NSObject result;
 				
@@ -285,8 +285,8 @@ namespace MObjc
 			
 			set
 			{
-				Trace.Assert(!string.IsNullOrEmpty(ivarName), "ivarName is null or empty");
-				Trace.Assert(!m_deallocated, "ref count is zero");
+				Contract.Requires(!string.IsNullOrEmpty(ivarName), "ivarName is null or empty");
+				Contract.Requires(!m_deallocated, "ref count is zero");
 				
 				if (m_instance != IntPtr.Zero)
 				{
@@ -395,7 +395,7 @@ namespace MObjc
 		protected virtual void OnDealloc()
 		{
 			bool removed = ms_instances.Remove(m_instance);
-			Trace.Assert(removed, "dealloc was called but the instance is not in ms_instances");
+			Contract.Requires(removed, "dealloc was called but the instance is not in ms_instances");
 			
 			Unused.Value = SuperCall("dealloc");
 			m_deallocated = true;

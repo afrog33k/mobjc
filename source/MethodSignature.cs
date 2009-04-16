@@ -33,7 +33,7 @@ namespace MObjc
 	{
 		public SignatureInfo(IntPtr sig)
 		{
-			Trace.Assert(sig != IntPtr.Zero, "sig is nil");
+			Contract.Requires(sig != IntPtr.Zero, "sig is nil");
 			
 			// Get the return encoding.
 			IntPtr exception = IntPtr.Zero;
@@ -100,14 +100,14 @@ namespace MObjc
 	{
 		public MethodSignature(string encoding) 
 		{
-			Trace.Assert(!string.IsNullOrEmpty(encoding), "encoding is null or empty");
+			Contract.Requires(!string.IsNullOrEmpty(encoding), "encoding is null or empty");
 			m_info = DoEncodingToSig(encoding);	
 		}
 		
 		public MethodSignature(IntPtr target, IntPtr selector) 
 		{
-			Trace.Assert(target != IntPtr.Zero, "target is nil");
-			Trace.Assert(selector != IntPtr.Zero, "selector is nil");
+			Contract.Requires(target != IntPtr.Zero, "target is nil");
+			Contract.Requires(selector != IntPtr.Zero, "selector is nil");
 			
 			m_info = DoClassSelectorToSig(target, selector);	
 			if (m_info == null)

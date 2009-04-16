@@ -32,7 +32,7 @@ namespace MObjc
 	{
 		public PtrArray(int count)
 		{
-			Trace.Assert(count >= 0, "count is negative");
+			Contract.Requires(count >= 0, "count is negative");
 			
 			m_array = Marshal.AllocHGlobal(count * Marshal.SizeOf(typeof(IntPtr)));
 			m_count = count;
@@ -40,8 +40,8 @@ namespace MObjc
 		
 		public PtrArray(IntPtr array, int count)
 		{
-			Trace.Assert(count >= 0, "count is negative");
-			Trace.Assert(array != IntPtr.Zero, "array is nil");	// always require an array (simplifies error checking)
+			Contract.Requires(count >= 0, "count is negative");
+			Contract.Requires(array != IntPtr.Zero, "array is nil");	// always require an array (simplifies error checking)
 			
 			m_array = array;
 			m_count = count;
@@ -56,14 +56,14 @@ namespace MObjc
 		{
 			get
 			{
-				Trace.Assert(index >= 0 && index < m_count, string.Format("bad index: {0}", index));
+				Contract.Requires(index >= 0 && index < m_count, string.Format("bad index: {0}", index));
 					
 				return Marshal.ReadIntPtr(m_array, index * Marshal.SizeOf(typeof(IntPtr)));
 			}
 			
 			set
 			{
-				Trace.Assert(index >= 0 && index < m_count, string.Format("bad index: {0}", index));
+				Contract.Requires(index >= 0 && index < m_count, string.Format("bad index: {0}", index));
 					
 				Marshal.WriteIntPtr(m_array, index * Marshal.SizeOf(typeof(IntPtr)), value);
 			}

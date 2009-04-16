@@ -33,8 +33,8 @@ namespace MObjc
 	{
 		internal Managed(MethodInfo info, string encoding)
 		{
-			Trace.Assert(info != null, "info is null");
-			Trace.Assert(!string.IsNullOrEmpty(encoding), "encoding is null or empty");
+			Contract.Requires(info != null, "info is null");
+			Contract.Requires(!string.IsNullOrEmpty(encoding), "encoding is null or empty");
 			
 			m_info = info;
 			m_signature = new MethodSignature(encoding);

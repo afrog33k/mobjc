@@ -38,14 +38,14 @@ namespace MObjc
 		
 		public static bool TryGetStruct(string name, out Type type)
 		{
-			Trace.Assert(!string.IsNullOrEmpty(name), "name is null or empty");
+			Contract.Requires(!string.IsNullOrEmpty(name), "name is null or empty");
 			
 			return ms_structs.TryGetValue(name, out type);
 		}
 		
 		public static string Encode(Type type)
 		{
-			Trace.Assert(type != null, "type is null");
+			Contract.Requires(type != null, "type is null");
 			
 			if (type == typeof(bool))
 				return "c";

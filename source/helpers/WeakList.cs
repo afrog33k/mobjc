@@ -30,7 +30,7 @@ namespace MObjc.Helpers
 	{
 		public WeakList(int capacity)
 		{
-			Trace.Assert(capacity > 0, "capacity is not positive");
+			Contract.Requires(capacity > 0, "capacity is not positive");
 			
 			m_capacity = capacity;
 			m_list = new List<WeakReference>(capacity);			

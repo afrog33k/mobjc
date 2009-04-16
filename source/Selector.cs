@@ -34,7 +34,7 @@ namespace MObjc
 		// Name should be something like "stringWithCharacters:length:".
 		public Selector(string name)
 		{
-			Trace.Assert(!string.IsNullOrEmpty(name), "name is null or empty");
+			Contract.Requires(!string.IsNullOrEmpty(name), "name is null or empty");
 				
 			m_selector = sel_registerName(name);
 			m_name = name;
@@ -45,7 +45,7 @@ namespace MObjc
 		
 		public Selector(IntPtr selector)
 		{
-			Trace.Assert(selector != IntPtr.Zero, "selector is nil");
+			Contract.Requires(selector != IntPtr.Zero, "selector is nil");
 			
 			m_selector = selector;
 			

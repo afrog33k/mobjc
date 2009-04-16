@@ -19,18 +19,19 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using MObjc.Helpers;
 using System;
 using System.Diagnostics;
 
 namespace MObjc
-{			
+{
 	public sealed class IBOutlet<T> : IEquatable<IBOutlet<T>> where T : NSObject	
 	{
 		public IBOutlet(NSObject owner, string name)
 		{
-			Trace.Assert(!NSObject.IsNullOrNil(owner), "owner is null or nil");
-			Trace.Assert(!string.IsNullOrEmpty(name), "name is null or empty");
-
+			Contract.Requires(!NSObject.IsNullOrNil(owner), "owner is null or nil");
+			Contract.Requires(!string.IsNullOrEmpty(name), "name is null or empty");
+			
 			m_owner = owner;
 			m_name = name;
 		}
@@ -43,18 +44,18 @@ namespace MObjc
 		
 		public override bool Equals(object rhsObj)
 		{
-			if (rhsObj == null)          
+			if (rhsObj == null)
 				return false;
 			
 			IBOutlet<T> rhs = rhsObj as IBOutlet<T>;
 			return this == rhs;
 		}
-			
-		public bool Equals(IBOutlet<T> rhs)  
+		
+		public bool Equals(IBOutlet<T> rhs)
 		{
 			return this == rhs;
 		}
-	
+		
 		public static bool operator==(IBOutlet<T> lhs, IBOutlet<T> rhs)
 		{
 			if (object.ReferenceEquals(lhs, rhs))
@@ -83,7 +84,7 @@ namespace MObjc
 			
 			return hash;
 		}
-    
+		
 		private NSObject m_owner;
 		private string m_name;
 	}
