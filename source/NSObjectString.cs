@@ -28,7 +28,7 @@ namespace MObjc
 {
 	// There's a lot of this string goo so we'll tuck it away into its own file.
 	public partial class NSObject : IFormattable
-	{ 
+	{
 		public override string ToString()
 		{
 			return ToString("G", null);
@@ -43,57 +43,57 @@ namespace MObjc
 		// A "P" can be appended to the C, I, and V formats to force private members (those
 		// starting with an underscore) to be included.
 		public string ToString(string format, IFormatProvider provider)
-		{				
+		{
 			if (provider != null)
 			{
 				ICustomFormatter formatter = provider.GetFormat(GetType()) as ICustomFormatter;
 				if (formatter != null)
 					return formatter.Format(format, this, provider);
 			}
-						
+			
 			StringBuilder builder = new StringBuilder(20);
-			if (m_instance != IntPtr.Zero)		
+			if (m_instance != IntPtr.Zero)
 			{
 				switch (format)
-				{    
-					case "":            
+				{
+					case "":
 					case null:
 					case "G":
 						DoGetDefaultString(builder);
 						break;
-																										
+					
 					case "I":
 						DoGetInstanceMethodsString(builder, false);
 						break;
-													
+					
 					case "IP":
 						DoGetInstanceMethodsString(builder, true);
 						break;
-													
+					
 					case "C":
 						DoGetClassMethodsString(builder, false);
 						break;
-													
+					
 					case "CP":
 						DoGetClassMethodsString(builder, true);
 						break;
-													
+					
 					case "D":
 						DoGetDescString(builder);
 						break;
-													
+					
 					case "V":
 						DoGetIvarString(builder, false);
 						break;
-													
+					
 					case "VP":
 						DoGetIvarString(builder, true);
 						break;
-													
+					
 					case "P":
 						DoGetPropsString(builder);
 						break;
-													
+					
 					default:
 						throw new ArgumentException(format + " isn't a valid NSObject format string");
 				}
@@ -111,7 +111,7 @@ namespace MObjc
 				builder.Append("class ");
 			else
 				builder.Append("instance ");
-
+			
 			IntPtr ptr = class_getName(m_class);
 			builder.Append(Marshal.PtrToStringAnsi(ptr));
 			
@@ -125,43 +125,43 @@ namespace MObjc
 			builder.Append(" (id = ");
 			builder.Append(m_instance.ToInt32().ToString("X", null));
 			builder.Append(")");
-
+			
 			if (m_deallocated)
 				builder.Append(" [deallocated]");
 		}
-				
+		
 		private void DoGetClassMethodsString(StringBuilder builder, bool includePrivate)
 		{
 			Class klass = new Class(object_getClass(m_class));
-
+			
 			bool needNewLine = false;
 			while (klass != null && (IntPtr) klass != IntPtr.Zero)
 			{
 				List<List<string>> table = new List<List<string>>();
 				DoAddMethods(klass, table, includePrivate);
-	
+				
 				if (table.Count > 0)
 				{
 					if (needNewLine)
 					{
-						builder.AppendLine();				
+						builder.AppendLine();
 						needNewLine = false;
 					}
 					
 					table.Sort((lhs, rhs) => lhs[0].CompareTo(rhs[0]));
 					DoAlign(table);
-		
-					builder.Append(klass.Name);				
-					builder.AppendLine(" class methods:");				
+					
+					builder.Append(klass.Name);
+					builder.AppendLine(" class methods:");
 					for (int i = 0; i < table.Count; ++i)
 					{
 						foreach (string entry in table[i])
 						{
-							builder.Append(entry);				
-							builder.Append(" ");				
+							builder.Append(entry);
+							builder.Append(" ");
 						}
-		
-						builder.AppendLine();				
+						
+						builder.AppendLine();
 					}
 					
 					needNewLine = true;
@@ -169,7 +169,7 @@ namespace MObjc
 				
 				if (klass.Name == "NSObject")
 					break;
-
+				
 				klass = klass.BaseClass;
 			}
 		}
@@ -194,9 +194,9 @@ namespace MObjc
 							builder.AppendLine(s);
 					}
 				}
-	
+				
 				Marshal.FreeHGlobal(buffer);
-
+				
 				klass = klass.BaseClass;
 			}
 		}
@@ -212,7 +212,7 @@ namespace MObjc
 				if (count > 0)
 				{
 					PtrArray ivars = new PtrArray(buffer, count);
-			
+					
 					for (int i = 0; i < count; ++i)	
 					{
 						IntPtr name = property_getName(ivars[i]);	// property_getAttributes?
@@ -220,9 +220,9 @@ namespace MObjc
 						builder.AppendLine(s);
 					}
 				}
-	
+				
 				Marshal.FreeHGlobal(buffer);
-
+				
 				klass = klass.BaseClass;
 			}
 		}
@@ -235,34 +235,34 @@ namespace MObjc
 			{
 				List<List<string>> table = new List<List<string>>();
 				DoAddMethods(klass, table, includePrivate);
-	
+				
 				if (table.Count > 0)
 				{
 					if (needNewLine)
 					{
-						builder.AppendLine();				
+						builder.AppendLine();
 						needNewLine = false;
 					}
 					
 					table.Sort((lhs, rhs) => lhs[0].CompareTo(rhs[0]));
 					DoAlign(table);
-		
-					builder.Append(klass.Name);				
-					builder.AppendLine(" instance methods:");				
+					
+					builder.Append(klass.Name);
+					builder.AppendLine(" instance methods:");
 					for (int i = 0; i < table.Count; ++i)
 					{
 						foreach (string entry in table[i])
 						{
-							builder.Append(entry);				
-							builder.Append(" ");				
+							builder.Append(entry);
+							builder.Append(" ");
 						}
-		
-						builder.AppendLine();				
+						
+						builder.AppendLine();
 					}
 					
 					needNewLine = true;
 				}
-
+				
 				klass = klass.BaseClass;
 			}
 		}
@@ -275,23 +275,23 @@ namespace MObjc
 			if (count > 0)
 			{
 				PtrArray methods = new PtrArray(buffer, count);
-		
+				
 				for (int i = 0; i < count; ++i)	
 				{
 					Selector sel = new Selector(method_getName(methods[i]));
 					if (includePrivate || (sel.Name.Length > 0 && sel.Name[0] != '_'))
 					{
-						List<string> row = new List<string>();					
+						List<string> row = new List<string>();
 						row.Add(sel.Name);
-	
+						
 						IntPtr imp = method_getImplementation(methods[i]);
 						row.Add(imp.ToInt32().ToString("X"));
-		
+						
 						table.Add(row);
 					}
 				}
 			}
-
+			
 			Marshal.FreeHGlobal(buffer);
 		}
 		
@@ -306,7 +306,7 @@ namespace MObjc
 			List<int> widths = new List<int>(table[0].Count);
 			for (int j = 0; j < table[0].Count; ++j)
 				widths.Add(table[0][j].Length + 1);
-
+			
 			for (int i = 1; i < table.Count; ++i)
 			{
 				for (int j = 0; j < table[i].Count; ++j)
@@ -314,7 +314,7 @@ namespace MObjc
 					widths[j] = Math.Max(table[i][j].Length + 1, widths[j]);
 				}
 			}
-
+			
 			for (int i = 0; i < table.Count; ++i)
 			{
 				for (int j = 0; j < table[i].Count; ++j)
@@ -328,25 +328,25 @@ namespace MObjc
 		#region P/Invokes
 		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr class_copyPropertyList(IntPtr klass, ref int count);
-
+		
 		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr property_getName(IntPtr prop);
-
+		
 //		[DllImport("/usr/lib/libobjc.dylib")]
 //		private extern static IntPtr property_getAttributes(IntPtr prop);
-
+		
 		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr ivar_getName(IntPtr iv);
-
+		
 		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr class_copyIvarList(IntPtr obj, ref int count);
-
+		
 		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr method_getImplementation(IntPtr method);
-
+		
 		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr method_getName(IntPtr method);
-
+		
 		[DllImport("/usr/lib/libobjc.dylib")]
 		private extern static IntPtr class_copyMethodList(IntPtr klass, ref int count);
 		#endregion

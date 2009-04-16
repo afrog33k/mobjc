@@ -196,7 +196,7 @@ namespace MObjc
 			return managed;
 		}
 		
-		public static implicit operator IntPtr(NSObject value) 
+		public static implicit operator IntPtr(NSObject value)
 		{
 			return value != null ? value.m_instance : IntPtr.Zero;
 		}
@@ -207,11 +207,13 @@ namespace MObjc
 			return value != null ? value.m_instance : IntPtr.Zero;
 		}
 		
+		[Pure]
 		public static bool IsNullOrNil(NSObject o)
 		{
 			return o == null || o.m_instance == IntPtr.Zero;
 		}
 		
+		[Pure]
 		public bool IsNil()
 		{
 			return m_instance == IntPtr.Zero;
@@ -221,6 +223,7 @@ namespace MObjc
 		// correctly for types exported with ExportClassAttribute and for instances
 		// released using the managed release method, but will not be set for
 		// non-exported instances released from unmanaged code.
+		[Pure]
 		public bool IsDeallocated()
 		{
 			return m_deallocated;

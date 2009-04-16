@@ -63,6 +63,7 @@ namespace MObjc
 			return NSObject.Lookup(instance);
 		}
 		
+		[Pure]
 		public bool conformsToProtocol(IntPtr protocol)
 		{
 			Contract.Requires(protocol != IntPtr.Zero, "protocol is nil");
@@ -74,6 +75,7 @@ namespace MObjc
 				return false;
 		}
 		
+		[Pure]
 		public string description()
 		{
 			Contract.Requires(!m_deallocated, "ref count is zero");
@@ -95,6 +97,7 @@ namespace MObjc
 				return "nil";
 		}
 		
+		[Pure]
 		public int hash()
 		{
 			Contract.Requires(!m_deallocated, "ref count is zero");
@@ -112,6 +115,7 @@ namespace MObjc
 			return hash;
 		}
 		
+		[Pure]
 		public bool isEqual(NSObject rhs)
 		{
 			Contract.Requires(!m_deallocated, "ref count is zero");
@@ -131,6 +135,7 @@ namespace MObjc
 			return equal;
 		}
 		
+		[Pure]
 		public bool isKindOfClass(NSObject rhs)
 		{
 			Contract.Requires(!NSObject.IsNullOrNil(rhs), "rhs is null or nil");
@@ -142,6 +147,7 @@ namespace MObjc
 				return false;
 		}
 		
+		[Pure]
 		public bool isMemberOfClass(NSObject klass)
 		{
 			Contract.Requires(!NSObject.IsNullOrNil(klass), "klass is null or nil");
@@ -153,6 +159,7 @@ namespace MObjc
 				return false;
 		}
 		
+		[Pure]
 		public bool isProxy()
 		{
 			Contract.Requires(!m_deallocated, "ref count is zero");
@@ -183,11 +190,13 @@ namespace MObjc
 				m_deallocated = true;		// OnDealloc won't be called for registered types so we'll go ahead and set dealloced here
 		}
 		
+		[Pure]
 		public bool respondsToSelector(string selector)
 		{
 			return respondsToSelector(new Selector(selector));
 		}
 		
+		[Pure]
 		public bool respondsToSelector(Selector selector)
 		{
 			Contract.Requires(selector != null, "selector is null");
@@ -228,11 +237,13 @@ namespace MObjc
 			return count;
 		}
 		
+		[Pure]
 		public Class class_()
 		{
 			return new Class(m_class);
 		}
 		
+		[Pure]
 		public Class superclass()
 		{
 			Contract.Requires(!m_deallocated, "ref count is zero");
@@ -243,6 +254,7 @@ namespace MObjc
 				return new Class(IntPtr.Zero);
 		}
 		
+		[Pure]
 		public IntPtr zone()
 		{
 			Contract.Requires(!m_deallocated, "ref count is zero");
@@ -252,6 +264,7 @@ namespace MObjc
 		#endregion
 		
 		#region Instance Methods
+		[Pure]
 		public NSObject copy()
 		{
 			Contract.Requires(!m_deallocated, "ref count is zero");
@@ -262,6 +275,7 @@ namespace MObjc
 				return new NSObject(IntPtr.Zero);
 		}
 		
+		[Pure]
 		public NSObject mutableCopy()
 		{
 			Contract.Requires(!m_deallocated, "ref count is zero");
