@@ -4,13 +4,15 @@ mono ../mono-tools/gendarme/bin/gendarme.exe --config ../mono-tools/gendarme/rul
 
 	/Users/jessejones/Source/mono-tools/gendarme/rules/Gendarme.Rules.Portability/MoMAWebService.cs(≈39)
 
-		public NSRange Balance(string text, NSRange range)
-
-	unbalanced (foo (bar)
-	
-	zero length () thing
-
+* Update mobjc:
+	- add a helpers namespace
+	- put Unused in there
+	- also Contract
+	- start using Contract instead of trace
+	- make IsNullOrNil pure
+	- remove AssertListener
 * Need to set PKG_CONFIG_PATH to /usr/lib/pkgconfig
+* Use the install tool?
 * Don't use that silly -------- Outer Exception -------- custom code.
 * Might want to enable the gendarme smells.
 * Need to always generate response files.
