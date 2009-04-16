@@ -26,13 +26,11 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 [TestFixture]
-public class ArgTests 	
+public class ArgTests
 {
 	[TestFixtureSetUp]
 	public void Init()
 	{
-		AssertListener.Install();
-
 		Registrar.CanInit = true;
 		m_pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
 	}

@@ -29,13 +29,10 @@ using System.Runtime.InteropServices;
 internal static class Program
 {
 	internal static void Main(string[] args)
-	{	
+	{
 		try
 		{
 			Registrar.CanInit = true;
-
-			// Force Trace.Assert and Debug.Assert to throw exceptions
-			AssertListener.Install();
 			
 			// Make our app a foreground app (if we don't do this we won't appear in the dock).
 			IntPtr psn = IntPtr.Zero;	
@@ -48,7 +45,7 @@ internal static class Program
 			NSObject pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
 			App app = new App("MainMenu.nib");
 			pool.release();
-
+			
 			app.Run();
 		}
 		catch (Exception e)
@@ -56,13 +53,13 @@ internal static class Program
 			Console.WriteLine(e);
 		}
 	}
-
+	
 	[DllImport("/System/Library/Frameworks/AppKit.framework/AppKit")]
 	private static extern void GetCurrentProcess(ref IntPtr psn);
-
+	
 	[DllImport("/System/Library/Frameworks/AppKit.framework/AppKit")]
 	private static extern void TransformProcessType(ref IntPtr psn, uint type);
-
+	
 	[DllImport("/System/Library/Frameworks/AppKit.framework/AppKit")]
 	private static extern void SetFrontProcess(ref IntPtr psn);
 }

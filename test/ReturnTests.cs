@@ -25,13 +25,11 @@ using System;
 using System.Runtime.InteropServices;
 
 [TestFixture]
-public class ReturnTests 	
+public class ReturnTests
 {
 	[TestFixtureSetUp]
 	public void Init()
 	{
-		AssertListener.Install();
-
 		Registrar.CanInit = true;
 		m_pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
 	}

@@ -5,7 +5,6 @@ mono ../mono-tools/gendarme/bin/gendarme.exe --config ../mono-tools/gendarme/rul
 	/Users/jessejones/Source/mono-tools/gendarme/rules/Gendarme.Rules.Portability/MoMAWebService.cs(≈39)
 
 * Update mobjc:
-	- make IsNullOrNil pure
 	- remove AssertListener
 * Need to set PKG_CONFIG_PATH to /usr/lib/pkgconfig
 * Use the install tool?

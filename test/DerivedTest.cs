@@ -53,8 +53,6 @@ public class DerivedTest
 	[TestFixtureSetUp]
 	public void Init()
 	{
-		AssertListener.Install();
-
 		Registrar.CanInit = true;
 		m_pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
 	}
@@ -68,13 +66,13 @@ public class DerivedTest
 			m_pool = null;
 		}
 	}
-		
+	
 	[Test]
-	public void Registered() 
+	public void Registered()
 	{
 		Class klass = new Class("NSString");
 		Assert.AreEqual("NSString", klass.Name);
-
+		
 		klass = new Class("PrettyData");
 		Assert.AreEqual("PrettyData", klass.Name);
 	}

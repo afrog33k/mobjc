@@ -31,10 +31,8 @@ public class InstanceTests
 	[SetUp]
 	public void Setup()
 	{
-		AssertListener.Install();
-
 		Registrar.CanInit = true;
-		GC.Collect(); 				
+		GC.Collect();
 		GC.WaitForPendingFinalizers();
 	}
 	
@@ -42,11 +40,11 @@ public class InstanceTests
 	public void RefCount1Test()	
 	{
 		NSObject pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
-
+		
 		// If we use alloc the object will have a ref count of one.
 		NSObject instance = (NSObject) new Class("NSHashTable").Call("alloc").Call("init");
 		Assert.AreEqual(1L, instance.retainCount());
-
+		
 		// Classes always have a very high retain count (because they
 		// are not supposed to go away).
 		Class nsSignature = new Class("NSMethodSignature");
