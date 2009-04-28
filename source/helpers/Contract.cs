@@ -55,7 +55,10 @@ namespace MObjc.Helpers
 	{
 		public ContractClassAttribute(Type otherClass)
 		{
+			OtherClass = otherClass;
 		}
+		
+		public Type OtherClass {get; private set;}
 	}
 	
 	// Marks a class as containing contracts for an abstract class or interface. 
@@ -75,7 +78,10 @@ namespace MObjc.Helpers
 	{
 		public ContractClassForAttribute(Type otherClass)
 		{
+			OtherClass = otherClass;
 		}
+		
+		public Type OtherClass {get; private set;}
 	}
 	
 	// Indicates that a method or delegate has no visible side effects (and 

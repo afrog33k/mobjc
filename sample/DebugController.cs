@@ -101,6 +101,9 @@ internal sealed class DebugController : NSObject
 	
 	public bool validateMenuItem(NSObject menuItem)
 	{
+		bool enabled = false;
+		
+#if DEBUG	
 		Selector selector = (Selector) menuItem.Call("action");
 		if (selector.Name == "memoryTest:")
 		{
@@ -115,9 +118,11 @@ internal sealed class DebugController : NSObject
 			}
 			
 			menuItem.Call("setTitle:", text);
+			enabled = true;
 		}
-		
-		return true;
+#endif
+
+		return enabled;
 	}
 	
 #if DEBUG	
@@ -229,9 +234,11 @@ internal sealed class DebugController : NSObject
 		pool.release();
 	}
 #endif
-	
+
+#if DEBUG
 	private Thread m_thread1;
 	private Thread m_thread2;
 	private bool m_checkingMemory;
 	private object m_lock = new object();
+#endif
 }

@@ -5,14 +5,14 @@ CSC ?= gmcs
 GCC ?= gcc
 NUNIT ?= nunit-console2
 MONO ?= mono
-GENDARME ?= /usr/bin/gendarme/gendarme.exe
+GENDARME ?= /usr/local/bin/gendarme
 
 ifdef RELEASE
 	# Note that -debug+ just generates an mdb file.
-	CSC_FLAGS ?= -checked+ -debug+ -optimize+ -warn:4 -d:TRACE
+	CSC_FLAGS ?= -checked+ -debug+ -optimize+ -warn:4 -d:TRACE -d:CONTRACTS_PRECONDITIONS
 	GCC_FLAGS ?= -Wall -O3
 else
-	CSC_FLAGS ?= -checked+ -debug+ -warn:4 -warnaserror+ -d:DEBUG -d:TRACE
+	CSC_FLAGS ?= -checked+ -debug+ -warn:4 -warnaserror+ -d:DEBUG -d:TRACE -d:CONTRACTS_FULL
 	GCC_FLAGS ?= -ggdb -Wall -Werror -D DEBUG
 endif
 
@@ -98,7 +98,7 @@ smoke: bin/mobjc.dll
 	
 gendarme_flags := --severity all --confidence all --ignore gendarme.ignore --quiet
 gendarme: bin/mobjc.dll
-	@-$(MONO) "$(GENDARME)" $(gendarme_flags) bin/mobjc.dll
+	@-"$(GENDARME)" $(gendarme_flags) bin/mobjc.dll
 	
 clean:
 	-rm -rf bin/Sample.app

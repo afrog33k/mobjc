@@ -65,6 +65,8 @@ A: mobjc
 # False positive.
 R: Gendarme.Rules.Design.Generic.AvoidMethodWithUnusedGenericTypeRule
 M: T MObjc.ObjectExtensions::To(System.Object)
+M: System.Void MObjc.Helpers.Contract::EnsuresOnThrow(System.Boolean)
+M: System.Void MObjc.Helpers.Contract::EnsuresOnThrow(System.Boolean,System.String)
 
 R: Gendarme.Rules.Design.PreferEventsOverMethodsRule
 M: System.Void MObjc.CocoaException::Raise(System.IntPtr)
@@ -75,11 +77,11 @@ T: MObjc.CocoaException
 
 # Unused does not need a getter.
 R: Gendarme.Rules.Design.AvoidPropertiesWithoutGetAccessorRule
-T: MObjc.Unused
+T: MObjc.Helpers.Unused
 
 # Unused::set_Value does not need to use the argument.
 R: Gendarme.Rules.Performance.AvoidUnusedParametersRule
-M: System.Void MObjc.Unused::set_Value(System.Object)
+M: System.Void MObjc.Helpers.Unused::set_Value(System.Object)
 
 # These methods all do something reasonable.
 R: Gendarme.Rules.Exceptions.DoNotSwallowErrorsCatchingNonSpecificExceptionsRule
