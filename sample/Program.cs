@@ -25,7 +25,6 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-// http://developer.apple.com/documentation/Cocoa/Reference/ApplicationKit/Miscellaneous/AppKit_Functions/Reference/reference.html
 internal static class Program
 {
 	internal static void Main(string[] args)
@@ -34,12 +33,20 @@ internal static class Program
 		{
 			Registrar.CanInit = true;
 			
-			// Make our app a foreground app (if we don't do this we won't appear in the dock).
-			IntPtr psn = IntPtr.Zero;	
-			GetCurrentProcess(ref psn);
+			// Make our app a foreground app (this is redundant if we were started via the
+			// Finder or the open command, but important if we were started by directly
+			// executing the launcher script).
+			var psn = new ProcessSerialNumber();
+			psn.highLongOfPSN = 0;
+			psn.lowLongOfPSN = kCurrentProcess;
 			
-			TransformProcessType(ref psn, 1);
-			SetFrontProcess(ref psn);
+			int err = TransformProcessType(ref psn, kProcessTransformToForegroundApplication);
+			if (err != 0)
+				throw new InvalidOperationException("TransformProcessType returned " + err + ".");
+			
+			err = SetFrontProcess(ref psn);
+			if (err != 0)
+				throw new InvalidOperationException("SetFrontProcess returned " + err + ".");
 		
 			// Load the nib and run the main event loop.
 			NSObject pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
@@ -54,12 +61,21 @@ internal static class Program
 		}
 	}
 	
-	[DllImport("/System/Library/Frameworks/AppKit.framework/AppKit")]
-	private static extern void GetCurrentProcess(ref IntPtr psn);
+	#region P/Invokes
+	private const uint kCurrentProcess = 2;
+	private const uint kProcessTransformToForegroundApplication = 1;
+	
+	[StructLayout(LayoutKind.Sequential, Pack = 2)]
+	private struct ProcessSerialNumber
+	{
+		public uint highLongOfPSN;
+		public uint lowLongOfPSN;
+	}
 	
 	[DllImport("/System/Library/Frameworks/AppKit.framework/AppKit")]
-	private static extern void TransformProcessType(ref IntPtr psn, uint type);
+	private static extern int TransformProcessType(ref ProcessSerialNumber psn, uint type);
 	
 	[DllImport("/System/Library/Frameworks/AppKit.framework/AppKit")]
-	private static extern void SetFrontProcess(ref IntPtr psn);
+	private static extern short SetFrontProcess(ref ProcessSerialNumber psn);
+	#endregion
 }

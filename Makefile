@@ -122,7 +122,7 @@ help:
 	@echo " "
 	@echo "Variables include:"
 	@echo "RELEASE - define to enable release builds, defaults to not defined"
-	@echo "INSTALL_DIR - where to put the dlls, defaults to $(INSTALL_DIR)"
+	@echo "INSTALL_DIR - where to put the dlls, defaults to $(INSTALL_DIR)/lib"
 	@echo "TEST1 - full name of an nunit TestFixture class"
 	@echo " "
 	@echo "Here's an example:"	

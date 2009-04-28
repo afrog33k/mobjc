@@ -111,11 +111,11 @@ NAME='%s'
 cd \"${APP_PATH}/Contents/MacOS\"
 
 if [ -f ${NAME} ]; then rm -f ${NAME} ; fi
-ln -s \x60which mono\x60 ${NAME}
+ln \x60which mono\x60 ${NAME}
 
 cd ../Resources
 ../MacOS/${NAME} $(mono-flags) $(exe-name).exe $@
-""" % ("%s", "mono-" + exeName)
+""" % ("%s", appName.replace(" ", "_"))
 	script = script.replace("$(app-name)", appName)
 	script = script.replace("$(mono-flags)", options.mono_flags)
 	script = script.replace("$(exe-name)", exeName)
