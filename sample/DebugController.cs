@@ -32,7 +32,7 @@ internal sealed class DebugController : NSObject
 	private DebugController(IntPtr instance) : base(instance)
 	{
 	}
-
+	
 #if DEBUG	
 	public void collectGarbage(NSObject sender)
 	{
@@ -46,7 +46,7 @@ internal sealed class DebugController : NSObject
 		
 		GC.Collect();
 		GC.WaitForPendingFinalizers();
-
+		
 		foreach (NSObject o in NSObject.Snapshot())
 		{
 			lines.Add(o.ToString("G", null));
@@ -57,13 +57,13 @@ internal sealed class DebugController : NSObject
 			Console.WriteLine(line);
 		Console.WriteLine(" ");
 	}
-		
+	
 	public void dumpMemory(NSObject sender)
 	{
-		DoPrintMemory();		
+		DoPrintMemory();
 	}
-		
-	public void memoryTest(NSObject sender)	
+	
+	public void memoryTest(NSObject sender)
 	{
 		lock (m_lock)
 		{
@@ -76,20 +76,20 @@ internal sealed class DebugController : NSObject
 				m_thread2 = null;
 			}
 			else
-			{				
+			{
 				NSObject app = (NSObject) new Class("NSApplication").Call("sharedApplication");
 				NSObject window = (NSObject) app.Call("mainWindow");
 				NSObject content = (NSObject) window.Call("contentView");
 				NSObject view = (NSObject) content.Call("viewWithTag:", 33);
-
+				
 				if (!view.IsNil())
 				{
 					m_thread1 = new Thread(this.DoDumpStatsThread);
 					m_thread1.Start();
-
+					
 					m_thread2 = new Thread(this.DoMemoryThread);
 					m_thread2.Start(view);
-
+					
 					m_checkingMemory = true;	
 				}
 				else
@@ -98,14 +98,14 @@ internal sealed class DebugController : NSObject
 		}
 	}
 #endif
-
+	
 	public bool validateMenuItem(NSObject menuItem)
 	{
 		Selector selector = (Selector) menuItem.Call("action");
 		if (selector.Name == "memoryTest:")
 		{
 			NSObject text;
-
+			
 			lock (m_lock)
 			{
 				if (m_checkingMemory)
@@ -116,10 +116,10 @@ internal sealed class DebugController : NSObject
 			
 			menuItem.Call("setTitle:", text);
 		}
-			
+		
 		return true;
 	}
-
+	
 #if DEBUG	
 	// There's probably a better way to do this but using top is easy and should give us
 	// accurate results. Note that Process does have a number of memory related properties
@@ -128,14 +128,14 @@ internal sealed class DebugController : NSObject
 	{
 		GC.Collect();
 		GC.WaitForPendingFinalizers();
-
+		
 		// Get the result of running top.
 		ProcessStartInfo info = new ProcessStartInfo();
-        info.Arguments = "-l 1 -P 'PID   COMMAND            RSIZE     VSIZE' -p '^aaaa ^bbbbbbbbbbbb $jjjjjjjjjj $llllllllll'";;
+		info.Arguments = "-l 1 -P 'PID   COMMAND            RSIZE     VSIZE' -p '^aaaa ^bbbbbbbbbbbb $jjjjjjjjjj $llllllllll'";;
 		info.FileName = "top";
 		info.RedirectStandardOutput = true;
 		info.UseShellExecute = false;
-	
+		
 		Process process = Process.Start(info);
 		
 		if (!process.WaitForExit(60*1000))
@@ -143,10 +143,10 @@ internal sealed class DebugController : NSObject
 			
 		if (process.ExitCode < 0 || process.ExitCode > 1)
 			throw new ApplicationException("top failed with error " + process.ExitCode + ".");
-			
+		
 		// Get our pid.
 		string pid = Process.GetCurrentProcess().Id.ToString();
-
+	
 		// Find the line in the top output that starts with our pid.
 		while (!process.StandardOutput.EndOfStream)
 		{
@@ -154,7 +154,7 @@ internal sealed class DebugController : NSObject
 			if (line.StartsWith(pid + " "))
 			{
 				string[] parts = line.Split(new char[]{' '}, StringSplitOptions.RemoveEmptyEntries);
-
+				
 				if (parts.Length == 4)
 				{
 					const double OneMeg = 1024.0*1024.0;	
@@ -171,34 +171,34 @@ internal sealed class DebugController : NSObject
 				return;
 			}
 		}
-
+		
 		Console.WriteLine("Couldn't find our pid: {0}.", pid);
 	}
-
+	
 	private void DoDumpStatsThread(object instance)
-	{		
+	{
 		TimeSpan interval = TimeSpan.FromMinutes(60);
 		Unused.Value = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
-
+		
 		lock (m_lock)
 		{
 			while (m_checkingMemory)
 			{
-				DoPrintMemory();		
-
+				DoPrintMemory();
+				
 				Unused.Value = Monitor.Wait(m_lock, interval);
 			}
 		}
 	}
-
+	
 	private void DoMemoryThread(object arg)
-	{		
+	{
 		NSObject view = (NSObject) arg;
 		TimeSpan interval = TimeSpan.FromSeconds(5);
 		Random rand = new Random(1);
-
+		
 		NSObject pool = (NSObject) new Class("NSAutoreleasePool").Call("alloc").Call("init");
-
+		
 		lock (m_lock)
 		{
 			int count = 0;				// note that this isn't the count of boxes: it's the count of boxes added by this thread
@@ -220,7 +220,7 @@ internal sealed class DebugController : NSObject
 						selector = new Selector("removeLastBox:");
 						--count;
 					}
-						
+					
 					view.Call("performSelectorOnMainThread:withObject:waitUntilDone:", selector, null, false);
 				}
 			}
@@ -229,7 +229,7 @@ internal sealed class DebugController : NSObject
 		pool.release();
 	}
 #endif
-
+	
 	private Thread m_thread1;
 	private Thread m_thread2;
 	private bool m_checkingMemory;
