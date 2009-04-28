@@ -52,16 +52,7 @@ namespace MObjc
 				// job printing inner exceptions. So, we'll print the exception ourself
 				// and shutdown the app.
 				Console.Error.WriteLine("Registrar.Init raised an exception:");
-				Exception ee = e;
-				while (ee != null)
-				{
-					if (e.InnerException != null)
-						Console.Error.WriteLine("--------- {0} Exception{1}", ee == e ? "Outer" : "Inner", Environment.NewLine);
-					Console.Error.WriteLine("{0}", ee.Message + Environment.NewLine);
-					Console.Error.WriteLine("{0}", ee.StackTrace + Environment.NewLine);
-					
-					ee = ee.InnerException;
-				}
+				Console.Error.WriteLine("{0}", e);
 				Console.Out.Flush();
 				Console.Error.Flush();
 				Environment.Exit(13);

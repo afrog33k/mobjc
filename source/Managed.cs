@@ -129,17 +129,7 @@ namespace MObjc
 		private void DoLogException(Exception e)
 		{
 			Console.Error.WriteLine("Managed exception: {0}", m_info);
-			
-			Exception ee = e;
-			while (ee != null)
-			{
-				if (e.InnerException != null)
-					Console.Error.WriteLine("-------- {0} Exception --------{1}", ee == e ? "Outer" : "Inner", Environment.NewLine);
-				Console.Error.WriteLine("{0}", ee.Message + Environment.NewLine);
-				Console.Error.WriteLine("{0}", ee.StackTrace + Environment.NewLine);
-				
-				ee = ee.InnerException;
-			}
+			Console.Error.WriteLine("{0}", e);
 		}
 		
 		private static NSObject DoCreateNativeException(Exception e)
@@ -176,8 +166,7 @@ namespace MObjc
 				catch (Exception ee)
 				{
 					// Typically this will happen if e is not serializable.
-					Console.Error.WriteLine(ee.Message);
-					Console.Error.WriteLine(ee.StackTrace);
+					Console.Error.WriteLine("{0}", ee);
 					Console.Error.Flush();
 				}
 				

@@ -4,12 +4,27 @@ mono ../mono-tools/gendarme/bin/gendarme.exe --config ../mono-tools/gendarme/rul
 
 	/Users/jessejones/Source/mono-tools/gendarme/rules/Gendarme.Rules.Portability/MoMAWebService.cs(≈39)
 
-* Update mobjc:
-	- remove AssertListener
-* Need to set PKG_CONFIG_PATH to /usr/lib/pkgconfig
-* Use the install tool?
-* Don't use that silly -------- Outer Exception -------- custom code.
-* Might want to enable the gendarme smells.
+* Release checklist:
+	- run smoke
+	- run gendarme
+	- make sure tests work in debug
+	- make sure app works in debug
+	- make RELEASE=1 test
+	- make RELEASE=1 app
+	- make sure app memory test is OK
+	- review tar target
+	- make sure everything is checked in
+	- use svn log -r 1:HEAD > CHANGE_LOG
+	- update CHANGES file
+	- update version number
+	- remove build_num file
+	- build debug 
+	- install
+	- update README and wiki
+	- upload a new version to googlecode
+	- send an announcement
+	- make sure everything is checked in
+
 * Need to always generate response files.
 * Should be able to call arbitrary .net code from native code.
 * Experiment with using the native GC:

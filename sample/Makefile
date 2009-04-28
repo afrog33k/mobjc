@@ -41,6 +41,8 @@ run: $(app-path)
 # makefile which copies the mobjc libraries into your project. Something like this:
 # update-libraries:
 #	cp `pkg-config --variable=Libraries mobjc` bin
+# But note that if you do this, you will need a line like "export PKG_CONFIG_PATH=/usr/lib/pkgconfig"
+# in your ~/.bash_profile script.
 
 # assembly 
 gmcs-resources := $(bin-path)/mobjc.dll
