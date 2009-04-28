@@ -16,7 +16,8 @@ else
 	GCC_FLAGS ?= -ggdb -Wall -Werror -D DEBUG
 endif
 
-INSTALL_DIR ?= /usr
+INSTALL_DIR ?= /usr/local
+PACKAGE_DIR ?= $(INSTALL_DIR)/lib/pkgconfig
 
 # ------------------
 # Internal variables
@@ -34,8 +35,6 @@ ffi_include := /usr/include
 ffi_lib := ffi
 #ffi_include := /usr/lib/libffi-3.0.5/include	# the newer libffi
 #ffi_lib := ffi.5
-
-pkg_config_dir := $(INSTALL_DIR)/lib/pkgconfig
 
 # ------------------
 # Primary targets
@@ -115,6 +114,7 @@ help:
 	@echo "The primary targets are:"
 	@echo "libs      - build the managed and native dll's"
 	@echo "test      - run the unit tests"
+	@echo "test1     - uses TEST1 to run a single unit test"
 	@echo "app       - build the cocoa sample app"
 	@echo "run-app   - run the cocoa sample app"
 	@echo "install   - install the dll's and a pkg-config file"
@@ -123,20 +123,25 @@ help:
 	@echo "Variables include:"
 	@echo "RELEASE - define to enable release builds, defaults to not defined"
 	@echo "INSTALL_DIR - where to put the dlls, defaults to $(INSTALL_DIR)"
+	@echo "TEST1 - full name of an nunit TestFixture class"
 	@echo " "
 	@echo "Here's an example:"	
 	@echo "sudo make RELEASE=1 install"	
 
-pc_file := $(pkg_config_dir)/mobjc.pc
+pc_file := $(PACKAGE_DIR)/mobjc.pc
 install: libs
-	cp "cocoa-pack" "$(INSTALL_DIR)/bin"
-	cp "bin/mobjc-glue.dylib" "$(INSTALL_DIR)/lib"
-	cp "bin/mobjc.dll" "$(INSTALL_DIR)/lib"
+	install -d "$(PACKAGE_DIR)"
+	install -d "$(INSTALL_DIR)/bin"
+	install -d "$(INSTALL_DIR)/lib"
+	install "cocoa-pack" "$(INSTALL_DIR)/bin"
+	install "bin/mobjc-glue.dylib" "$(INSTALL_DIR)/lib"
+	install "bin/mobjc.dll" "$(INSTALL_DIR)/lib"
 ifndef RELEASE
-	cp "bin/mobjc.dll.mdb" "$(INSTALL_DIR)/lib"
+	install "bin/mobjc.dll.mdb" "$(INSTALL_DIR)/lib"
 endif
 	@echo "generating $(pc_file)"
 	@echo "# Use 'cp \x60pkg-config --variable=Libraries mobjc\x60 bin' to copy the libraries into your build directory." > $(pc_file)
+	@echo "# You may also need to set PKG_CONFIG_PATH in your .bash_profile script so that it includes /usr/local/lib/pkgconfig." >> $(pc_file)
 	@echo "# 'pkg-config --libs mobjc' can be used to get the gmcs flags." >> $(pc_file)
 	@echo "# 'pkg-config --cflags mobjc' can be used to get the (optional) macpack flags." >> $(pc_file)
 	@echo "prefix=$(INSTALL_DIR)/lib" >> $(pc_file)
@@ -155,7 +160,7 @@ ifndef RELEASE
 	@echo " -r:mobjc.dll.mdb\c" >> $(pc_file)
 endif
 	@echo "" >> $(pc_file)
-	
+
 uninstall:
 	-rm "$(INSTALL_DIR)/bin/cocoa-pack"
 	-rm "$(INSTALL_DIR)/lib/mobjc-glue.dylib"

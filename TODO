@@ -5,9 +5,6 @@ mono ../mono-tools/gendarme/bin/gendarme.exe --config ../mono-tools/gendarme/rul
 /usr/local/bin/gendarme
 
 * Release checklist:
-	- make sure app memory test is OK
-	- review tar target
-	- switch back to debug
 	- make sure everything is checked in
 	- use svn log -r 1:HEAD > CHANGE_LOG
 	- update CHANGES file
