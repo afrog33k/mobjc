@@ -1,3 +1,17 @@
+-- Version 0.6.0.0 (r76) ----
+
+* Did some work on the cocoa-pack script:
+	- Made the bundle's Resources directory the working directory so mono finds
+	the mobjc-glue.dylib there instead of the one in /usr/local/lib.
+	- Quoted a path so apps launch even if there is a space somewhere in their path.
+	- The mono link is now named after the bundle and the link is now hard which
+	means that the process name will now be something reasonable instead of "mono".
+* mobjc-glue.dylib is now built as a universal binary.
+* Moved DisableRuleAttribute, Unused, and WeakList into a Helpers namespace.
+* Added a Helpers.Contract class based on Microsoft's contract goo.
+* Removed AssertListener.
+* make install now creates the /usr/local directories if they do not exist.
+
 -- Version 0.5.0.0 (r56) ----
 
 * Methods that start with a lower case letter are now automagically registered with Cocoa.

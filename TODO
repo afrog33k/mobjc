@@ -1,30 +1,5 @@
 set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-console.exe -fixture=BaseClassTests -nologo bin/tests.dll
 
-mono ../mono-tools/gendarme/bin/gendarme.exe --config ../mono-tools/gendarme/rules/rules.xml --html tmp.html bin/mobjc.dll
-
-#!/bin/sh
-path=`echo $0 | awk '{split($0,patharr,"/"); idx=1; while(patharr[idx+3] != "") { if (patharr[idx] != "/") {printf("%s/", patharr[idx]); idx++ }} }'`
-mono=`which mono`
-
-cd "$path/Contents"
-contents=`pwd`
-
-cd "$contents/Resources"
-"$mono" --debug "sample.exe" $@	
-
-* Release checklist:
-	- make sure everything is checked in
-	- use svn log -r 1:HEAD > CHANGE_LOG
-	- update CHANGES file
-	- update version number
-	- remove build_num file
-	- build debug 
-	- install
-	- update README and wiki
-	- upload a new version to googlecode
-	- send an announcement
-	- make sure everything is checked in
-
 * Need to always generate response files.
 * Should be able to call arbitrary .net code from native code.
 * Experiment with using the native GC:

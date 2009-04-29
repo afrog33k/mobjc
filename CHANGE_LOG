@@ -469,3 +469,153 @@ Renamed NOTES TODO.
 
 
 ------------------------------------------------------------------------
+r59 | jesjones@mindspring.com | 2009-02-24 11:04:55 -0800 (Tue, 24 Feb 2009) | 11 lines
+
+Index: Makefile
+* Bumped version.
+
+Index: CHANGES
+Index: CHANGE_LOG
+* Updated.
+
+Index: cocoa-pack
+* Cleaned up white space. Removed a bogus escape.
+
+
+------------------------------------------------------------------------
+r60 | jesjones@mindspring.com | 2009-02-24 12:47:22 -0800 (Tue, 24 Feb 2009) | 4 lines
+
+Index: cocoa-pack
+* The weird escape was needed after all.
+* Made Resources the working directory so the proper mobjc-glue.dylib is found.
+
+------------------------------------------------------------------------
+r61 | jesjones@mindspring.com | 2009-02-25 01:39:34 -0800 (Wed, 25 Feb 2009) | 3 lines
+
+Index: Makefile
+* Builds a universal binary for mobjc-glue.dylib.
+
+------------------------------------------------------------------------
+r62 | jesjones@mindspring.com | 2009-02-26 05:48:35 -0800 (Thu, 26 Feb 2009) | 3 lines
+
+Fixed the launch script so that it works if spaces are in the path.
+
+
+------------------------------------------------------------------------
+r63 | jesjones@mindspring.com | 2009-03-21 08:27:17 -0700 (Sat, 21 Mar 2009) | 3 lines
+
+Index: Makefile
+* Install to /usr/lib instead of /usr/local/lib (not all macs have /usr/local).
+
+------------------------------------------------------------------------
+r64 | jesjones@mindspring.com | 2009-04-08 11:01:27 -0700 (Wed, 08 Apr 2009) | 6 lines
+
+Tweaked cocoa-pack so that the process name is not just "mono",
+but is "mono-name" where name is the main assembly name. This
+makes reading the output of tools like fs_usage much easier
+when multiple mobjc apps are running.
+
+
+------------------------------------------------------------------------
+r65 | jesjones@mindspring.com | 2009-04-16 15:53:53 -0700 (Thu, 16 Apr 2009) | 3 lines
+
+Moved some classes to new helpers directory.
+
+
+------------------------------------------------------------------------
+r66 | jesjones@mindspring.com | 2009-04-16 16:18:52 -0700 (Thu, 16 Apr 2009) | 5 lines
+
+Moved DisableRuleAttribute, Unused, and WeakList into
+new MObjbc.Helpers namespace. Cleaned up a lot of
+white space.
+
+
+------------------------------------------------------------------------
+r67 | jesjones@mindspring.com | 2009-04-16 16:20:32 -0700 (Thu, 16 Apr 2009) | 3 lines
+
+Added new Contract class to helpers.
+
+
+------------------------------------------------------------------------
+r68 | jesjones@mindspring.com | 2009-04-16 16:25:38 -0700 (Thu, 16 Apr 2009) | 3 lines
+
+Uses Contract.Requires/Assert instead of Trace.Assert.
+
+
+------------------------------------------------------------------------
+r69 | jesjones@mindspring.com | 2009-04-16 16:34:39 -0700 (Thu, 16 Apr 2009) | 12 lines
+
+Index: source/NSObjectMethods.cs
+* Made quite a few methods pure: conformsToProtocol, description, etc.
+
+Index: source/NSObject.cs
+* Made IsNullOrNil and IsNil pure.
+
+Index: source/AssemblyInfo.cs
+Index: source/NSObjectString.cs
+* Whitepsace.
+
+
+
+------------------------------------------------------------------------
+r70 | jesjones@mindspring.com | 2009-04-16 16:37:38 -0700 (Thu, 16 Apr 2009) | 3 lines
+
+Removed AssertListener.
+
+
+------------------------------------------------------------------------
+r71 | jesjones@mindspring.com | 2009-04-27 21:51:53 -0700 (Mon, 27 Apr 2009) | 7 lines
+
+Index: sample/Makefile
+* Added a comment about PKG_CONFIG_PATH.
+
+Index: source/Managed.cs
+Index: source/NSObject.cs
+* Don't use silly code to write out exceptions.
+
+------------------------------------------------------------------------
+r72 | jesjones@mindspring.com | 2009-04-27 22:43:08 -0700 (Mon, 27 Apr 2009) | 3 lines
+
+Whitespace.
+
+
+------------------------------------------------------------------------
+r73 | jesjones@mindspring.com | 2009-04-27 22:49:14 -0700 (Mon, 27 Apr 2009) | 12 lines
+
+Index: sample/DebugController.cs
+* Fixed so it compiles in release.
+
+Index: source/helpers/Contract.cs
+Index: gendarme.ignore
+* Made gendarme happy.
+
+Index: Makefile
+* Set GENDARME to the value it's installed to by default.
+* Set CONTRACTS_FULL in debug.
+* Set CONTRACTS_PRECONDITIONS in release.
+
+------------------------------------------------------------------------
+r74 | jesjones@mindspring.com | 2009-04-28 07:47:26 -0700 (Tue, 28 Apr 2009) | 3 lines
+
+Again installs into /usr/local, but uses install -d to ensure the directories exist.
+   
+
+------------------------------------------------------------------------
+r75 | jesjones@mindspring.com | 2009-04-28 11:48:24 -0700 (Tue, 28 Apr 2009) | 9 lines
+
+Index: cocoa-pack
+* Make a hard link to the file which launches mono so the process name is not "mono"
+   (using a soft link won't do this).
+* Instead of naming the file "mono-" + exeName, name it after the bundle name.
+
+Index: sample/Program.cs
+* Use non-broken code to make our app the foreground app.
+
+
+------------------------------------------------------------------------
+r76 | jesjones@mindspring.com | 2009-04-28 18:06:43 -0700 (Tue, 28 Apr 2009) | 3 lines
+
+make help mentions he clean target.
+
+
+------------------------------------------------------------------------
