@@ -117,6 +117,7 @@ help:
 	@echo "test1     - uses TEST1 to run a single unit test"
 	@echo "app       - build the cocoa sample app"
 	@echo "run-app   - run the cocoa sample app"
+	@echo "clean     - remove the app bundles and executables from bin"
 	@echo "install   - install the dll's and a pkg-config file"
 	@echo "uninstall - remove the dll's and the pkg-config file"
 	@echo " "
