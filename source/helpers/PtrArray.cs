@@ -24,11 +24,11 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace MObjc
+namespace MObjc.Helpers
 {
 	// Manages a pointer to an array of pointers.
 	[DisableRuleAttribute("R1001", "DisposeNativeResources")]
-	internal sealed class PtrArray
+	public sealed class PtrArray
 	{
 		public PtrArray(int count)
 		{

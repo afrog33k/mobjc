@@ -104,14 +104,18 @@ else:
 	file.close()
 	
 	# Create a little script to run our assembly using mono. Note that we can't simply
-	# run mono from its normal location or nibs won't load.
+	# run mono from its normal location or nibs won't load. Also we want to use a hard
+	# link if possible because it means that our process name will be something
+	# reasonable instead of "mono".
 	script = """#!/bin/sh
 APP_PATH=`echo \x240 | awk '{split(\x240,patharr,\"/\"); idx=1; while(patharr[idx+3] != \"\") { if (patharr[idx] != \"/\") {printf(\"%s/\", patharr[idx]); idx++ }} }'`
 NAME='%s'
 cd \"${APP_PATH}/Contents/MacOS\"
 
 if [ -f ${NAME} ]; then rm -f ${NAME} ; fi
-ln \x60which mono\x60 ${NAME}
+if !(ln \x60which mono\x60 ${NAME}); then
+	ln -s \x60which mono\x60 ${NAME}
+fi
 
 cd ../Resources
 ../MacOS/${NAME} $(mono-flags) $(exe-name).exe $@

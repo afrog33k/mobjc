@@ -19,6 +19,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using MObjc.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -185,7 +186,7 @@ namespace MObjc
 				if (count > 0)
 				{
 					PtrArray ivars = new PtrArray(buffer, count);
-			
+					
 					for (int i = 0; i < count; ++i)	
 					{
 						IntPtr name = ivar_getName(ivars[i]);
