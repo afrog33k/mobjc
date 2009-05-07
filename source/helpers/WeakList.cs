@@ -26,14 +26,15 @@ using System.Diagnostics;
 namespace MObjc.Helpers
 {
 	// Compacting list of System.WeakReference<T>.
-	public sealed class WeakList<T> where T : class		// thread safe
+	[ThreadModel(ThreadModel.Concurrent)]
+	public sealed class WeakList<T> where T : class
 	{
 		public WeakList(int capacity)
 		{
 			Contract.Requires(capacity > 0, "capacity is not positive");
 			
 			m_capacity = capacity;
-			m_list = new List<WeakReference>(capacity);			
+			m_list = new List<WeakReference>(capacity);
 		}
 		
 		public void Add(T o)
@@ -79,7 +80,7 @@ namespace MObjc.Helpers
 				if (m_list[i].Target != null)
 					compacted.Add(m_list[i]);
 			}
-		
+			
 			// If we couldn't find any free elements then we need to allow
 			// our list to grow.
 			if (compacted.Count >= m_capacity)

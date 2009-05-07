@@ -26,6 +26,7 @@ using System.Reflection;
 
 namespace MObjc
 {
+	[ThreadModel(ThreadModel.Concurrent)]
 	public static class ObjectExtensions
 	{
 		// These are provided so Call expressions can be chained.

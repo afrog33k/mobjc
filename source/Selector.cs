@@ -29,7 +29,8 @@ namespace MObjc
 {
 	[DisableRuleAttribute("R1001", "DisposeNativeResources")]
 	[DisableRuleAttribute("D1035", "ImplicitCast")]
-	public sealed class Selector : IEquatable<Selector>	// thread safe
+	[ThreadModel(ThreadModel.Concurrent)]
+	public sealed class Selector : IEquatable<Selector>
 	{
 		// Name should be something like "stringWithCharacters:length:".
 		public Selector(string name)
@@ -58,7 +59,7 @@ namespace MObjc
 			get {return m_name;}
 		}
 		
-		public static implicit operator IntPtr(Selector value) 
+		public static implicit operator IntPtr(Selector value)
 		{
 			return value != null ? value.m_selector : IntPtr.Zero;
 		}
@@ -133,8 +134,8 @@ namespace MObjc
 		#endregion
 		
 		#region Fields
-		private IntPtr m_selector;
-		private string m_name;
+		private readonly IntPtr m_selector;
+		private readonly string m_name;
 		#endregion
 	}
 }

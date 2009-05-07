@@ -1,4 +1,4 @@
-// Copyright (C) 2008 Jesse Jones
+// Copyright (C) 2008-2009 Jesse Jones
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,7 +28,8 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace MObjc
-{	
+{
+	[ThreadModel(ThreadModel.Concurrent)]
 	public sealed class Managed
 	{
 		internal Managed(MethodInfo info, string encoding)
@@ -43,9 +44,11 @@ namespace MObjc
 		// We default to logging exceptions thrown by managed code to stderr before
 		// we convert them into a native exception (because Cocoa has a tendency to
 		// eat them). If you want to do something else you can set this.
-		public static Action<Exception> LogException {get; set;}
+		public delegate void LogHandler(Exception e);
 		
-		internal IntPtr Call(IntPtr dummy, IntPtr resultBuffer, IntPtr argBuffers)	// thread safe
+		public static LogHandler LogException {get; set;}
+		
+		internal IntPtr Call(IntPtr dummy, IntPtr resultBuffer, IntPtr argBuffers)
 		{
 			Unused.Value = dummy;
 			
@@ -188,8 +191,8 @@ namespace MObjc
 		#endregion
 		
 		#region Fields
-		private MethodInfo m_info;
-		private MethodSignature m_signature;
+		private readonly MethodInfo m_info;
+		private readonly MethodSignature m_signature;
 		#endregion
 	}
 }

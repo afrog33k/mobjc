@@ -23,7 +23,8 @@ using System;
 
 namespace MObjc.Helpers
 {
-	public static class Unused		// thread safe
+	[ThreadModel(ThreadModel.Concurrent)]
+	public static class Unused
 	{
 		public static object Value
 		{

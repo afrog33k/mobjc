@@ -28,6 +28,7 @@ namespace MObjc.Helpers
 {
 	// Manages a pointer to an array of pointers.
 	[DisableRuleAttribute("R1001", "DisposeNativeResources")]
+	[ThreadModel(ThreadModel.Serializable)]
 	public sealed class PtrArray
 	{
 		public PtrArray(int count)
@@ -69,12 +70,12 @@ namespace MObjc.Helpers
 			}
 		}
 		
-		public static explicit operator IntPtr(PtrArray value)
+		public IntPtr ToIntPtr()
 		{
-			if (value.m_array == IntPtr.Zero)	
+			if (m_array == IntPtr.Zero)	
 				throw new ArgumentException("array is null");
 			
-			return value.m_array;
+			return m_array;
 		}
 		
 		public void Free()

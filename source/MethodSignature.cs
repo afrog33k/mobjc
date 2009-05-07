@@ -29,6 +29,7 @@ using System.Text;
 
 namespace MObjc
 {
+	[ThreadModel(ThreadModel.Concurrent)]
 	internal sealed class SignatureInfo
 	{
 		public SignatureInfo(IntPtr sig)
@@ -87,31 +88,34 @@ namespace MObjc
 			return result.ToString();
 		}
 		
+		#region Fields
 		private static readonly Selector getArgumentTypeAtIndex = new Selector("getArgumentTypeAtIndex:");
 		private static readonly Selector methodReturnType = new Selector("methodReturnType");
 		private static readonly Selector numberOfArguments = new Selector("numberOfArguments");
 		
-		private string m_return;
-		private string[] m_args;
+		private readonly string m_return;
+		private readonly string[] m_args;
+		#endregion
 	}
-
-	[DisableRule("C1026", "NoStaticRemove")] 
+	
+	[DisableRule("C1026", "NoStaticRemove")]
+	[ThreadModel(ThreadModel.Concurrent)]
 	internal sealed class MethodSignature : IEquatable<MethodSignature>
 	{
-		public MethodSignature(string encoding) 
+		public MethodSignature(string encoding)
 		{
 			Contract.Requires(!string.IsNullOrEmpty(encoding), "encoding is null or empty");
-			m_info = DoEncodingToSig(encoding);	
+			m_info = DoEncodingToSig(encoding);
 		}
 		
-		public MethodSignature(IntPtr target, IntPtr selector) 
+		public MethodSignature(IntPtr target, IntPtr selector)
 		{
 			Contract.Requires(target != IntPtr.Zero, "target is nil");
 			Contract.Requires(selector != IntPtr.Zero, "selector is nil");
 			
-			m_info = DoClassSelectorToSig(target, selector);	
+			m_info = DoClassSelectorToSig(target, selector);
 			if (m_info == null)
-				m_info = DoInstanceSelectorToSig(target, selector);	
+				m_info = DoInstanceSelectorToSig(target, selector);
 		}
 		
 		public string GetReturnEncoding()
@@ -125,7 +129,7 @@ namespace MObjc
 			return m_info.GetNumArgs();
 		}
 		
-		public string GetArgEncoding(int index)	
+		public string GetArgEncoding(int index)
 		{
 			return m_info.GetArgEncoding(index);
 		}
@@ -189,7 +193,8 @@ namespace MObjc
 			return hash;
 		}
 		
-		private static SignatureInfo DoEncodingToSig(string encoding)
+		#region Private Methods
+		private SignatureInfo DoEncodingToSig(string encoding)
 		{
 			SignatureInfo info;
 			
@@ -217,7 +222,7 @@ namespace MObjc
 		}
 		
 		// Note that if we don't do all of this caching the memory tests fail.
-		private static SignatureInfo DoClassSelectorToSig(IntPtr target, IntPtr selector)
+		private SignatureInfo DoClassSelectorToSig(IntPtr target, IntPtr selector)
 		{
 			SignatureInfo info = null;
 			
@@ -256,7 +261,7 @@ namespace MObjc
 			return info;
 		}
 		
-		private static SignatureInfo DoInstanceSelectorToSig(IntPtr target, IntPtr selector)
+		private SignatureInfo DoInstanceSelectorToSig(IntPtr target, IntPtr selector)
 		{
 			IntPtr exception = IntPtr.Zero;
 			IntPtr instance = DirectCalls.Callpp(target, methodSignatureForSelector, selector, ref exception);
@@ -272,15 +277,18 @@ namespace MObjc
 			
 			return new SignatureInfo(instance);
 		}
+		#endregion
 		
-		private SignatureInfo m_info;
-		private static Dictionary<string, SignatureInfo> ms_encodedTable = new Dictionary<string, SignatureInfo>();
-		private static Dictionary<KeyValuePair<IntPtr, IntPtr>, SignatureInfo> ms_selectorTable = new Dictionary<KeyValuePair<IntPtr, IntPtr>, SignatureInfo>();
+		#region Fields
+		private readonly SignatureInfo m_info;
 		private static object ms_lock = new object();
+			private static Dictionary<string, SignatureInfo> ms_encodedTable = new Dictionary<string, SignatureInfo>();
+			private static Dictionary<KeyValuePair<IntPtr, IntPtr>, SignatureInfo> ms_selectorTable = new Dictionary<KeyValuePair<IntPtr, IntPtr>, SignatureInfo>();
 		
 		private static readonly Selector klass = new Selector("class");
 		private static readonly Selector instanceMethodSignatureForSelector = new Selector("instanceMethodSignatureForSelector:");
 		private static readonly Selector signatureWithObjCTypes = new Selector("signatureWithObjCTypes:");
 		private static readonly Selector methodSignatureForSelector = new Selector("methodSignatureForSelector:");
+		#endregion
 	}
 }

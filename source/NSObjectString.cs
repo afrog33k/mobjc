@@ -28,6 +28,7 @@ using System.Text;
 namespace MObjc
 {
 	// There's a lot of this string goo so we'll tuck it away into its own file.
+	//	[MultiThreaded]			NSObject.cs declares this
 	public partial class NSObject : IFormattable
 	{
 		public override string ToString()

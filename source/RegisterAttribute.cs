@@ -19,6 +19,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using MObjc.Helpers;
 using System;
 
 namespace MObjc
@@ -35,21 +36,22 @@ namespace MObjc
 	[Serializable]
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Struct | AttributeTargets.Class, AllowMultiple = false)]
 	public sealed class RegisterAttribute : Attribute
-	{		
+	{
 		public RegisterAttribute()
 		{
 		}
 		
-		public RegisterAttribute(string name) 
+		public RegisterAttribute(string name)
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentException("name is null or empty");
-								
+			
 			Name = name;
 		}
-				
+		
 		// Optional name to be used by the native code. If it is null the
 		// native code will use the managed method/struct/class name.
+		[ThreadModel(ThreadModel.Concurrent)]
 		public string Name {get; private set;}
 	}
 }

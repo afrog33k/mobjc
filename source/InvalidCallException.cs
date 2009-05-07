@@ -19,6 +19,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using MObjc.Helpers;
 using System;
 using System.Runtime.Serialization;
 
@@ -26,13 +27,14 @@ namespace MObjc
 {
 	// This will be thrown if an Objective-C method is called with bad arguments.
 	[Serializable]
+	[ThreadModel(ThreadModel.Concurrent)]
 	public sealed class InvalidCallException : Exception
 	{	
 		// Need this for XML serialization.
 		public InvalidCallException()
 		{
 		}
-
+		
 		public InvalidCallException(string text) : base(text)
 		{
 		}

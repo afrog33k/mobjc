@@ -29,6 +29,7 @@ using System.Runtime.InteropServices;
 namespace MObjc
 {
 	[DisableRuleAttribute("C1026", "NoStaticRemove")]
+	[ThreadModel(ThreadModel.Concurrent)]
 	internal static class Ffi
 	{
 		// Return an ffi_type* which will be used when values of the encoding
@@ -54,7 +55,7 @@ namespace MObjc
 			if (atypes[atypes.Length - 1] != IntPtr.Zero)
 				throw new ArgumentException("atypes should be null terminated");
 				
-			IntPtr cif = AllocCif(atypes.Length - 1, rtype, (IntPtr) atypes);
+			IntPtr cif = AllocCif(atypes.Length - 1, rtype, atypes.ToIntPtr());
 			
 			if (cif.ToInt32() == 1)
 				throw new ArgumentException("FFI_BAD_TYPEDEF");
@@ -88,7 +89,7 @@ namespace MObjc
 		{
 			IntPtr exception = IntPtr.Zero;
 			
-			FfiCall(cif, imp, result, (IntPtr) args, ref exception);
+			FfiCall(cif, imp, result, args.ToIntPtr(), ref exception);
 			
 			if (exception != IntPtr.Zero)
 				CocoaException.Raise(exception);
@@ -575,7 +576,7 @@ namespace MObjc
 			for (int i = 0; i < ft.Length; ++i)
 				ft[i] = fieldTypes[i];
 				
-			IntPtr result = AllocStructFfiType((IntPtr) ft);
+			IntPtr result = AllocStructFfiType( ft.ToIntPtr());
 			
 			return result;
 		}
@@ -721,8 +722,8 @@ namespace MObjc
 		#endregion
 		
 		#region Fields
-		private static Dictionary<string, IntPtr> ms_structs = new Dictionary<string, IntPtr>();
 		private static object ms_lock = new object();
+			private static Dictionary<string, IntPtr> ms_structs = new Dictionary<string, IntPtr>();
 		#endregion
 	}
 }

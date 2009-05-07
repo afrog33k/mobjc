@@ -32,6 +32,7 @@ namespace MObjc
 	// Iterates through all types in the loaded assemblies and handles any that
 	// are marked with ExportClassAttribute or RegisterAttribute.
 	[DisableRuleAttribute("C1026", "NoStaticRemove")]
+	[ThreadModel(ThreadModel.ArbitraryThread)]
 	public static class Registrar
 	{
 		internal static void Init()
@@ -57,19 +58,21 @@ namespace MObjc
 				pool.release();
 			}
 		}
-				
+		
 		// Registrar::Init is called automagically the first time an NSObject is contructed.
 		// Init will grovel through all the loaded .NET types, find the ones which are registered
 		// with mobjc, and define the associated Objective-C classes. However this can be
 		// a bit tricky if multiple assemblies register types. Because this leads to rather icky
 		// hard to track down errors, you must explicitly notify mobjc when it is safe to call
 		// Init.
+		[ThreadModel(ThreadModel.Concurrent)]
 		public static bool CanInit
 		{
 			get {return ms_canInit;}
 			set {ms_canInit = value;}
 		}
 		
+		[ThreadModel(ThreadModel.Concurrent)]
 		internal static bool TryGetType(string name, out Type type)
 		{
 			return ms_typeNames.TryGetValue(name, out type);
@@ -388,7 +391,7 @@ namespace MObjc
 		#endregion
 		
 		#region Fields
-		private static bool ms_canInit;
+		private static volatile bool ms_canInit;
 		private static Dictionary<string, Type> ms_typeNames = new Dictionary<string, Type>();
 		private static Dictionary<Type, string> ms_classNames = new Dictionary<Type, string>();
 		private static List<ManagedImp> ms_imps = new List<ManagedImp>();

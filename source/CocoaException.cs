@@ -33,6 +33,7 @@ namespace MObjc
 	// This will be thrown if the unmanaged code throws an exception.
 	[Serializable]
 	[DisableRuleAttribute("R1000", "DisposableFields")]
+	[ThreadModel(ThreadModel.Concurrent)]
 	public sealed class CocoaException : Exception
 	{
 		// This should not normally be used but is present so the class
@@ -132,6 +133,6 @@ namespace MObjc
 			return text;
 		}
 		
-		private NSObject m_instance;
+		private readonly NSObject m_instance;
 	}
 }

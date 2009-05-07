@@ -29,6 +29,7 @@ using System.Runtime.InteropServices;
 namespace MObjc
 {
 	// http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Protocols/NSObject_Protocol/Reference/NSObject.html#//apple_ref/doc/uid/20000052-BBCEBEIC
+	//	[MultiThreaded]			NSObject.cs declares this
 	public partial class NSObject : IFormattable
 	{
 		#region Protocol

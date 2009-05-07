@@ -29,10 +29,14 @@ namespace MObjc
 {
 	// http://developer.apple.com/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/chapter_7_section_1.html
 	[DisableRuleAttribute("C1026", "NoStaticRemove")]
+	[ThreadModel(ThreadModel.Concurrent)]
 	internal static class TypeEncoder
 	{
+		[ThreadModel(ThreadModel.ArbitraryThread)]
 		public static void Register(Type type, string name)
 		{
+			Contract.Assert(!ms_inUse, "Register was called after the TypeEncode began to be used");
+			
 			ms_structs.Add(name, type);		// this is the only ms_structs mutator and is only called by Registrar so we don't have to worry about synchronization
 		}
 		
@@ -40,6 +44,7 @@ namespace MObjc
 		{
 			Contract.Requires(!string.IsNullOrEmpty(name), "name is null or empty");
 			
+			ms_inUse = true;
 			return ms_structs.TryGetValue(name, out type);
 		}
 		
@@ -47,6 +52,8 @@ namespace MObjc
 		{
 			Contract.Requires(type != null, "type is null");
 			
+			ms_inUse = true;
+
 			if (type == typeof(bool))
 				return "c";
 			
@@ -124,6 +131,7 @@ namespace MObjc
 		#endregion
 		
 		#region Fields
+		private static bool ms_inUse;
 		private static Dictionary<string, Type> ms_structs = new Dictionary<string, Type>();
 		#endregion
 	}

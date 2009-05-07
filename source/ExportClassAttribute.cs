@@ -19,6 +19,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using MObjc.Helpers;
 using System;
 
 namespace MObjc
@@ -28,12 +29,12 @@ namespace MObjc
 	[Serializable]
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
 	public sealed class ExportClassAttribute : Attribute
-	{		
+	{
 		public ExportClassAttribute(string derivedName) : this(derivedName, "NSObject")
 		{
 		}
 		
-		public ExportClassAttribute(string derivedName, string baseName) 
+		public ExportClassAttribute(string derivedName, string baseName)
 		{
 			if (string.IsNullOrEmpty(derivedName))
 				throw new ArgumentException("derivedName is null or empty");
@@ -47,11 +48,14 @@ namespace MObjc
 		
 		// The C# class can be instantiated using a C# new expression
 		// or using the derived name and the alloc method.
+		[ThreadModel(ThreadModel.Concurrent)]
 		public string DerivedName {get; private set;}
-	
+		
+		[ThreadModel(ThreadModel.Concurrent)]
 		public string BaseName {get; private set;}
-	
+		
 		// Space delimited list of instance variables to add to the class.
+		[ThreadModel(ThreadModel.Concurrent)]
 		public string Outlets {get; set;}
 	}
 }

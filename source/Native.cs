@@ -30,6 +30,7 @@ namespace MObjc
 {
 	[DisableRuleAttribute("D1041", "CircularReference")]
 	[DisableRuleAttribute("D1067", "PreferSafeHandle")]
+	[ThreadModel(ThreadModel.Serializable)]
 	public sealed class Native
 	{
 		public Native(IntPtr target, Selector selector) : this(target, selector, DoGetImp(target, selector, IntPtr.Zero), null)
@@ -88,7 +89,7 @@ namespace MObjc
 			}
 		}
 		
-		public object Invoke()	
+		public object Invoke()
 		{
 			object result = new NSObject(IntPtr.Zero);
 			
@@ -101,7 +102,8 @@ namespace MObjc
 			return result;
 		}
 		
-		internal static object Call(IntPtr instance, string name, object[] args)	// thread safe
+		[ThreadModel(ThreadModel.Concurrent)]
+		internal static object Call(IntPtr instance, string name, object[] args)
 		{
 			Contract.Requires(instance != IntPtr.Zero, "instance is zero");
 			
@@ -119,7 +121,7 @@ namespace MObjc
 			{
 				Selector selector = new Selector(name);
 				MethodSignature sig = new MethodSignature(instance, (IntPtr) selector);
-			
+				
 				Native native = new Native(instance, selector, sig);
 				native.SetArgs(args);
 				result = native.Invoke();
@@ -134,6 +136,7 @@ namespace MObjc
 		}
 		
 		#region Private Methods
+		[ThreadModel(ThreadModel.Concurrent)]
 		private static IntPtr DoGetImp(IntPtr target, Selector selector, IntPtr klass)
 		{
 			if (target == IntPtr.Zero)
@@ -218,15 +221,19 @@ namespace MObjc
 		
 		#region P/Invokes
 		[DllImport("/usr/lib/libobjc.dylib")]
+		[ThreadModel(ThreadModel.Concurrent)]
 		private extern static IntPtr class_getInstanceMethod(IntPtr klass, IntPtr selector);
 		
 		[DllImport("/usr/lib/libobjc.dylib")]
+		[ThreadModel(ThreadModel.Concurrent)]
 		private extern static IntPtr class_getClassMethod(IntPtr klass, IntPtr selector);
 		
 		[DllImport("/usr/lib/libobjc.dylib")]
+		[ThreadModel(ThreadModel.Concurrent)]
 		private extern static IntPtr method_getImplementation(IntPtr method);
 		
 		[DllImport("/usr/lib/libobjc.dylib")]
+		[ThreadModel(ThreadModel.Concurrent)]
 		private extern static IntPtr object_getClass(IntPtr obj);
 		#endregion
 		

@@ -29,6 +29,7 @@ namespace MObjc
 {
 	// Represents a class definition.
 	[DisableRuleAttribute("D1041", "CircularReference")]
+	[ThreadModel(ThreadModel.Concurrent)]
 	public sealed class Class : NSObject
 	{
 		// Name should be something like "NSString".
@@ -97,7 +98,7 @@ namespace MObjc
 		#endregion
 		
 		#region Fields
-		private string m_name;
+		private readonly string m_name;
 		#endregion
 	}
 }

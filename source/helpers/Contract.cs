@@ -115,6 +115,7 @@ namespace MObjc.Helpers
 		}
 	}
 	
+	[ThreadModel(ThreadModel.Concurrent)]
 	public static class Contract
 	{
 		#region Asserts

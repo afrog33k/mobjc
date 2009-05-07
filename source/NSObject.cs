@@ -28,7 +28,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
 namespace MObjc
-{	
+{
 	// http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Protocols/NSObject_Protocol/Reference/NSObject.html#//apple_ref/doc/uid/20000052-BBCEBEIC
 	[DisableRuleAttribute("S1003", "KeepAlive")]
 	[DisableRuleAttribute("P1014", "InlineStaticInit")]
@@ -37,8 +37,9 @@ namespace MObjc
 	[DisableRuleAttribute("C1026", "NoStaticRemove")]
 	[DisableRuleAttribute("D1041", "CircularReference")]
 	[DisableRule("D1007", "UseBaseTypes")]
+	[ThreadModel(ThreadModel.Concurrent)]
 	public partial class NSObject : IFormattable, IEquatable<NSObject>
-	{		
+	{
 		[DisableRuleAttribute("D1038", "DontExit2")]
 		static NSObject()
 		{
@@ -99,7 +100,7 @@ namespace MObjc
 					{
 						if (ms_instances.ContainsKey(instance))
 							throw new InvalidOperationException(type + " is being constructed twice with the same id.");
-					
+						
 						ms_instances.Add(instance, this);
 					}
 				}
@@ -141,7 +142,7 @@ namespace MObjc
 			get {return ms_class;}
 		}
 		
-		public static NSObject Lookup(IntPtr instance)	// thread safe
+		public static NSObject Lookup(IntPtr instance)
 		{
 			NSObject managed = null;
 			
@@ -220,7 +221,7 @@ namespace MObjc
 			return m_deallocated;
 		}
 		
-		public object Call(string name, params object[] args)	// thread safe
+		public object Call(string name, params object[] args)
 		{
 			Contract.Requires(name != null, "name is null");
 			Contract.Requires(!m_deallocated, "ref count is zero");
@@ -370,6 +371,7 @@ namespace MObjc
 			return hash();
 		}
 		
+		[ThreadModel(ThreadModel.ArbitraryThread)]
 		internal static void Register(Type klass, string nativeName)
 		{
 			if (!ms_registeredClasses.ContainsKey(nativeName))
@@ -388,8 +390,11 @@ namespace MObjc
 		// implementation.
 		protected virtual void OnDealloc()
 		{
-			bool removed = ms_instances.Remove(m_instance);
-			Contract.Requires(removed, "dealloc was called but the instance is not in ms_instances");
+			lock (ms_instancesLock)
+			{
+				bool removed = ms_instances.Remove(m_instance);
+				Contract.Requires(removed, "dealloc was called but the instance is not in ms_instances");
+			}
 			
 			Unused.Value = SuperCall("dealloc");
 			m_deallocated = true;
@@ -435,18 +440,18 @@ namespace MObjc
 		#endregion
 		
 		#region Fields
-		private IntPtr m_instance;
-		private IntPtr m_class;
-		private IntPtr m_baseClass;
-		private bool m_deallocated;
+		private readonly IntPtr m_instance;
+		private readonly IntPtr m_class;
+		private readonly IntPtr m_baseClass;
+		private volatile bool m_deallocated;
 		
-		private static Dictionary<IntPtr, NSObject> ms_instances = new Dictionary<IntPtr, NSObject>();
-		private static object ms_instancesLock = new object();
 		private static Dictionary<string, Type> ms_registeredClasses = new Dictionary<string, Type>();
-		private static Dictionary<Type, bool> ms_exports = new Dictionary<Type, bool>();
-		private static Dictionary<Type, Func<IntPtr, NSObject>> ms_factories = new Dictionary<Type, Func<IntPtr, NSObject>>();
-		private static Type[] ms_factoryArgTypes = new Type[]{typeof(IntPtr)};
-		
+		private static object ms_instancesLock = new object();
+			private static Dictionary<IntPtr, NSObject> ms_instances = new Dictionary<IntPtr, NSObject>();
+			private static Dictionary<Type, bool> ms_exports = new Dictionary<Type, bool>();
+			private static Dictionary<Type, Func<IntPtr, NSObject>> ms_factories = new Dictionary<Type, Func<IntPtr, NSObject>>();
+			private static Type[] ms_factoryArgTypes = new Type[]{typeof(IntPtr)};
+				
 #if DEBUG
 		private static WeakList<NSObject> ms_refs = new WeakList<NSObject>(64);
 #endif

@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace MObjc
 {
+	[ThreadModel(ThreadModel.Concurrent)]
 	public static class DirectCalls
 	{
 		// nullary
