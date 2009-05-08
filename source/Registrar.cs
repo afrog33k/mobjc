@@ -32,7 +32,7 @@ namespace MObjc
 	// Iterates through all types in the loaded assemblies and handles any that
 	// are marked with ExportClassAttribute or RegisterAttribute.
 	[DisableRuleAttribute("C1026", "NoStaticRemove")]
-	[ThreadModel(ThreadModel.ArbitraryThread)]
+	[ThreadModel(ThreadModel.SingleThread)]
 	public static class Registrar
 	{
 		internal static void Init()
