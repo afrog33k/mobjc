@@ -371,7 +371,7 @@ namespace MObjc
 			return hash();
 		}
 		
-		[ThreadModel(ThreadModel.SingleThread)]
+		[ThreadModel(ThreadModel.Sequential)]
 		internal static void Register(Type klass, string nativeName)
 		{
 			if (!ms_registeredClasses.ContainsKey(nativeName))

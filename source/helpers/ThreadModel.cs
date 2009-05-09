@@ -25,29 +25,21 @@ namespace MObjc.Helpers
 {
 	public enum ThreadModel
 	{
-		// The code may execute multiple threads concurrently without user locking 
-		// (this is the default for code in the System/Mono namespaces). For example 
-		// immutable types like System.String.
-		Concurrent = 0x0000,
+		// The code runs under a single thead and cannot be used concurrently. The 
+		// thread may be unnamed (e.g. for a database connection class) or named 
+		// (eg for methods invoked by a database connection delegate). Note that 
+		// the default for code being checked is "main".
+		Sequential = 0x0000,
 		
-		// The code may execute under multiple threads, but only if the execution is 
-		// serialized (e.g. by user level locking). For example, System.Collections.
+		// The code may execute under multiple threads, but only if the execution 
+		// is serialized (e.g. by user level locking). For example, System.Collections.
 		// Generic.Dictionary.
 		Serializable = 0x0001,
 		
-		// The code runs under an arbitrary thread, but cannot be used concurrently.
-		// For example, a database connection type.
-		SingleThread = 0x0002,
-		
-		// The code may run safely only under the main thread (this is the default 
-		// for code outside the System/Mono namespaces). For example, the Initialize 
-		// method of a concurrent Log type might be main thread.
-		MainThread = 0x0003,
-		
-		// The code runs under a single thread with a user specified name (e.g. the 
-		// method invoked by a timer) or the code has no name but is intended to be
-		// used with a named thread (e.g. the timer's delegate type). 
-		NamedThread = 0x0004,
+		// The code may execute multiple threads concurrently without user locking 
+		// (this is the default for code in the System/Mono namespaces). For example 
+		// immutable types like System.String.
+		Concurrent = 0x0002,
 		
 		// Or this with the above for the rare cases where the code cannot be shown 
 		// to be correct using a static analysis.
@@ -64,20 +56,31 @@ namespace MObjc.Helpers
 	AllowMultiple = false, Inherited = false)]
 	public sealed class ThreadModelAttribute : Attribute
 	{
-		public ThreadModelAttribute(string name)
+		// Note that there are two standard names: "main" for code that executes
+		// under the main thread and "finalizer" for code that executes under the
+		// finalizer thread.
+		public ThreadModelAttribute (string name)
 		{
-			if (string.IsNullOrEmpty(name))
-				throw new ArgumentException("Name is null or empty.");
+			if (string.IsNullOrEmpty (name))
+				throw new ArgumentException ("Name is null or empty.");
 			
-			Model = ThreadModel.NamedThread;
+			Name = name;
+		}
+		
+		public ThreadModelAttribute (string name, ThreadModel model)
+		{
+			if (string.IsNullOrEmpty (name))
+				throw new ArgumentException ("Name is null or empty.");
+			
+			if (model != ThreadModel.Sequential && model != ThreadModel.AllowEveryCaller)
+				throw new ArgumentException ("Model should be Sequential or AllowEveryCaller.");
+			
+			Model = model;
 			Name = name;
 		}
 		
 		public ThreadModelAttribute(ThreadModel model)
 		{
-			if (model == ThreadModel.AllowEveryCaller)
-				throw new ArgumentException("Or AllowEveryCaller with one of the other enum values.");
-			
 			Model = model;
 		}
 		

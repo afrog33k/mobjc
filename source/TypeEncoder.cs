@@ -32,7 +32,7 @@ namespace MObjc
 	[ThreadModel(ThreadModel.Concurrent)]
 	internal static class TypeEncoder
 	{
-		[ThreadModel(ThreadModel.SingleThread)]
+		[ThreadModel(ThreadModel.Sequential)]
 		public static void Register(Type type, string name)
 		{
 			Contract.Assert(!ms_inUse, "Register was called after the TypeEncode began to be used");
