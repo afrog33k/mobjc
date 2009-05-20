@@ -176,7 +176,7 @@ namespace MObjc
 				}
 			}
 			
-			MethodInfo info2 = typeof(NSObject).GetMethod("OnDealloc", BindingFlags.Instance | BindingFlags.NonPublic);
+			MethodInfo info2 = typeof(NSObject).GetMethod("Deallocated", BindingFlags.Instance | BindingFlags.NonPublic);
 			DoAddMethod(name, info2, "dealloc", klass, superClass);
 			
 			RegisterClass(klass, ref exception);

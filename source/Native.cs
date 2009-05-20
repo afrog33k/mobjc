@@ -45,6 +45,10 @@ namespace MObjc
 		{
 		}
 		
+		internal Native(IntPtr target, Selector selector, IntPtr klass) : this(target, selector, DoGetImp(target, selector, klass), null)
+		{
+		}
+		
 		internal Native(IntPtr target, Selector selector, IntPtr imp, MethodSignature sig)
 		{
 			Contract.Requires(selector != null, "selector is null");

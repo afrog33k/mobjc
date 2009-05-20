@@ -44,9 +44,7 @@ namespace MObjc
 		// We default to logging exceptions thrown by managed code to stderr before
 		// we convert them into a native exception (because Cocoa has a tendency to
 		// eat them). If you want to do something else you can set this.
-		public delegate void LogHandler(Exception e);
-		
-		public static LogHandler LogException {get; set;}
+		public static Action<Exception> LogException {get; set;}
 		
 		internal IntPtr Call(IntPtr dummy, IntPtr resultBuffer, IntPtr argBuffers)
 		{

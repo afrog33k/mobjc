@@ -46,6 +46,7 @@ namespace MObjc
 			try
 			{
 				Registrar.Init();
+				ms_class = new Class("NSObject");
 			}
 			catch (Exception e)
 			{
@@ -385,23 +386,62 @@ namespace MObjc
 			return m_baseClass;
 		}
 		
+		internal void Deallocated()
+		{
+			if (!m_deallocated)
+			{
+				// Allow the managed classes to clean up their state.
+				OnDealloc();
+				Contract.Assert(m_deallocated, "base.OnDealloc wasn't called");
+				
+				// Remove the instance from our list.
+				lock (ms_instancesLock)
+				{
+					bool removed = ms_instances.Remove(m_instance);
+					Contract.Assert(removed, "dealloc was called but the instance is not in ms_instances");
+				}
+				
+				// Allow the unmanaged base class to clean itself up. Note that we have to be
+				// careful how we do this to avoid falling into infinite loops...
+				if (m_instance != IntPtr.Zero)
+				{
+					IntPtr klass = DoGetNonExportedBaseClass();
+					Native native = new Native(m_instance, Selector.Dealloc, klass);
+					Unused.Value = native.Invoke();
+				}
+			}
+		}
+		
 		#region Protected Methods
 		// Only called for exported types. Derived classes must call the base class 
 		// implementation.
 		protected virtual void OnDealloc()
 		{
-			lock (ms_instancesLock)
-			{
-				bool removed = ms_instances.Remove(m_instance);
-				Contract.Requires(removed, "dealloc was called but the instance is not in ms_instances");
-			}
-			
-			Unused.Value = SuperCall("dealloc");
 			m_deallocated = true;
 		}
 		#endregion
 		
 		#region Private Methods
+		private IntPtr DoGetNonExportedBaseClass()
+		{
+			IntPtr klass = object_getClass(m_instance);
+			
+			while (klass != IntPtr.Zero)
+			{
+				IntPtr ptr = class_getName(klass);
+				string name = Marshal.PtrToStringAnsi(ptr);
+				
+				Type type;
+				if (!Registrar.TryGetType(name, out type))
+					break;
+					
+				klass = class_getSuperclass(klass);
+			}
+			Contract.Assert(klass != IntPtr.Zero, "couldn't find a non-exported base class");	// should have found NSObject at least
+			
+			return klass;
+		}
+		
 		private static Type DoGetManagedClass(IntPtr klass)
 		{
 			while (klass != IntPtr.Zero)

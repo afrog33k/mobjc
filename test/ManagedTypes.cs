@@ -205,7 +205,7 @@ public class Subclass1 : NSObject
 		get {return m_data.Value.ToString();}
 		set {m_data.Value = NSString.Create(value);}
 	}
-		
+	
 	protected override void OnDealloc()
 	{
 		m_dead = true;
@@ -265,6 +265,17 @@ public class MyBase : NSObject
 	{
 	}
 	
+	private bool BaseDead {get; set;}
+
+	protected override void OnDealloc()
+	{
+		if (BaseDead)
+			throw new Exception("OnDealloc was called twice");
+			
+		BaseDead = true;
+		base.OnDealloc();
+	}
+	
 	[Register]
 	public int get33() 				// new method
 	{
@@ -294,7 +305,15 @@ public class MyDerived : MyBase
 	protected MyDerived(IntPtr instance) : base(instance)
 	{
 	}
-		
+	
+	public bool Dead {get; private set;}
+	
+	protected override void OnDealloc()
+	{
+		Dead = true;
+		base.OnDealloc();
+	}
+	
 	[Register]
 	public int get63() 				// new method
 	{
@@ -344,6 +363,11 @@ public class Item : NSObject			// make sure Registrar processes base types befor
 	protected Item(IntPtr instance) : base(instance)
 	{
 	}
+	
+	public int value()
+	{
+		return 1;
+	}
 }
 
 [ExportClass("File", "Item")]
@@ -359,6 +383,11 @@ public class Media : File
 {
 	protected Media(IntPtr instance) : base(instance)
 	{
+	}
+	
+	public new int value()
+	{
+		return 2 + SuperCall("value").To<int>();
 	}
 }
 

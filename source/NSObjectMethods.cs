@@ -48,9 +48,6 @@ namespace MObjc
 		
 		public static NSObject alloc()
 		{
-			if (ms_class == null)
-				ms_class = new Class("NSObject");
-				
 			return ms_class.Alloc();
 		}
 		

@@ -114,6 +114,7 @@ namespace MObjc
 		internal static readonly Selector Alloc = new Selector("alloc");
 		internal static readonly Selector Autorelease = new Selector("autorelease");
 		internal static readonly Selector Class = new Selector("class");
+		internal static readonly Selector Dealloc = new Selector("dealloc");
 		internal static readonly Selector Description = new Selector("description");
 		internal static readonly Selector Hash = new Selector("hash");
 		internal static readonly Selector Init = new Selector("init");

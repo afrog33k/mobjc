@@ -27,7 +27,7 @@ using System.Runtime.InteropServices;
 
 [TestFixture]
 public class InstanceTests
-{		
+{
 	[SetUp]
 	public void Setup()
 	{
@@ -37,7 +37,7 @@ public class InstanceTests
 	}
 	
 	[Test]
-	public void RefCount1Test()	
+	public void RefCount1Test()
 	{
 		NSObject pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
 		
@@ -132,45 +132,73 @@ public class InstanceTests
 	public void NilCallTest()
 	{
 		NSObject pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
-
+		
 		NSObject nil = new NSObject(IntPtr.Zero);
 		
 		// Calling an NSObject method on nil does nothing and returns nil.
 		NSObject result = (NSObject) nil.Call("hash");
 		Assert.IsTrue(result.IsNil());
-
+		
 		// Calling a unknown method on nil does nothing and returns nil.
 		result = (NSObject) nil.Call("foo");
 		Assert.IsTrue(result.IsNil());
-
+		
 		// Can chain calls to nil.
 		result = (NSObject) nil.Call("foo").Call("bar");
 		Assert.IsTrue(result.IsNil());
-
+		
 		// Can use Native with null.
 		result = (NSObject) nil.Call("foo");
 		Assert.IsTrue(result.IsNil());
-
+		
 		pool.release();
 	}
-
+	
 	[Test]
 	public void ThreadedTest()
 	{
 		NSObject pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
-
+		
 		sbyte threaded = (sbyte) new Class("NSThread").Call("isMultiThreaded");
 		Assert.AreEqual(1, threaded);
-
+		
 		pool.release();
 	}
-
+	
+	[Test]
+	public void SuperTest()
+	{
+		NSObject pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
+		
+		Media instance = (Media) new Class("Media").Call("alloc").Call("init");
+		int value = instance.value();
+		Assert.AreEqual(3, value);
+		
+		value = instance.Call("value").To<int>();
+		Assert.AreEqual(3, value);
+		
+		pool.release();
+	}
+	
 	[Test]
 	public void DeallocTest()
 	{
 		NSObject pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
-
+		
 		Subclass1 instance = (Subclass1) new Class("Subclass1").Call("alloc").Call("init");
+		Assert.AreEqual(1L, instance.retainCount());
+		instance.release();
+		Assert.IsTrue(instance.Dead);
+		
+		pool.release();
+	}
+	
+	[Test]
+	public void DeallocTest2()
+	{
+		NSObject pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
+		
+		MyDerived instance = (MyDerived) new Class("MyDerived").Call("alloc").Call("init");
 		Assert.AreEqual(1L, instance.retainCount());
 		instance.release();
 		Assert.IsTrue(instance.Dead);
