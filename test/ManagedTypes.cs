@@ -55,7 +55,7 @@ public struct NSRange
 
 [Register]
 public class NSString : NSObject
-{		
+{
 	public NSString(IntPtr value) : base(value)
 	{
 	}
@@ -96,39 +96,39 @@ public class Subclass1 : NSObject
 		m_data = new IBOutlet<NSString>(this, "myData");
 	}
 		
-	[Register]		
-	public NSString concat(NSString lhs, NSString rhs) 
+	[Register]
+	public NSString concat(NSString lhs, NSString rhs)
 	{
 		return NSString.Create(lhs.ToString() + rhs.ToString());
 	}
 	
-	[Register]		
-	public Subclass1 initValue() 
+	[Register]
+	public Subclass1 initValue()
 	{
 		m_value = 100;
 		return this;
 	}
 	
-	[Register("getValue")]		
-	public int GetValue() 
+	[Register("getValue")]
+	public int GetValue()
 	{
 		return m_value;
 	}
-		
-	[Register]		
-	public void BadValue() 
+	
+	[Register]
+	public void BadValue()
 	{
 		throw new ArgumentException("my error", "alpha");
 	}
-		
-	[Register]		
-	public int DiffRange(NSRange range) 
+	
+	[Register]
+	public int DiffRange(NSRange range)
 	{
 		return range.location - range.length;
 	}
-		
-	[Register]		
-	public NSRect GetRect() 
+	
+	[Register]
+	public NSRect GetRect()
 	{
 		NSRect result = new NSRect();
 		result.origin.x = 1.0f;
@@ -138,18 +138,18 @@ public class Subclass1 : NSObject
 		
 		return result;
 	}
-		
-	[Register]		
+	
+	[Register]
 	public Subclass1 Clone()
 	{
 		return Subclass1.make(m_value);
 	}
-		
-	[Register]		
-	public NSObject MungeRect(NSRect r) 
+	
+	[Register]
+	public NSObject MungeRect(NSRect r)
 	{
 		NSObject str = (NSObject) new Class("NSMutableString").Call("alloc").Call("init");
-
+		
 		str.Call("appendString:", DoCreateStr(((int) r.origin.x).ToString()));
 		str.Call("appendString:", DoCreateStr(((int) r.origin.y).ToString()));
 		str.Call("appendString:", DoCreateStr(((int) r.size.width).ToString()));
@@ -158,39 +158,39 @@ public class Subclass1 : NSObject
 		return str;
 	}
 	
-	[Register]		
-	public int TakeUInt16(UInt16 value) 
+	[Register]
+	public int TakeUInt16(UInt16 value)
 	{
 		return value;
 	}
-		
-	[Register]		
-	public UInt16 TakeUInt162(UInt16 value) 
+	
+	[Register]
+	public UInt16 TakeUInt162(UInt16 value)
 	{
 		return (UInt16) (value + 10);
 	}
-		
-	[Register]		
-	public int TakeChar(char value) 
+	
+	[Register]
+	public int TakeChar(char value)
 	{
 		return (int) value;
 	}
-		
-	[Register]		
-	public NSString TakeString(NSString s) 
+	
+	[Register]
+	public NSString TakeString(NSString s)
 	{
 		return (NSString) s.Call("stringByAppendingString:", s);
 	}
-		
-	[Register]		
-	public int TakeBase(NSObject s) 
+	
+	[Register]
+	public int TakeBase(NSObject s)
 	{
 		int r = (int) s.Call("getValue");
 		return 3 * r;
 	}
-		
-	[Register]		
-	public int TakeDerived(Subclass1 s) 
+	
+	[Register]
+	public int TakeDerived(Subclass1 s)
 	{
 		return 3 * s.GetValue();
 	}
@@ -199,7 +199,7 @@ public class Subclass1 : NSObject
 	{
 		get {return m_dead;}
 	}
-		
+	
 	public string Data
 	{
 		get {return m_data.Value.ToString();}
@@ -218,7 +218,7 @@ public class Subclass1 : NSObject
 		NSObject str = (NSObject) nsString.Call("alloc");
 		return (NSObject) str.Call("initWithUTF8String:", Marshal.StringToHGlobalAuto(s));
 	}
-		
+	
 	private int m_value;
 	private bool m_dead;
 	private IBOutlet<NSString> m_data;
@@ -227,7 +227,7 @@ public class Subclass1 : NSObject
 [ExportClass("PrettyData", "NSConcreteData")]
 public class PrettyData : NSObject
 {
-	public static PrettyData makeDefault() 
+	public static PrettyData makeDefault()
 	{
 		PrettyData result = (PrettyData) new Class("PrettyData").Call("alloc").Call("init");
 		result.autorelease();
@@ -237,23 +237,23 @@ public class PrettyData : NSObject
 	protected PrettyData(IntPtr instance) : base(instance)
 	{
 	}
-		
-	[Register]		
-	public int get33() 
+	
+	[Register]
+	public int get33()
 	{
 		return 33;
 	}
 	
-	[Register]		
-	public new NSObject description() 
+	[Register]
+	public new NSObject description()
 	{
 		Class nsString = new Class("NSMutableString");
 		NSObject str = (NSObject) nsString.Call("alloc");
 		str = (NSObject) str.Call("initWithUTF8String:", Marshal.StringToHGlobalAuto("pretty: "));
-
+		
 		NSObject ss = (NSObject) SuperCall("description");
 		str.Call("appendString:", ss);
-	
+		
 		return str;
 	}
 }
@@ -264,26 +264,26 @@ public class MyBase : NSObject
 	protected MyBase(IntPtr instance) : base(instance)
 	{
 	}
-		
-	[Register]		
+	
+	[Register]
 	public int get33() 				// new method
 	{
 		return 33;
 	}
 	
-	[Register]		
+	[Register]
 	public int integerValue() 		// NSString override
 	{
 		return 43;
 	}
 	
-	[Register]		
-	public new NSObject description() 
+	[Register]
+	public new NSObject description()
 	{
 		Class nsString = new Class("NSMutableString");
 		NSObject str = (NSObject) nsString.Call("alloc");
 		str = (NSObject) str.Call("initWithUTF8String:", Marshal.StringToHGlobalAuto("base"));
-	
+		
 		return str;
 	}
 }
@@ -295,26 +295,26 @@ public class MyDerived : MyBase
 	{
 	}
 		
-	[Register]		
+	[Register]
 	public int get63() 				// new method
 	{
 		return 63;
 	}
 	
-	[Register]		
+	[Register]
 	public int intValue() 			// NSString override
 	{
 		return 73;
 	}
 	
-	[Register]			
+	[Register]
 	new public int integerValue()	// MyBase override 	
 	{
 		return 74;
 	}
 	
-	[Register]		
-	public new NSObject description() 
+	[Register]
+	public new NSObject description()
 	{
 		Class nsString = new Class("NSMutableString");
 		NSObject str = (NSObject) nsString.Call("alloc");
@@ -323,14 +323,14 @@ public class MyDerived : MyBase
 		return str;
 	}
 		
-	[Register]		
-	public NSObject TakeBase(MyBase s) 
+	[Register]
+	public NSObject TakeBase(MyBase s)
 	{
 		return (NSObject) s.Call("description");
 	}
-		
-	[Register]		
-	public NSObject TakeDerived(MyDerived s) 
+	
+	[Register]
+	public NSObject TakeDerived(MyDerived s)
 	{
 		return (NSObject) s.Call("description");
 	}
