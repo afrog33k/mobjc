@@ -24,15 +24,15 @@ using System;
 
 namespace MObjc
 {
-	// Used to mark:
-	// 1) methods which may be called from native code
-	// 2) structs which may be marshaled to and from native code 
-	// 3) classes which may be used as managed method argument types
+	// This is most commonly used to decorate types which are associated with
+	// existing cocoa types (e.g. NSApplication or NSRange). It may also be used
+	// on methods to explicitly register a method with cocoa or to provide a custom
+	// name for the cocoa form of the method.
 	//
-	// Note that public, lower case, nullary and unary methods are registered 
-	// automatically if RegisterAttribute is not present. The native method 
-	// name will be the managed name except that if the method is unary a colon 
-	// is appended.
+	// Note that methods in exported classes are automatically registered if they
+	// are lower case. The cocoa name is the same as the managed name except 
+	// that underscores are replaced with colons and a colon is appended if the
+	// method is not nullary.
 	[Serializable]
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Struct | AttributeTargets.Class, AllowMultiple = false)]
 	public sealed class RegisterAttribute : Attribute

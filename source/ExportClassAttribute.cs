@@ -24,8 +24,8 @@ using System;
 
 namespace MObjc
 {
-	// Used to mark a class as one that can be used from Objective-C.
-	// Note that the class should also be a descendent of NSObject.
+	// Used to label brand-new cocoa classes which are implemented in
+	// managed code. The class should be a descendent of NSObject.
 	[Serializable]
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
 	public sealed class ExportClassAttribute : Attribute
