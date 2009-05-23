@@ -268,7 +268,7 @@ namespace MObjc
 			Contract.Requires(!m_deallocated, "ref count is zero");
 			
 			if (m_instance != IntPtr.Zero)
-				return NSObject.Lookup((IntPtr) Call("copy"));
+				return Call("copy").To<NSObject>();
 			else
 				return new NSObject(IntPtr.Zero);
 		}
@@ -279,7 +279,7 @@ namespace MObjc
 			Contract.Requires(!m_deallocated, "ref count is zero");
 			
 			if (m_instance != IntPtr.Zero)
-				return NSObject.Lookup((IntPtr) Call("mutableCopy"));
+				return Call("mutableCopy").To<NSObject>();
 			else
 				return new NSObject(IntPtr.Zero);
 		}
