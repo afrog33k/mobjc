@@ -109,17 +109,17 @@ else:
 	# reasonable instead of "mono".
 	script = """#!/bin/sh
 APP_PATH=`echo \x240 | awk '{split(\x240,patharr,\"/\"); idx=1; while(patharr[idx+3] != \"\") { if (patharr[idx] != \"/\") {printf(\"%s/\", patharr[idx]); idx++ }} }'`
-NAME='%s'
+NAME=`basename \"$APP_PATH\" .app`
 cd \"${APP_PATH}/Contents/MacOS\"
 
-if [ -f ${NAME} ]; then rm -f ${NAME} ; fi
-if !(ln \x60which mono\x60 ${NAME}); then
-	ln -s \x60which mono\x60 ${NAME}
+if [ -f \"$NAME\" ]; then rm -f \"$NAME\" ; fi
+if !(ln \x60which mono\x60 \"$NAME\"); then
+	ln -s \x60which mono\x60 \"$NAME\"
 fi
 
 cd ../Resources
-../MacOS/${NAME} $(mono-flags) $(exe-name).exe $@
-""" % ("%s", appName.replace(" ", "_"))
+\"../MacOS/$NAME\" $(mono-flags) $(exe-name).exe $@
+"""
 	script = script.replace("$(app-name)", appName)
 	script = script.replace("$(mono-flags)", options.mono_flags)
 	script = script.replace("$(exe-name)", exeName)

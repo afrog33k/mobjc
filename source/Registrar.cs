@@ -135,7 +135,7 @@ namespace MObjc
 			Class superClass = new Class(baseName);
 			
 			IntPtr exception = IntPtr.Zero;
-			IntPtr klass = CreateClass(superClass, name, ref exception);			
+			IntPtr klass = CreateClass(superClass, name, ref exception);
 			if (exception != IntPtr.Zero)
 				CocoaException.Raise(exception);
 			
@@ -157,6 +157,9 @@ namespace MObjc
 			{
 				if (!info.IsSpecialName && info.DeclaringType.Name != "NSObject")
 				{
+					if (info.Name == "dealloc")
+						throw new ArgumentException(string.Format("Instead of using {0}::{1}, override OnDealloc.", type, info.Name));
+					
 					RegisterAttribute attr = Attribute.GetCustomAttribute(info, typeof(RegisterAttribute), false) as RegisterAttribute;
 					if (attr != null)
 					{

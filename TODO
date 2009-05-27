@@ -1,14 +1,30 @@
 set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-console.exe -fixture=BaseClassTests -nologo bin/tests.dll
 
-xxxxx
-
 * Document that OnDealloc should be used instead of overriding dealloc.
-* Provide a custom error message if people try to override dealloc.
-* Use the app bundle name instead of the build time name for the link.
-* Wrapping section on the wiki should be updated.
 * Might want some better docs.
-* Try the code below to set APP_PATH:
-	- http://developer.apple.com/documentation/OpenSource/Conceptual/ShellScripting/AdvancedTechniques/AdvancedTechniques.html#//apple_ref/doc/uid/TP40004268-TP40003521-SW42
+* Release checklist:
+	- search for TODO (everywhere)
+	- run smoke
+	- run gendarme
+	- make sure tests work in debug
+	- make sure app works in debug
+	- make RELEASE=1 test
+	- make RELEASE=1 app
+	- make sure app memory test is OK
+	- review tar target
+	- make sure everything is checked in
+	- use svn log -r 1:HEAD > CHANGE_LOG
+	- update CHANGES file
+	- update version number
+	- remove build_num file
+	- build debug 
+	- install
+	- update README and wiki
+	- wrapping section on the wiki should be updated.
+	- upload a new version to googlecode
+	- send an announcement
+	- make sure everything is checked in
+
 * Need to always generate response files.
 * Should be able to call arbitrary .net code from native code.
 * Experiment with using the native GC:
@@ -84,7 +100,7 @@ xxxxx
 	- send an announcement
 	- make sure everything is checked in
 * Limitations:
-	- 64-bit is doable but not there yet
+	- 64-bit is doable but not there yet (mono doesn't support it either tho)
 	- can't export static methods
 	- can't add methods to an instance (as opposed to a class)
 	- thread safety needs to be tested
