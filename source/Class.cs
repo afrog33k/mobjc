@@ -27,16 +27,18 @@ using System.Runtime.InteropServices;
 
 namespace MObjc
 {
-	// Represents a class definition.
+	/// <summary>Wrapper for the Objective-C <c>Class</c> type.</summary>
+	/// <remarks>See the <a href = "http://developer.apple.com/documentation/Cocoa/Reference/ObjCRuntimeRef/Reference/reference.html">Objective-C 2.0 Runtime Reference</a> for more information.</remarks>
 	[ThreadModel(ThreadModel.Concurrent)]
 	public sealed class Class : NSObject
 	{
-		// Name should be something like "NSString".
+		/// <param name = "name">The name of the class, e.g. "NSString".</param>
 		public Class(string name) : base(DoGetDefinition(name))
 		{
 			m_name = name;
 		}
 		
+		/// <param name = "klass">An unmanaged <c>Class</c> pointer.</param>
 		public Class(IntPtr klass) : base(klass)
 		{
 			if ((IntPtr) this != IntPtr.Zero)
@@ -48,6 +50,10 @@ namespace MObjc
 				m_name = "(null)";
 		}
 		
+		/// <summary>Used to allocate an uninitialized Objective-C instance.</summary>
+		/// <remarks>The new instance will have a reference count of one. Note that
+		/// this is preferred over <c>alloc</c> because mcocoa generates <c>Alloc></c>
+		/// methods for each type which return the type instead of NSObject.</remarks>
 		public NSObject Alloc()
 		{
 			IntPtr exception = IntPtr.Zero;
@@ -58,17 +64,20 @@ namespace MObjc
 			return NSObject.Lookup(instance);
 		}
 		
+		/// <summary>Returns the name of the class, e.g. "NSString".</summary>
 		public string Name
 		{
 			get {return m_name;}
 		}
 		
-		// Base class of NSObject is null.
+		/// <remarks>The base class of the NSObject class is null.</remarks>
 		public Class BaseClass
 		{
 			get {return new Class(GetBaseClass());}
 		}
 		
+		/// <summary>Returns the name of the class, e.g. "NSString".</summary>
+		/// <remarks>This ignores the normal <see cref = "NSObject"/> format specifiers like ":D".</remarks>
 		public override string ToString()
 		{
 			return m_name;

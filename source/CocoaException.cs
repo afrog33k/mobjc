@@ -30,24 +30,28 @@ using System.Security.Permissions;
 
 namespace MObjc
 {
-	// This will be thrown if the unmanaged code throws an exception.
+	/// <summary>Wrapper around unmanaged cocoa exceptions.</summary>
+	/// <remarks>This is the exception that will be thrown if unmanaged code throws an
+	/// exception. However if managed code calls unmanaged code which calls managed
+	/// code which throws then the original managed call will throw a <c>TargetInvocationException</c>
+	/// which wraps the managed exception.</remarks>
 	[Serializable]
 	[ThreadModel(ThreadModel.Concurrent)]
 	public sealed class CocoaException : Exception
 	{
 		// This should not normally be used but is present so the class
 		// works with XML serialization.
-		public CocoaException()
+		internal CocoaException()
 		{
 			m_instance = new NSObject(IntPtr.Zero);
 		}
 		
-		public CocoaException(NSObject instance, Exception innerException) : base(DoGetMessage(instance), innerException)
+		private CocoaException(NSObject instance) : base(DoGetMessage(instance))
 		{
 			m_instance = instance;
 		}
 		
-		private CocoaException(NSObject instance) : base(DoGetMessage(instance))
+		internal CocoaException(NSObject instance, Exception innerException) : base(DoGetMessage(instance), innerException)
 		{
 			m_instance = instance;
 		}
@@ -69,14 +73,20 @@ namespace MObjc
 			info.AddValue("NSObject", ((IntPtr) m_instance).ToInt64());
 		}
 		
-		public static void Raise(IntPtr p)
+		/// <summary>Converts an <c>NSException</c> into a managed exception and throws it.</summary>
+		/// <param name = "instance">The <a href ="http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Classes/nsexception_Class/Reference/Reference.html">NSException</a>
+		/// pointer.</param>
+		/// <summary>If the <c>NSException</c> wraps a managed exception then 
+		/// <c>TargetInvocationException</c> is thrown instead with the inner exception
+		/// set to the original exception.</summary>
+		public static void Raise(IntPtr instance)
 		{
-			NSObject instance = new NSObject(p);
+			NSObject obj = new NSObject(instance);
 			
-			if (instance.isMemberOfClass(new Class("NSException")))
+			if (obj.isMemberOfClass(new Class("NSException")))
 			{
 				// See if the userInfo contains a .NET exception.
-				NSObject userInfo = (NSObject) instance.Call("userInfo");
+				NSObject userInfo = (NSObject) obj.Call("userInfo");
 				
 				if (userInfo != null && (IntPtr) userInfo != IntPtr.Zero)
 				{
@@ -107,10 +117,11 @@ namespace MObjc
 				}
 			}
 			
-			throw new CocoaException(instance);
+			throw new CocoaException(obj);
 		}
 		
-		// Will usually be a NSException.
+		/// <summary>Returns the pointer passed to the Raise method.</summary>
+		/// <returns>This will normally be an <c>NSException</c>.</returns>
 		public NSObject NSObject
 		{
 			get {return m_instance;}

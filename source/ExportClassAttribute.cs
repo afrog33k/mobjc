@@ -24,10 +24,7 @@ using System;
 
 namespace MObjc
 {
-	/// <summary>This is used to label new Cocoa classes which happen to be implemented
-	/// in managed code.</summary>
-	/// <remarks>Also see <see cref = "MObjc.RegisterAttribute"/> which can be used to
-	/// label existing Cocoa classes which are exposed to managed code via a native class.</remarks>
+	/// <summary>Identifies the managed classes which can also be used as (new) Objective-C classes.</summary>
 	/// <example>Here's an example of how you might use this attribute with a custom view:
 	/// <code>
 	/// // The outlets should be setup using Interface Builder.
@@ -82,15 +79,19 @@ namespace MObjc
 	/// }
 	/// </code>
 	/// </example>
+	/// <seealso cref = "MObjc.RegisterAttribute"/>
 	[Serializable]
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
 	public sealed class ExportClassAttribute : Attribute
 	{
-		/// <summary>The base class will be NSObject.</summary>
+		/// <param name = "derivedName">The Objective-C class name, e.g. "TableItem".</param>
+		/// <remarks>The base class will be NSObject.</remarks>
 		public ExportClassAttribute(string derivedName) : this(derivedName, "NSObject")
 		{
 		}
 		
+		/// <param name = "derivedName">The Objective-C derived class name, e.g. "MyView".</param>
+		/// <param name = "baseName">The Objective-C base class name, e.g. "NSView".</param>
 		public ExportClassAttribute(string derivedName, string baseName)
 		{
 			if (string.IsNullOrEmpty(derivedName))

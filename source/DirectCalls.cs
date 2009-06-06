@@ -1,10 +1,11 @@
-// Machine generated on 2009-04-16
+// Machine generated on 2009-06-06
 using MObjc.Helpers;
 using System;
 using System.Runtime.InteropServices;
 
 namespace MObjc
 {
+	/// <exclude/>
 	[ThreadModel(ThreadModel.Concurrent)]
 	public static class DirectCalls
 	{

@@ -38,6 +38,8 @@ class GenerateCS:
 		self.write("")
 		self.write("namespace MObjc")
 		self.write("{")
+		self.write("	/// <exclude/>")
+		self.write("	[ThreadModel(ThreadModel.Concurrent)]")
 		self.write("	public static class DirectCalls")
 		self.write("	{")
 		self.writeCalls()
