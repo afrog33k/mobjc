@@ -25,12 +25,14 @@ using System.Diagnostics;
 
 namespace MObjc
 {
-	/// <summary>Simple wrapper around the NSObject indexer.</summary>
-	/// <summary>This allows you to get and set the native instance values asscociated
+	/// <summary>Wrapper around the NSObject indexer.</summary>
+	/// <remarks>This allows you to get and set the native instance values asscociated
 	/// with the class. Note that these normally map to the same names as those set within
-	/// Interface Builder.</summary>
-	public sealed class IBOutlet<T> : IEquatable<IBOutlet<T>> where T : NSObject	
+	/// Interface Builder. Also it's usually easiest to just use the <see cref = "NSObject"/> indexer.</remarks>
+	public sealed class IBOutlet<T> : IEquatable<IBOutlet<T>> where T : NSObject
 	{
+		/// <param name = "owner">The object which owns the outlet. Usually <c>this</c>.</param>
+		/// <param name = "name">The name of the outlet. Usually the name set within Interface Builder.</param>
 		public IBOutlet(NSObject owner, string name)
 		{
 			Contract.Requires(!NSObject.IsNullOrNil(owner), "owner is null or nil");
@@ -40,6 +42,7 @@ namespace MObjc
 			m_name = name;
 		}
 		
+		/// <summary>The current value of the outlet.</summary>
 		public T Value
 		{
 			get {NSObject o = m_owner[m_name]; return NSObject.IsNullOrNil(o) ? null : (T) o;}

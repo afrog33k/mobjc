@@ -25,21 +25,24 @@ using System.Runtime.Serialization;
 
 namespace MObjc
 {
-	// This will be thrown if an Objective-C method is called with bad arguments.
+	/// <summary>Thrown if a call to unmanaged code cannot be performed.</summary>
+	/// <remarks>Usually the reason for this is that the unmanaged code is called with
+	/// an argument that cannot be marshaled to unmanaged code or the unmanaged method
+	/// could not be found (e.g. it may be misspelled).</remarks>
 	[Serializable]
 	[ThreadModel(ThreadModel.Concurrent)]
 	public sealed class InvalidCallException : Exception
-	{	
+	{
 		// Need this for XML serialization.
-		public InvalidCallException()
+		internal InvalidCallException()
 		{
 		}
 		
-		public InvalidCallException(string text) : base(text)
+		internal InvalidCallException(string text) : base(text)
 		{
 		}
 		
-		public InvalidCallException(string text, Exception inner) : base(text, inner)
+		internal InvalidCallException(string text, Exception inner) : base(text, inner)
 		{
 		}
 		
