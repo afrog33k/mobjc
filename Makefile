@@ -88,18 +88,6 @@ keys:
 docs: libs
 	mmmdoc --out=docs bin/mobjc.dll,bin/docs.xml
 
-smokey_flags := --not-localized -set:naming:jurassic
-smokey_flags += -exclude-check:D1020	# NativeMethods
-smokey_flags += -exclude-check:PO1001	# DllImportPath
-smokey_flags += -exclude-check:PO1002	# DllImportExtension
-smokey_flags += -exclude-check:P1003	# AvoidBoxing
-smokey_flags += -exclude-check:P1004	# AvoidUnboxing
-smokey_flags += -exclude-check:P1005	# StringConcat
-smokey_flags += -exclude-check:R1039	# ThreadSafeAttr
-smokey_flags += -exclude-check:S1020	# VisiblePInvoke (mcocoa needs these for the fast path)
-smoke: bin/mobjc.dll
-	@-smoke $(smokey_flags) bin/mobjc.dll
-	
 gendarme_flags := --severity all --confidence all --ignore gendarme.ignore --quiet
 gendarme: bin/mobjc.dll
 	@-"$(GENDARME)" $(gendarme_flags) bin/mobjc.dll

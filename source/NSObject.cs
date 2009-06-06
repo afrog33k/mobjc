@@ -30,17 +30,9 @@ using System.Runtime.Serialization;
 namespace MObjc
 {
 	// http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Protocols/NSObject_Protocol/Reference/NSObject.html#//apple_ref/doc/uid/20000052-BBCEBEIC
-	[DisableRuleAttribute("S1003", "KeepAlive")]
-	[DisableRuleAttribute("P1014", "InlineStaticInit")]
-	[DisableRuleAttribute("D1035", "ImplicitCast")]
-	[DisableRuleAttribute("P1012", "NotInstantiated")]
-	[DisableRuleAttribute("C1026", "NoStaticRemove")]
-	[DisableRuleAttribute("D1041", "CircularReference")]
-	[DisableRule("D1007", "UseBaseTypes")]
 	[ThreadModel(ThreadModel.Concurrent)]
 	public partial class NSObject : IFormattable, IEquatable<NSObject>
 	{
-		[DisableRuleAttribute("D1038", "DontExit2")]
 		static NSObject()
 		{
 			try
@@ -66,7 +58,6 @@ namespace MObjc
 		// id, except for the exported classes. For the exported classes NSObject
 		// enforces a constraint that requires that each exported class id is
 		// wrapped by no more than one managed instance.
-		[DisableRuleAttribute("D1032", "UnusedMethod")]
 		public NSObject(IntPtr instance)
 		{
 			m_instance = instance;				// note that it's legal to send messages to nil
@@ -343,7 +334,6 @@ namespace MObjc
 			return this == rhs;
 		}
 		
-		[DisableRule("D1007", "UseBaseTypes")]
 		public static bool operator==(NSObject lhs, NSObject rhs)
 		{
 			if (object.ReferenceEquals(lhs, rhs))

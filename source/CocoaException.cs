@@ -32,7 +32,6 @@ namespace MObjc
 {
 	// This will be thrown if the unmanaged code throws an exception.
 	[Serializable]
-	[DisableRuleAttribute("R1000", "DisposableFields")]
 	[ThreadModel(ThreadModel.Concurrent)]
 	public sealed class CocoaException : Exception
 	{

@@ -31,7 +31,6 @@ namespace MObjc
 {
 	// Iterates through all types in the loaded assemblies and handles any that
 	// are marked with ExportClassAttribute or RegisterAttribute.
-	[DisableRuleAttribute("C1026", "NoStaticRemove")]
 	[ThreadModel(ThreadModel.SingleThread)]
 	public static class Registrar
 	{
@@ -187,7 +186,6 @@ namespace MObjc
 				CocoaException.Raise(exception);
 		}
 		
-		[DisableRule("D1047", "TooManyArgs")]
 		private static void DoAddMethod(string name, MethodInfo info, string selName, IntPtr klass, Class superClass)
 		{
 			ManagedImp mimp = null;

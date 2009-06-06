@@ -28,7 +28,6 @@ using System.Runtime.InteropServices;
 
 namespace MObjc
 {
-	[DisableRuleAttribute("C1026", "NoStaticRemove")]
 	[ThreadModel(ThreadModel.Concurrent)]
 	internal static class Ffi
 	{
@@ -114,7 +113,6 @@ namespace MObjc
 		}
 		
 		#region Private Methods
-		[DisableRuleAttribute("P1003", "AvoidBoxing")]
 		private static object DoDrainBuffer(IntPtr buffer, string encoding)
 		{
 			object result;
@@ -186,7 +184,6 @@ namespace MObjc
 		}
 		
 		// Values always appear at the start of the buffer.
-		[DisableRuleAttribute("P1003", "AvoidBoxing")]
 		private static object DoDrainArgBuffer(IntPtr buffer, string encoding)
 		{
 			object result;
@@ -219,7 +216,6 @@ namespace MObjc
 		}
 		
 		// Small values appear at the end of the 4-byte buffer.
-		[DisableRuleAttribute("P1003", "AvoidBoxing")]
 		private static object DoDrainReturnBuffer(IntPtr buffer, string encoding)
 		{
 			object result;
@@ -296,7 +292,6 @@ namespace MObjc
 			return result;
 		}
 		
-		[DisableRuleAttribute("D1002", "MethodTooComplex")]
 		private static void DoFillBuffer(IntPtr buffer, object value, string encoding)
 		{
 			Type type = value != null ? value.GetType() : null;
@@ -623,7 +618,6 @@ namespace MObjc
 			return code;
 		}
 		
-		[DisableRule("D1002", "MethodTooComplex")]
 		private static IntPtr DoCreateBuffer(string encoding)
 		{
 			IntPtr buffer;

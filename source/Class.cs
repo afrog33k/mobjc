@@ -28,7 +28,6 @@ using System.Runtime.InteropServices;
 namespace MObjc
 {
 	// Represents a class definition.
-	[DisableRuleAttribute("D1041", "CircularReference")]
 	[ThreadModel(ThreadModel.Concurrent)]
 	public sealed class Class : NSObject
 	{

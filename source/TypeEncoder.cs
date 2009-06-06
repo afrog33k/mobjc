@@ -28,7 +28,6 @@ using System.Reflection;
 namespace MObjc
 {
 	// http://developer.apple.com/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/chapter_7_section_1.html
-	[DisableRuleAttribute("C1026", "NoStaticRemove")]
 	[ThreadModel(ThreadModel.Concurrent)]
 	internal static class TypeEncoder
 	{

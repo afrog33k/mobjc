@@ -27,7 +27,6 @@ using System.Runtime.InteropServices;
 namespace MObjc.Helpers
 {
 	// Manages a pointer to an array of pointers.
-	[DisableRuleAttribute("R1001", "DisposeNativeResources")]
 	[ThreadModel(ThreadModel.Serializable)]
 	public sealed class PtrArray
 	{

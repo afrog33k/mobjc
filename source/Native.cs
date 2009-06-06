@@ -30,8 +30,6 @@ namespace MObjc
 {
 	/// <summary>Allows a call to native code to be pre-prepared so that it can be invoked more efficiently.</summary>
 	/// <remarks>Note that this will only help with dynamic calls or the slow path (through Ffi instead of DirectCalls).</remarks>
-	[DisableRuleAttribute("D1041", "CircularReference")]
-	[DisableRuleAttribute("D1067", "PreferSafeHandle")]
 	[ThreadModel(ThreadModel.Serializable)]
 	public sealed class Native
 	{
@@ -173,7 +171,6 @@ namespace MObjc
 		#endregion
 		
 		#region Private Types
-		[DisableRuleAttribute("R1001", "DisposeNativeResources")]		// These are used as a per thread cache for each method signature used and are not released so we don't need to cleanup m_cif. 
 		private struct StackFrame		// TODO: it should be possible to use a single stack frame for all calls
 		{
 			public StackFrame(MethodSignature sig)

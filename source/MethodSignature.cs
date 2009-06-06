@@ -98,7 +98,6 @@ namespace MObjc
 		#endregion
 	}
 	
-	[DisableRule("C1026", "NoStaticRemove")]
 	[ThreadModel(ThreadModel.Concurrent)]
 	internal sealed class MethodSignature : IEquatable<MethodSignature>
 	{

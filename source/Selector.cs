@@ -28,8 +28,6 @@ using System.Runtime.InteropServices;
 namespace MObjc
 {
 	/// <summary>Wrapper around a cookie representing the name of a native method.</summary>
-	[DisableRuleAttribute("R1001", "DisposeNativeResources")]
-	[DisableRuleAttribute("D1035", "ImplicitCast")]
 	[ThreadModel(ThreadModel.Concurrent)]
 	public sealed class Selector : IEquatable<Selector>
 	{

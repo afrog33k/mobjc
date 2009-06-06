@@ -28,7 +28,6 @@ namespace MObjc.Helpers
 	{
 		public static object Value
 		{
-			[DisableRule("C1022", "UseSetterValue")]
 			set {}
 		}
 	}
