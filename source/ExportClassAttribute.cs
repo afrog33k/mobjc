@@ -24,12 +24,69 @@ using System;
 
 namespace MObjc
 {
-	// Used to label brand-new cocoa classes which are implemented in
-	// managed code. The class should be a descendent of NSObject.
+	/// <summary>This is used to label new Cocoa classes which happen to be implemented
+	/// in managed code.</summary>
+	/// <remarks>Also see <see cref = "MObjc.RegisterAttribute"/> which can be used to
+	/// label existing Cocoa classes which are exposed to managed code via a native class.</remarks>
+	/// <example>Here's an example of how you might use this attribute with a custom view:
+	/// <code>
+	/// // The outlets should be setup using Interface Builder.
+	/// [ExportClass(&quot;MyView&quot;, &quot;NSView&quot;, Outlets = &quot;label1 label2&quot;)]
+	/// internal sealed class MyView : NSView
+	/// {
+	/// 	// This will be called automatically when the nib is loaded.
+	/// 	private MyView(IntPtr instance) : base(instance)
+	/// 	{
+	/// 		// NSObject provides an indexer which allows you to get or set outlets.
+	/// 		NSTextField label1 = this[&quot;label1&quot;].To&lt;NSTextField&gt;();
+	/// 		label1.setStringValue(NSString.Create(&quot;hi&quot;));
+	/// 		
+	/// 		<para/>
+	/// 		// IBOutlet is a simple wrapper around the NSObject indexer. It&apos;s probably
+	/// 		// simplest to just use the indexer, but IBOutlet can be useful if the outlet
+	/// 		// is not set right away or its value changes.
+	/// 		NSTextField label2 = new IBOutlet&lt;NSTextField&gt;(this, &quot;label1&quot;).Value;
+	/// 		label2.setStringValue(NSString.Create(&quot;there&quot;));
+	/// 	}
+	/// 
+	/// 	<para/>
+	/// 	// This is normally where you would release any objects you have retained.
+	/// 	public override void OnDealloc()
+	/// 	{
+	/// 		// Note that the base method must be called (if you don&apos;t an exception
+	/// 		// will be thrown).
+	/// 		base.OnDealloc();
+	/// 	}
+	/// 	
+	/// 	<para/>
+	/// 	// Methods which start with a lower case letter are automatically registered
+	/// 	// with the Objective-C runtime. These may be either brand-new methods
+	/// 	// or overrides of existing base class methods.
+	/// 	public void doSomething()
+	/// 	{
+	/// 	}
+	/// }
+	/// </code>
+	/// </example>
+	/// <example>And here is an example of how to write a class which is intended
+	/// to be created from managed code:
+	/// <code>
+	/// [ExportClass(&quot;TableItem&quot;, &quot;NSObject&quot;)]
+	/// internal sealed class TableItem : NSObject
+	/// {
+	/// 	// Note that we follow the Cocoa naming conventions so the alloc in AllocNative
+	/// 	// means that our object will have a reference count of one.
+	/// 	public TableItem(string name) : base(NSObject.AllocNative(&quot;TableItem&quot;))
+	/// 	{
+	/// 	}
+	/// }
+	/// </code>
+	/// </example>
 	[Serializable]
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
 	public sealed class ExportClassAttribute : Attribute
 	{
+		/// <summary>The base class will be NSObject.</summary>
 		public ExportClassAttribute(string derivedName) : this(derivedName, "NSObject")
 		{
 		}
@@ -46,15 +103,14 @@ namespace MObjc
 			BaseName = baseName;
 		}
 		
-		// The C# class can be instantiated using a C# new expression
-		// or using the derived name and the alloc method.
 		[ThreadModel(ThreadModel.Concurrent)]
 		public string DerivedName {get; private set;}
 		
 		[ThreadModel(ThreadModel.Concurrent)]
 		public string BaseName {get; private set;}
 		
-		// Space delimited list of instance variables to add to the class.
+		/// <summary>Space delimited list of instance variables to add to the class.</summary>
+		/// <remarks>These usually correspond to the outlets defined in Interface Builder.</remarks>
 		[ThreadModel(ThreadModel.Concurrent)]
 		public string Outlets {get; set;}
 	}

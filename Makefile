@@ -16,6 +16,8 @@ else
 	GCC_FLAGS ?= -ggdb -Wall -Werror -D DEBUG
 endif
 
+CSC_FLAGS += -nowarn:1591	# Missing XML comment for publicly visible type or member
+
 INSTALL_DIR ?= /usr/local
 PACKAGE_DIR ?= $(INSTALL_DIR)/lib/pkgconfig
 
@@ -64,7 +66,7 @@ run-app: libs
 # Binary targets 
 bin/mobjc.dll: keys bin/csc_flags source/*.cs source/helpers/*.cs
 	@./gen_version.sh $(version) source/AssemblyVersion.cs
-	$(CSC) -out:bin/mobjc.dll $(CSC_FLAGS) -keyfile:keys -target:library source/*.cs source/helpers/*.cs
+	$(CSC) -out:bin/mobjc.dll $(CSC_FLAGS) -doc:bin/docs.xml -keyfile:keys -target:library source/*.cs source/helpers/*.cs
 
 bin/mobjc-glue-ppc.dylib: bin/gcc_flags glue/*.m
 	$(GCC) -o bin/mobjc-glue-ppc.dylib $(GCC_FLAGS) -arch ppc -framework Foundation -dynamiclib -l$(ffi_lib) -I $(ffi_include) glue/*.m
@@ -82,7 +84,10 @@ bin/tests.dll: bin/csc_flags bin/mobjc.dll test/*.cs
 # Misc targets
 keys:
 	sn -k keys
-	
+
+docs: libs
+	mmmdoc --out=docs bin/mobjc.dll,bin/docs.xml
+
 smokey_flags := --not-localized -set:naming:jurassic
 smokey_flags += -exclude-check:D1020	# NativeMethods
 smokey_flags += -exclude-check:PO1001	# DllImportPath
@@ -102,6 +107,7 @@ gendarme: bin/mobjc.dll
 clean:
 	-rm -rf bin/Sample.app
 	-rm  bin/TestResult.xml
+	-rm  bin/docs.xml
 	-rm  bin/*.exe
 	-rm  bin/*.dylib
 	-rm -rf bin/*.dSYM

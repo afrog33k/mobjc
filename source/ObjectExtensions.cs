@@ -26,15 +26,17 @@ using System.Reflection;
 
 namespace MObjc
 {
+	/// <summary>Provides a way to chain dynamic method calls and to cast return values.</summary>
 	[ThreadModel(ThreadModel.Concurrent)]
 	public static class ObjectExtensions
 	{
-		// These are provided so Call expressions can be chained.
+		/// <summary>Allows Call expressions to be chained.</summary>
 		public static object Call(this object instance, string selector, params object[] args)
 		{
 			return ObjectExtensions.Call(instance, new Selector(selector), args);
 		}
 		
+		/// <summary>Allows Call expressions to be chained.</summary>
 		public static object Call(this object instance, Selector selector, params object[] args)
 		{
 			Contract.Requires(selector != null, "selector is null");
@@ -70,11 +72,10 @@ namespace MObjc
 			return result;
 		}
 		
-		// This works just like a cast from value to T except that if the cast
-		// fails an exception with a reasonable message is thrown. (You can
-		// also use mono --debug=casts but that doesn't work on all platforms).
-		// TODO: might want to remove this when and if --debug=casts works on
-		// more platforms.
+		/// <summary>Used to cast the return value of a native call to something useful.</summary>
+		/// <remarks>This is better than a C# cast because it will produce a decent error message
+		/// if there are problems and it will convert native IntPtr objects to the corresponding managed
+		/// object.</remarks>
 		public static T To<T>(this object value)
 		{
 			// If the value is null then return some form of null.

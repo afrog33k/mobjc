@@ -28,6 +28,8 @@ using System.Runtime.InteropServices;
 
 namespace MObjc
 {
+	/// <summary>Allows a call to native code to be pre-prepared so that it can be invoked more efficiently.</summary>
+	/// <remarks>Note that this will only help with dynamic calls or the slow path (through Ffi instead of DirectCalls).</remarks>
 	[DisableRuleAttribute("D1041", "CircularReference")]
 	[DisableRuleAttribute("D1067", "PreferSafeHandle")]
 	[ThreadModel(ThreadModel.Serializable)]
@@ -76,6 +78,7 @@ namespace MObjc
 			}
 		}
 		
+		/// <summary>Note that this may be be called once and <see cref = "Invoke"/> many times.</summary>
 		public void SetArgs(params object[] args)
 		{
 			Contract.Requires(args != null, "args is null");
@@ -93,6 +96,7 @@ namespace MObjc
 			}
 		}
 		
+		/// <summary>Calls the native method using the arguments which were set by <see cref = "SetArgs"/>.</summary>
 		public object Invoke()
 		{
 			object result = new NSObject(IntPtr.Zero);

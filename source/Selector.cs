@@ -27,12 +27,13 @@ using System.Runtime.InteropServices;
 
 namespace MObjc
 {
+	/// <summary>Wrapper around a cookie representing the name of a native method.</summary>
 	[DisableRuleAttribute("R1001", "DisposeNativeResources")]
 	[DisableRuleAttribute("D1035", "ImplicitCast")]
 	[ThreadModel(ThreadModel.Concurrent)]
 	public sealed class Selector : IEquatable<Selector>
 	{
-		// Name should be something like "stringWithCharacters:length:".
+		/// <summary>Name should be something like "stringWithCharacters:length:".</summary>
 		public Selector(string name)
 		{
 			Contract.Requires(!string.IsNullOrEmpty(name), "name is null or empty");
@@ -44,7 +45,7 @@ namespace MObjc
 				throw new ArgumentException(name + " is not a known selector");
 		}
 		
-		public Selector(IntPtr selector)
+		internal Selector(IntPtr selector)
 		{
 			Contract.Requires(selector != IntPtr.Zero, "selector is nil");
 			
@@ -54,17 +55,20 @@ namespace MObjc
 			m_name = Marshal.PtrToStringAnsi(ptr);
 		}
 		
+		/// <returns>A name like "stringWithCharacters:length:".</returns>
 		public string Name
 		{
 			get {return m_name;}
 		}
 		
+		/// <returns>A pointer to the native selector.</returns>
 		public static implicit operator IntPtr(Selector value)
 		{
 			return value != null ? value.m_selector : IntPtr.Zero;
 		}
 		
 		// Need this for languages like VB that don't support operator overloading.
+		/// <returns>A pointer to the native selector.</returns>
 		public static IntPtr ToIntPtrType(Selector value)
 		{
 			return value != null ? value.m_selector : IntPtr.Zero;

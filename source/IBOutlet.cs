@@ -25,6 +25,10 @@ using System.Diagnostics;
 
 namespace MObjc
 {
+	/// <summary>Simple wrapper around the NSObject indexer.</summary>
+	/// <summary>This allows you to get and set the native instance values asscociated
+	/// with the class. Note that these normally map to the same names as those set within
+	/// Interface Builder.</summary>
 	public sealed class IBOutlet<T> : IEquatable<IBOutlet<T>> where T : NSObject	
 	{
 		public IBOutlet(NSObject owner, string name)
