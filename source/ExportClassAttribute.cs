@@ -71,9 +71,9 @@ namespace MObjc
 	/// [ExportClass(&quot;TableItem&quot;, &quot;NSObject&quot;)]
 	/// internal sealed class TableItem : NSObject
 	/// {
-	/// 	// Note that we follow the Cocoa naming conventions so the alloc in AllocNative
+	/// 	// Note that we follow the Cocoa naming conventions so the alloc in AllocAndInitInstance
 	/// 	// means that our object will have a reference count of one.
-	/// 	public TableItem(string name) : base(NSObject.AllocNative(&quot;TableItem&quot;))
+	/// 	public TableItem(string name) : base(NSObject.AllocAndInitInstance(&quot;TableItem&quot;))
 	/// 	{
 	/// 	}
 	/// }

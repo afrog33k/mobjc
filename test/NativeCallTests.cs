@@ -31,7 +31,7 @@ public class NativeCallTests
 	public void Init()
 	{
 		Registrar.CanInit = true;
-		m_pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
+		m_pool = new NSObject(NSObject.AllocAndInitInstance("NSAutoreleasePool"));
 	}
 	
 	[TestFixtureTearDown]
@@ -47,21 +47,21 @@ public class NativeCallTests
 	[SetUp]
 	public void Setup()
 	{
-		GC.Collect(); 				
+		GC.Collect();
 		GC.WaitForPendingFinalizers();
 	}
 	
 	[Test]
-	public void ExceptionTest() 
+	public void ExceptionTest()
 	{
 		NSObject array = (NSObject) new Class("NSMutableArray").Call("alloc").Call("init");
 		NSObject str = (NSObject) new Class("NSString").Call("alloc").Call("init");
-
+		
 		array.Call("addObject:", str);
-
+		
 		NSObject result = (NSObject) array.Call("objectAtIndex:", 0U);
 		Assert.IsTrue(!NSObject.IsNullOrNil(result));
-
+		
 		try
 		{
 			array.Call("objectAtIndex:", 1U);
@@ -75,23 +75,23 @@ public class NativeCallTests
 
 	[Test]
 	[ExpectedException(typeof(InvalidCallException))]
-	public void TooManyArgs() 
+	public void TooManyArgs()
 	{
 		NSObject array = (NSObject) new Class("NSMutableArray").Call("alloc").Call("init");
 		NSObject str = (NSObject) new Class("NSString").Call("alloc").Call("init");
-
+		
 		array.Call("addObject:", str, str);
 	}
 
 	[Test]
 	[ExpectedException(typeof(InvalidCallException))]
-	public void TooFewArgs() 
+	public void TooFewArgs()
 	{
 		NSObject array = (NSObject) new Class("NSMutableArray").Call("alloc").Call("init");
-
+		
 		array.Call("addObject:");
 	}
-
+	
 	[Test]
 	[ExpectedException(typeof(InvalidCallException))]
 	public void BadSelector1() 

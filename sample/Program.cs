@@ -49,7 +49,7 @@ internal static class Program
 				throw new InvalidOperationException("SetFrontProcess returned " + err + ".");
 		
 			// Load the nib and run the main event loop.
-			NSObject pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
+			NSObject pool = new NSObject(NSObject.AllocAndInitInstance("NSAutoreleasePool"));
 			App app = new App("MainMenu.nib");
 			pool.release();
 			

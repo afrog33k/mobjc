@@ -29,6 +29,7 @@ namespace MObjc
 	/// <remarks>Usually the reason for this is that the unmanaged code is called with
 	/// an argument that cannot be marshaled to unmanaged code or the unmanaged method
 	/// could not be found (e.g. it may be misspelled).</remarks>
+	/// <seealso cref = "CocoaException"/>
 	[Serializable]
 	[ThreadModel(ThreadModel.Concurrent)]
 	public sealed class InvalidCallException : Exception

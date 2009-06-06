@@ -32,7 +32,7 @@ public class ExceptionTests
 	public void Init()
 	{
 		Registrar.CanInit = true;
-		m_pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
+		m_pool = new NSObject(NSObject.AllocAndInitInstance("NSAutoreleasePool"));
 	}
 	
 	[TestFixtureTearDown]

@@ -28,11 +28,13 @@ using System.Runtime.InteropServices;
 
 namespace MObjc
 {
-	/// <summary>Allows a call to native code to be pre-prepared so that it can be invoked more efficiently.</summary>
-	/// <remarks>Note that this will only help with dynamic calls or the slow path (through Ffi instead of DirectCalls).</remarks>
+	/// <summary>Allows a call to unmanaged code to be pre-prepared so that it can be invoked more efficiently.</summary>
+	/// <remarks>Note that this will only help with dynamic calls or mcocoa's slow path (through Ffi instead of DirectCalls).</remarks>
 	[ThreadModel(ThreadModel.Serializable)]
 	public sealed class Native
 	{
+		/// <param name = "target">The object instance.</param>
+		/// <param name = "selector">The method to call on the instance.</param>
 		public Native(IntPtr target, Selector selector) : this(target, selector, DoGetImp(target, selector, IntPtr.Zero), null)
 		{
 		}
@@ -76,7 +78,7 @@ namespace MObjc
 			}
 		}
 		
-		/// <summary>Note that this may be be called once and <see cref = "Invoke"/> many times.</summary>
+		/// <summary>Note that this may be be called once and <c>Invoke</c> many times.</summary>
 		public void SetArgs(params object[] args)
 		{
 			Contract.Requires(args != null, "args is null");
@@ -94,7 +96,7 @@ namespace MObjc
 			}
 		}
 		
-		/// <summary>Calls the native method using the arguments which were set by <see cref = "SetArgs"/>.</summary>
+		/// <summary>Calls the native method using the arguments which were set by <c>SetArgs</c>.</summary>
 		public object Invoke()
 		{
 			object result = new NSObject(IntPtr.Zero);
@@ -136,6 +138,7 @@ namespace MObjc
 			return result;
 		}
 		
+		/// <summary>Returns the method signature.</summary>
 		public override string ToString()
 		{
 			return m_sig.ToString();

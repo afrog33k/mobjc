@@ -29,7 +29,12 @@ using System.Runtime.Serialization;
 
 namespace MObjc
 {
-	// http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Protocols/NSObject_Protocol/Reference/NSObject.html#//apple_ref/doc/uid/20000052-BBCEBEIC
+	/// <summary>Base class for all Cocoa classes.</summary>
+	/// <remarks>They don't appear in the documentation but this class exposes all of the
+	/// standard <a href = "http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Classes/NSObject_Class/Reference/Reference.html">NSObject</a> 
+	/// methods except that the only perform method exposed is performSelectorOnMainThread:withObject:waitUntilDone:.
+	/// The rest may be added in the future, but it's much easier to use mcocoa's NSApplication::BeginInvoke
+	/// method to do this sort of thing.</remarks>
 	[ThreadModel(ThreadModel.Concurrent)]
 	public partial class NSObject : IFormattable, IEquatable<NSObject>
 	{
@@ -52,12 +57,13 @@ namespace MObjc
 				Environment.Exit(13);
 			}
 		}
-				
-		// Constructs a new managed instance using a native id. Note that there
-		// may be an arbitrary number of managed instances wrapping the same native
-		// id, except for the exported classes. For the exported classes NSObject
-		// enforces a constraint that requires that each exported class id is
-		// wrapped by no more than one managed instance.
+		
+		/// <summary>Constructs a managed object which is associated with an unmanaged object.</summary>
+		/// <remarks>In general multiple NSObject instances can be associated with the same unmanaged object.
+		/// The exception is that only one <see cref = "ExportClassAttribute"/> object can be associated with an
+		/// unmanaged object. If an attempt is made to construct two NSObjects pointing to the same
+		/// exported object an exception will be thrown. (The reason for this is that exported instances may
+		/// have managed state which should be associated with one and only one unmanaged instance).</remarks>
 		public NSObject(IntPtr instance)
 		{
 			m_instance = instance;				// note that it's legal to send messages to nil
@@ -102,7 +108,27 @@ namespace MObjc
 			}
 		}
 		
-		public static IntPtr AllocNative(string name)
+		/// <summary>Creates a new uninitialized unmanaged object with a reference count of one.</summary>
+		/// <param name = "name">The class name, e.g. "MyView".</param>
+		/// <remarks>This is commonly used with exported types which can be created via managed code 
+		/// (as opposed to via Interface Builder).</remarks>
+		public static IntPtr AllocInstance(string name)
+		{
+			Class klass = new Class(name);
+			
+			IntPtr exception = IntPtr.Zero;
+			IntPtr instance = DirectCalls.Callp(klass, Selector.Alloc, ref exception);
+			if (exception != IntPtr.Zero)
+				CocoaException.Raise(exception);
+			
+			return instance;
+		}
+		
+		/// <summary>Creates a new default initialized unmanaged object with a reference count of one.</summary>
+		/// <param name = "name">The class name, e.g. "MyView".</param>
+		/// <remarks>This is commonly used with exported types which can be created via managed code 
+		/// (as opposed to via Interface Builder).</remarks>
+		public static IntPtr AllocAndInitInstance(string name)
 		{
 			Class klass = new Class(name);
 			
@@ -118,22 +144,30 @@ namespace MObjc
 			return instance;
 		}
 		
-		// It's quite handy to have a retain method that returns the correct type
-		// but we don't want to call it retain because it will be registered as an
-		// override for exported classes which tends to cause problems.
+		/// <summary>Increments the objects instance count.</summary>
+		/// <remarks>Retain counts work exactly like in native code and both mobjc and mcocoa
+		/// adhere to the cocoa memory management naming conventions. So, for example, mcocoa's
+		/// Create methods create auto-released objects with retain counts of one. See Apple's
+		/// <a href = "http://developer.apple.com/documentation/Cocoa/Conceptual/MemoryMgmt/MemoryMgmt.html">Memory Management Programming Guide</a>
+		/// for more details.
+		///
+		/// <para/>Note that you can also use <c>retain</c> but <c>Retain</c> is often more useful
+		/// because mcocoa provides <c>Retain</c> methods with better return types (which allows
+		/// you do do things like <c>NSString m_name = NSString.Create("Fred").Retain();</c>.</remarks>
 		public NSObject Retain()
 		{
 			Unused.Value = retain();
 			return this;
 		}
 		
-		// Note that this is the static NSObject class type. To get the dynamic type
-		// of an instance use the class_() method.
+		/// <summary>Always returns type NSObject.</summary>
+		/// <remarks>To get the dynamic type of an instance use the <c>class_</c> method.</remarks>
 		public static Class Class
 		{
 			get {return ms_class;}
 		}
 		
+		/// <summary>Returns a new or existing NSObject associated with the unmanaged instance.</summary>
 		public static NSObject Lookup(IntPtr instance)
 		{
 			NSObject managed = null;
@@ -180,12 +214,14 @@ namespace MObjc
 			return managed;
 		}
 		
+		/// <summary>Returns the unmanaged instance.</summary>
 		public static implicit operator IntPtr(NSObject value)
 		{
 			return value != null ? value.m_instance : IntPtr.Zero;
 		}
 		
-		// Need this for languages like VB that don't support operator overloading.
+		/// <summary>Returns the unmanaged instance.</summary>
+		/// <remarks>This is needed for languages that don't support operator overloading.</remarks>
 		public static IntPtr ToIntPtrType(NSObject value)
 		{
 			return value != null ? value.m_instance : IntPtr.Zero;
@@ -203,16 +239,21 @@ namespace MObjc
 			return m_instance == IntPtr.Zero;
 		}
 		
-		// This should only be used for debugging and testing. It will be set
-		// correctly for types exported with ExportClassAttribute and for instances
-		// released using the managed release method, but will not be set for
-		// non-exported instances released from unmanaged code.
+		/// <summary>Returns true if the unmanaged instance has been deleted.</summary>
+		/// <remarks>This should only be used for debugging and testing.
+		///
+		/// <para/>This will be set correctly only if the last release call was from managed
+		/// code or the type is exported.</remarks>
 		[Pure]
 		public bool IsDeallocated()
 		{
 			return m_deallocated;
 		}
 		
+		/// <summary>Dynamic method call.</summary>
+		/// <param name = "name">A method name, e.g. "setFrame:display:".</param>
+		/// <param name = "args">The arguments to pass to the method. If the arity or argument types
+		/// don't match the unmanaged code an exception will be thrown.</param>
 		public object Call(string name, params object[] args)
 		{
 			Contract.Requires(name != null, "name is null");
@@ -228,6 +269,10 @@ namespace MObjc
 			return result;
 		}
 		
+		/// <summary>Dynamic call to an exported type's base class method.</summary>
+		/// <param name = "name">A method name, e.g. "setFrame:display:".</param>
+		/// <param name = "args">The arguments to pass to the method. If the arity or argument types
+		/// don't match the unmaanaged code an exception will be thrown.</param>
 		public object SuperCall(string name, params object[] args)
 		{
 			Contract.Requires(name != null, "name is null");
@@ -245,6 +290,8 @@ namespace MObjc
 			return result;
 		}
 		
+		/// <summary>Get or set an ivar.</summary>
+		/// <remarks>Usually these will be Interface Builder outlets.</remarks>
 		public NSObject this[string ivarName]
 		{
 			get
@@ -312,8 +359,8 @@ namespace MObjc
 		}
 		
 #if DEBUG
-		// Returns a list of all NSObject's which are still alive. Note that some
-		// of these may be deallocated.
+		/// <summary>Debug method which returns a list of all NSObject instances still in use.</summary>
+		/// <remarks>Note that the unmanaged instance may have been deleted.</remarks>
 		public static NSObject[] Snapshot()
 		{
 			return ms_refs.Snapshot();
@@ -403,8 +450,10 @@ namespace MObjc
 		}
 		
 		#region Protected Methods
-		// Only called for exported types. Derived classes must call the base class 
-		// implementation.
+		/// <summary>Called just before the unmanaged instance of an exported type is deleted.</summary>
+		/// <remarks>Typically this is where you will release any objects you have retained. Note
+		/// that the base OnDealloc method must be called (if you don't an <see cref = "ContractException"/> 
+		/// will be thrown).</remarks>
 		protected virtual void OnDealloc()
 		{
 			m_deallocated = true;

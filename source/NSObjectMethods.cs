@@ -33,6 +33,7 @@ namespace MObjc
 	public partial class NSObject : IFormattable
 	{
 		#region Protocol
+		/// <exclude/>
 		public void autorelease()
 		{
 			Contract.Requires(!m_deallocated, "ref count is zero");
@@ -46,11 +47,13 @@ namespace MObjc
 			}
 		}
 		
+		/// <exclude/>
 		public static NSObject alloc()
 		{
 			return ms_class.Alloc();
 		}
 		
+		/// <exclude/>
 		public NSObject init()
 		{
 			IntPtr exception = IntPtr.Zero;
@@ -61,6 +64,7 @@ namespace MObjc
 			return NSObject.Lookup(instance);
 		}
 		
+		/// <exclude/>
 		[Pure]
 		public bool conformsToProtocol(IntPtr protocol)
 		{
@@ -73,6 +77,7 @@ namespace MObjc
 				return false;
 		}
 		
+		/// <exclude/>
 		[Pure]
 		public string description()
 		{
@@ -95,6 +100,7 @@ namespace MObjc
 				return "nil";
 		}
 		
+		/// <exclude/>
 		[Pure]
 		public int hash()
 		{
@@ -113,6 +119,7 @@ namespace MObjc
 			return hash;
 		}
 		
+		/// <exclude/>
 		[Pure]
 		public bool isEqual(NSObject rhs)
 		{
@@ -133,6 +140,7 @@ namespace MObjc
 			return equal;
 		}
 		
+		/// <exclude/>
 		[Pure]
 		public bool isKindOfClass(NSObject rhs)
 		{
@@ -145,6 +153,7 @@ namespace MObjc
 				return false;
 		}
 		
+		/// <exclude/>
 		[Pure]
 		public bool isMemberOfClass(NSObject klass)
 		{
@@ -157,6 +166,7 @@ namespace MObjc
 				return false;
 		}
 		
+		/// <exclude/>
 		[Pure]
 		public bool isProxy()
 		{
@@ -168,11 +178,7 @@ namespace MObjc
 				return false;
 		}
 		
-		// Retain counts work exactly like in native code. In particular code that
-		// creates a native object using a managed constructor does not have an
-		// ownership stake in the object unless it explicitly calls Retain. See
-		// <http://developer.apple.com/documentation/Cocoa/Conceptual/MemoryMgmt/Tasks/MemoryManagementRules.html#//apple_ref/doc/uid/20000994>
-		// for details on the memory management rules.
+		/// <exclude/>
 		public void release()
 		{
 			Contract.Requires(!m_deallocated, "ref count is zero");
@@ -188,12 +194,14 @@ namespace MObjc
 				m_deallocated = true;		// OnDealloc won't be called for registered types so we'll go ahead and set dealloced here
 		}
 		
+		/// <exclude/>
 		[Pure]
 		public bool respondsToSelector(string selector)
 		{
 			return respondsToSelector(new Selector(selector));
 		}
 		
+		/// <exclude/>
 		[Pure]
 		public bool respondsToSelector(Selector selector)
 		{
@@ -206,6 +214,7 @@ namespace MObjc
 				return false;
 		}
 		
+		/// <exclude/>
 		public NSObject retain()
 		{
 			Contract.Requires(!m_deallocated, "ref count is zero");
@@ -218,6 +227,7 @@ namespace MObjc
 			return this;
 		}
 		
+		/// <exclude/>
 		public uint retainCount()
 		{
 			Contract.Requires(!m_deallocated, "ref count is zero");
@@ -235,12 +245,14 @@ namespace MObjc
 			return count;
 		}
 		
+		/// <exclude/>
 		[Pure]
 		public Class class_()
 		{
 			return new Class(m_class);
 		}
 		
+		/// <exclude/>
 		[Pure]
 		public Class superclass()
 		{
@@ -252,6 +264,7 @@ namespace MObjc
 				return new Class(IntPtr.Zero);
 		}
 		
+		/// <exclude/>
 		[Pure]
 		public IntPtr zone()
 		{
@@ -262,6 +275,7 @@ namespace MObjc
 		#endregion
 		
 		#region Instance Methods
+		/// <exclude/>
 		[Pure]
 		public NSObject copy()
 		{
@@ -273,6 +287,7 @@ namespace MObjc
 				return new NSObject(IntPtr.Zero);
 		}
 		
+		/// <exclude/>
 		[Pure]
 		public NSObject mutableCopy()
 		{
@@ -284,6 +299,7 @@ namespace MObjc
 				return new NSObject(IntPtr.Zero);
 		}
 		
+		/// <exclude/>
 		public void performSelectorOnMainThreadWithObjectWaitUntilDone(Selector selector, NSObject arg, bool wait)
 		{
 			Contract.Requires(selector != null, "selector is null");

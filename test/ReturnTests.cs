@@ -31,7 +31,7 @@ public class ReturnTests
 	public void Init()
 	{
 		Registrar.CanInit = true;
-		m_pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
+		m_pool = new NSObject(NSObject.AllocAndInitInstance("NSAutoreleasePool"));
 	}
 	
 	[TestFixtureTearDown]
@@ -47,12 +47,12 @@ public class ReturnTests
 	[SetUp]
 	public void Setup()
 	{
-		GC.Collect(); 			
+		GC.Collect();
 		GC.WaitForPendingFinalizers();
 	}
 	
 	[Test]
-	public void BoolWithTo() 
+	public void BoolWithTo()
 	{
 		Class klass = new Class("NSNumber");
 		
@@ -64,7 +64,7 @@ public class ReturnTests
 	}
 
 	[Test]
-	public void BoolWithTo2() 
+	public void BoolWithTo2()
 	{
 		Class klass = new Class("NSNumber");
 		
@@ -76,7 +76,7 @@ public class ReturnTests
 	}
 
 	[Test]
-	public void UInt16WithTo() 
+	public void UInt16WithTo()
 	{
 		Class klass = new Class("NSNumber");
 		
@@ -88,7 +88,7 @@ public class ReturnTests
 	}
 
 	[Test]
-	public void UInt16WithCast() 
+	public void UInt16WithCast()
 	{
 		Class klass = new Class("NSNumber");
 		
@@ -100,7 +100,7 @@ public class ReturnTests
 	}
 
 	[Test]
-	public void SCharWithTo() 
+	public void SCharWithTo()
 	{
 		Class klass = new Class("NSNumber");
 		
@@ -112,7 +112,7 @@ public class ReturnTests
 	}
 
 	[Test]
-	public void CharWithTo() 
+	public void CharWithTo()
 	{
 		Class klass = new Class("NSNumber");
 		
@@ -124,7 +124,7 @@ public class ReturnTests
 	}
 
 	[Test]
-	public void ShortWithTo() 
+	public void ShortWithTo()
 	{
 		Class klass = new Class("NSNumber");
 		
@@ -136,7 +136,7 @@ public class ReturnTests
 	}
 
 	[Test]
-	public void IntWithTo() 
+	public void IntWithTo()
 	{
 		Class klass = new Class("NSNumber");
 		
@@ -148,7 +148,7 @@ public class ReturnTests
 	}
 
 	[Test]
-	public void UIntWithTo() 
+	public void UIntWithTo()
 	{
 		Class klass = new Class("NSNumber");
 		

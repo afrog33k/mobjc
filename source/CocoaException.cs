@@ -35,6 +35,7 @@ namespace MObjc
 	/// exception. However if managed code calls unmanaged code which calls managed
 	/// code which throws then the original managed call will throw a <c>TargetInvocationException</c>
 	/// which wraps the managed exception.</remarks>
+	/// <seealso cref = "InvalidCallException"/>
 	[Serializable]
 	[ThreadModel(ThreadModel.Concurrent)]
 	public sealed class CocoaException : Exception

@@ -29,6 +29,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace MObjc
 {
+	/// <summary>Used when unmanaged code calls into managed code.</summary>
 	[ThreadModel(ThreadModel.Concurrent)]
 	public sealed class Managed
 	{
@@ -41,9 +42,10 @@ namespace MObjc
 			m_signature = new MethodSignature(encoding);
 		}
 		
-		// We default to logging exceptions thrown by managed code to stderr before
-		// we convert them into a native exception (because Cocoa has a tendency to
-		// eat them). If you want to do something else you can set this.
+		/// <summary>Called before a managed exception is converted into an <c>NSException</c>.</summary>
+		/// <remarks>Cocoa seems to sometimes eat exceptions so, by default, we log
+		/// them to stderr before handing them off to the unmanaged code. If you don't
+		/// want to do this you can set the delegate to null.</remarks>
 		public static Action<Exception> LogException {get; set;}
 		
 		internal IntPtr Call(IntPtr dummy, IntPtr resultBuffer, IntPtr argBuffers)

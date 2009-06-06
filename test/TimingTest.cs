@@ -27,15 +27,15 @@ using System.Runtime.InteropServices;
 
 #if false				
 [TestFixture]
-public class TimingTest 	
+public class TimingTest
 {
 	[TestFixtureSetUp]
 	public void Init()
 	{
 		AssertListener.Install();
-
+		
 		Registrar.CanInit = true;
-		m_pool = new NSObject(NSObject.AllocNative("NSAutoreleasePool"));
+		m_pool = new NSObject(NSObject.AllocAndInitInstance("NSAutoreleasePool"));
 	}
 	
 	[TestFixtureTearDown]
