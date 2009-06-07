@@ -1,14 +1,8 @@
+https://home.comcast.net/~jesse98/public/mobjc_docs/namespaces.html
+
 set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-console.exe -fixture=BaseClassTests -nologo bin/tests.dll
 
-monodocer -pretty -importslashdoc:docs.xml -assembly:bin/mobjc.dll -path:docs
-mdoc-export-html -o hdocs docs
-
-table.help {background-color: #CBE7CE; margin-bottom: 1.5em}
-
-  at MmmDoc.ParseXml.DoParseMarkup (System.Xml.XmlNode parent, System.String context) [0x0017e] in /Users/jessejones/Source/mmmdoc/source/ParseXml.cs:259 
-
 * Document that OnDealloc should be used instead of overriding dealloc.
-* Might want some better docs.
 * Release checklist:
 	- search for TODO (everywhere)
 	- run smoke
@@ -102,6 +96,7 @@ table.help {background-color: #CBE7CE; margin-bottom: 1.5em}
 	- remove build_num file
 	- build debug 
 	- install
+	- upload new html docs
 	- update README and wiki
 	- upload a new version to googlecode
 	- send an announcement
