@@ -27,11 +27,11 @@ using System.Runtime.InteropServices;
 
 namespace MObjc
 {
-	/// <summary>Wrapper around a cookie representing the name of a native method.</summary>
+	/// <summary>Wrapper around an unmanaged SEL type which represents the name of a method.</summary>
 	[ThreadModel(ThreadModel.Concurrent)]
 	public sealed class Selector : IEquatable<Selector>
 	{
-		/// <summary>Name should be something like "stringWithCharacters:length:".</summary>
+		/// <param name = "name">Should be something like "stringWithCharacters:length:".</param>
 		public Selector(string name)
 		{
 			Contract.Requires(!string.IsNullOrEmpty(name), "name is null or empty");
@@ -59,14 +59,14 @@ namespace MObjc
 			get {return m_name;}
 		}
 		
-		/// <returns>A pointer to the native selector.</returns>
+		/// <returns>The SEL value.</returns>
 		public static implicit operator IntPtr(Selector value)
 		{
 			return value != null ? value.m_selector : IntPtr.Zero;
 		}
 		
 		// Need this for languages like VB that don't support operator overloading.
-		/// <returns>A pointer to the native selector.</returns>
+		/// <returns>The SEL value.</returns>
 		public static IntPtr ToIntPtrType(Selector value)
 		{
 			return value != null ? value.m_selector : IntPtr.Zero;

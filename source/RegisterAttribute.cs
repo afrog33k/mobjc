@@ -24,15 +24,18 @@ using System;
 
 namespace MObjc
 {
-	// This is most commonly used to decorate types which are associated with
-	// existing cocoa types (e.g. NSApplication or NSRange). It may also be used
-	// on methods to explicitly register a method with cocoa or to provide a custom
-	// name for the cocoa form of the method.
-	//
-	// Note that methods in exported classes are automatically registered if they
-	// are lower case. The cocoa name is the same as the managed name except 
-	// that underscores are replaced with colons and a colon is appended if the
-	// method is not nullary.
+	/// <summary>Used to create an association between a managed type/method and
+	/// unmanaged code.</summary>
+	/// <remarks>When used with a class or struct then mobjc will create an instance of that
+	/// type when it needs to create a managed object to wrap an unmanaged object. When
+	/// used on a method of an exported type the Objective-C method name can be customized.
+	///
+	/// <para/>Note that it's rarely neccesary for users to use this attribute: mcocoa already
+	/// provides class and struct wrappers and mobjc will automatically register lower-case
+	/// methods in exported classes (the Objective-C name is the same as the managed name except 
+	/// that underscores are replaced with colons and a colon is appended if the
+	/// method is not nullary).</remarks>
+	/// <seealso cref = "MObjc.ExportClassAttribute"/>
 	[Serializable]
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Struct | AttributeTargets.Class, AllowMultiple = false)]
 	public sealed class RegisterAttribute : Attribute
@@ -41,6 +44,7 @@ namespace MObjc
 		{
 		}
 		
+		/// <param name = "name">The name of a type ("MyClass") or a method ("initWithFrame:color:").</param>
 		public RegisterAttribute(string name)
 		{
 			if (string.IsNullOrEmpty(name))
@@ -49,8 +53,6 @@ namespace MObjc
 			Name = name;
 		}
 		
-		// Optional name to be used by the native code. If it is null the
-		// native code will use the managed method/struct/class name.
 		[ThreadModel(ThreadModel.Concurrent)]
 		public string Name {get; private set;}
 	}

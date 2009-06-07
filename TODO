@@ -3,12 +3,10 @@ set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-cons
 monodocer -pretty -importslashdoc:docs.xml -assembly:bin/mobjc.dll -path:docs
 mdoc-export-html -o hdocs docs
 
-* Work on docs:
-	- get the tests working
-	- get the sample working
-	- install
-	- checkin
-* Help bottom margin looks goofy.
+table.help {background-color: #CBE7CE; margin-bottom: 1.5em}
+
+  at MmmDoc.ParseXml.DoParseMarkup (System.Xml.XmlNode parent, System.String context) [0x0017e] in /Users/jessejones/Source/mmmdoc/source/ParseXml.cs:259 
+
 * Document that OnDealloc should be used instead of overriding dealloc.
 * Might want some better docs.
 * Release checklist:

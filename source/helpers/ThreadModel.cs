@@ -23,34 +23,38 @@ using System;
 
 namespace MObjc.Helpers
 {
+	/// <summary>Used with <see cref = "ThreadModelAttribute">ThreadModelAttribute</see> to specify the thread
+	/// safety of a type or member.</summary>
 	public enum ThreadModel
 	{
-		// The code may run safely only under the main thread (this is the default for
-		// code in the assemblies being checked).
+		/// <summary>The code may run safely only under the main thread (this is the default for
+		/// code in the assemblies being checked).</summary>
 		MainThread = 0x0000,
 		
-		// The code may run under a single arbitrary thread.
+		/// <summary>The code may run under a single arbitrary thread.</summary>
 		SingleThread = 0x0001,
 		
-		// The code may run under multiple threads, but only if the execution is 
-		// serialized (e.g. by user level locking).
+		/// <summary>The code may run under multiple threads, but only if the execution is 
+		/// serialized (e.g. by user level locking).</summary>
 		Serializable = 0x0002,
 		
-		// The code may run under multiple threads concurrently without user locking 
-		// (this is the default for code in the System/Mono namespaces).
+		/// <summary>The code may run under multiple threads concurrently without user locking 
+		/// (this is the default for code in the System/Mono namespaces).</summary>
 		Concurrent = 0x0003,
 		
-		// Or this with the above for the rare cases where the code cannot be shown to 
-		// be correct using a static analysis.
+		/// <summary>Or this with one of the other values for the rare cases where the code cannot be shown to 
+		/// be correct using a static analysis.</summary>
 		AllowEveryCaller = 0x0008,
 	}
 	
-	// This is used to precisely specify the threading semantics of code. Note 
-	// that Gendarme&apos;s DecorateThreadsRule will catch problematic code which 
-	// uses these attributes (such as concurrent code calling main thread code).
+	/// <summary>Used with <see cref = "ThreadModel">ThreadModel</see> to specify the thread
+	/// safety of a type or member.</summary>
+	/// <remarks>The mono 2.5 version of <a href = "http://www.mono-project.com/Gendarme">Gendarme</a>
+	/// will include a rule which will catch specification violations (such as concurrent code
+	/// calling main thread code).</remarks>
 	[Serializable]
-	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | 
-	AttributeTargets.Interface | AttributeTargets.Delegate | 
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct |
+	AttributeTargets.Interface | AttributeTargets.Delegate |
 	AttributeTargets.Method | AttributeTargets.Event | AttributeTargets.Property,
 	AllowMultiple = false, Inherited = false)]
 	public sealed class ThreadModelAttribute : Attribute

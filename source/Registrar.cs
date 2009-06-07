@@ -29,8 +29,11 @@ using System.Text;
 
 namespace MObjc
 {
-	// Iterates through all types in the loaded assemblies and handles any that
-	// are marked with ExportClassAttribute or RegisterAttribute.
+	/// <summary>Used to initialize mobjc and the Objective-C runtime with information about the
+	/// registered/exported types.</summary>
+	/// <remarks>This will be invoked the first time an NSObject instance is created. It will
+	/// iterate over all the types in the currently loaded assemblies and process any which are
+	/// decorated with <see cref = "RegisterAttribute">RegisterAttribute</see> or <see cref = "ExportClassAttribute">ExportClassAttribute</see>.</remarks>
 	[ThreadModel(ThreadModel.SingleThread)]
 	public static class Registrar
 	{
@@ -58,12 +61,12 @@ namespace MObjc
 			}
 		}
 		
-		// Registrar::Init is called automagically the first time an NSObject is contructed.
-		// Init will grovel through all the loaded .NET types, find the ones which are registered
-		// with mobjc, and define the associated Objective-C classes. However this can be
-		// a bit tricky if multiple assemblies register types. Because this leads to rather icky
-		// hard to track down errors, you must explicitly notify mobjc when it is safe to call
-		// Init.
+		/// <summary>Used to inform mobjc when all relevant types have been loaded.</summary>
+		/// <remarks>Applications which dynamically load assemblies cannot use mobjc until all of the
+		/// assemblies which define mobjc types have been loaded. To help avoid problems with this
+		/// you must set CanInit manually to signal mobjc that it is safe to register types with Objective-C.
+		/// If you don't set CanInit or create an NSObject before CanInit is set an InvalidOperationException
+		/// is thrown.</remarks>
 		[ThreadModel(ThreadModel.Concurrent)]
 		public static bool CanInit
 		{

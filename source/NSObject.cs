@@ -60,7 +60,7 @@ namespace MObjc
 		
 		/// <summary>Constructs a managed object which is associated with an unmanaged object.</summary>
 		/// <remarks>In general multiple NSObject instances can be associated with the same unmanaged object.
-		/// The exception is that only one <see cref = "ExportClassAttribute"/> object can be associated with an
+		/// The exception is that only one <see cref = "ExportClassAttribute">ExportClassAttribute</see> object can be associated with an
 		/// unmanaged object. If an attempt is made to construct two NSObjects pointing to the same
 		/// exported object an exception will be thrown. (The reason for this is that exported instances may
 		/// have managed state which should be associated with one and only one unmanaged instance).</remarks>
@@ -153,7 +153,7 @@ namespace MObjc
 		///
 		/// <para/>Note that you can also use <c>retain</c> but <c>Retain</c> is often more useful
 		/// because mcocoa provides <c>Retain</c> methods with better return types (which allows
-		/// you do do things like <c>NSString m_name = NSString.Create("Fred").Retain();</c>.</remarks>
+		/// you do do things like <c>NSString m_name = NSString.Create("Fred").Retain();</c>).</remarks>
 		public NSObject Retain()
 		{
 			Unused.Value = retain();
@@ -452,7 +452,7 @@ namespace MObjc
 		#region Protected Methods
 		/// <summary>Called just before the unmanaged instance of an exported type is deleted.</summary>
 		/// <remarks>Typically this is where you will release any objects you have retained. Note
-		/// that the base OnDealloc method must be called (if you don't an <see cref = "ContractException"/> 
+		/// that the base OnDealloc method must be called (if you don't an <see cref = "ContractException">ContractException</see> 
 		/// will be thrown).</remarks>
 		protected virtual void OnDealloc()
 		{

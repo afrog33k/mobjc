@@ -77,9 +77,9 @@ namespace MObjc
 		/// <summary>Converts an <c>NSException</c> into a managed exception and throws it.</summary>
 		/// <param name = "instance">The <a href ="http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Classes/nsexception_Class/Reference/Reference.html">NSException</a>
 		/// pointer.</param>
-		/// <summary>If the <c>NSException</c> wraps a managed exception then 
+		/// <remarks>If the <c>NSException</c> wraps a managed exception then 
 		/// <c>TargetInvocationException</c> is thrown instead with the inner exception
-		/// set to the original exception.</summary>
+		/// set to the original exception.</remarks>
 		public static void Raise(IntPtr instance)
 		{
 			NSObject obj = new NSObject(instance);

@@ -77,7 +77,7 @@ namespace MObjc
 		}
 		
 		/// <summary>Returns the name of the class, e.g. "NSString".</summary>
-		/// <remarks>This ignores the normal <see cref = "NSObject"/> format specifiers like ":D".</remarks>
+		/// <remarks>This ignores the normal <see cref = "NSObject">NSObject</see> format specifiers like ":D".</remarks>
 		public override string ToString()
 		{
 			return m_name;

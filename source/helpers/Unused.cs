@@ -23,6 +23,8 @@ using System;
 
 namespace MObjc.Helpers
 {
+	/// <summary>Used to suppress <a href = "http://www.mono-project.com/Gendarme">Gendarme</a>
+	/// defects for things like ignored return values.</summary>
 	[ThreadModel(ThreadModel.Concurrent)]
 	public static class Unused
 	{

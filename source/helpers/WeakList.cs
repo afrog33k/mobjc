@@ -25,7 +25,8 @@ using System.Diagnostics;
 
 namespace MObjc.Helpers
 {
-	// Compacting list of System.WeakReference<T>.
+	/// <summary>Compacting list of System.WeakReference&lt;T&gt;.</summary>
+	/// <remarks>This can be helpful when tracking down leaks for particular object types.</remarks>
 	[ThreadModel(ThreadModel.Concurrent)]
 	public sealed class WeakList<T> where T : class
 	{
@@ -51,6 +52,7 @@ namespace MObjc.Helpers
 			}
 		}
 		
+		/// <summary>Returns all of the objects which have not yet been garbage collected.</summary>
 		public T[] Snapshot()
 		{
 			List<T> elements;
@@ -61,7 +63,7 @@ namespace MObjc.Helpers
 				
 				foreach (WeakReference wr in m_list)
 				{
-					T o = (T) wr.Target;
+					T o = (T) wr.Target;	
 					if (o != null && !elements.Exists(e => ReferenceEquals(e, o)))
 						elements.Add(o);
 				}
@@ -70,6 +72,7 @@ namespace MObjc.Helpers
 			return elements.ToArray();
 		}
 		
+		#region Private Methods
 		private void DoCompact()
 		{
 			List<WeakReference> compacted = new List<WeakReference>(m_capacity);
@@ -91,9 +94,12 @@ namespace MObjc.Helpers
 			// Switch to our new list.
 			m_list = compacted;
 		}
+		#endregion
 		
+		#region Fields
 		private int m_capacity;
 		private List<WeakReference> m_list;
 		private object m_lock = new object();
+		#endregion
 	}
 }

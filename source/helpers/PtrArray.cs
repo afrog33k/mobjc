@@ -26,7 +26,7 @@ using System.Runtime.InteropServices;
 
 namespace MObjc.Helpers
 {
-	// Manages a pointer to an array of pointers.
+	/// <summary>Manages an IntPtr to an array of IntPtrs.</summary>
 	[ThreadModel(ThreadModel.Serializable)]
 	public sealed class PtrArray
 	{
@@ -77,6 +77,7 @@ namespace MObjc.Helpers
 			return m_array;
 		}
 		
+		/// <summary>Frees each pointer in the array as well as the array pointer.</summary>
 		public void Free()
 		{
 			if (m_array != IntPtr.Zero)
@@ -89,6 +90,7 @@ namespace MObjc.Helpers
 			}
 		}
 		
+		/// <summary>Frees the array pointer, but not the pointers in the array.</summary>
 		public void FreeBuffer()
 		{
 			if (m_array != IntPtr.Zero)
@@ -98,7 +100,9 @@ namespace MObjc.Helpers
 			}
 		}
 		
+		#region Fields
 		private IntPtr m_array;
 		private int m_count;
+		#endregion
 	}
 }

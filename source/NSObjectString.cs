@@ -28,22 +28,26 @@ using System.Text;
 namespace MObjc
 {
 	// There's a lot of this string goo so we'll tuck it away into its own file.
-	//	[MultiThreaded]			NSObject.cs declares this
 	public partial class NSObject : IFormattable
 	{
+		/// <summary>Equivalent to <c>ToString("G", null)</c>.</summary>
 		public override string ToString()
 		{
 			return ToString("G", null);
 		}
 		
-		// {0} or {0:G} returns something like "MyView : NSView (imp = 0xA08E7468)".
-		// {0:D} returns the result of calling the description method.
-		// {0:I} returns the instance methods. 
-		// {0:C} returns the class methods. 
-		// {0:V} returns the instance variables.	
-		// {0:P} returns the properties.	
-		// A "P" can be appended to the C, I, and V formats to force private members (those
-		// starting with an underscore) to be included.
+		/// <summary>Can be used to convert unmanaged objects to strings in a variety of formats.</summary>
+		/// <remarks>The format specifier may be:
+		/// <list>
+		/// <item><description>{0} or {0:G} returns something like "MyView : NSView (imp = 0xA08E7468)".</description></item>
+		/// <item><description>{0:D} returns the result of calling the description method.</description></item>
+		/// <item><description>{0:I} returns the instance methods. </description></item>
+		/// <item><description>{0:C} returns the class methods. </description></item>
+		/// <item><description>{0:V} returns the instance variables.	</description></item>
+		/// <item><description>{0:P} returns the properties.</description></item>
+		/// </list>
+		/// A "P" can be appended to the C, I, and V formats to force private members 
+		/// (those starting with an underscore) to be included.</remarks>
 		public string ToString(string format, IFormatProvider provider)
 		{
 			if (provider != null)
