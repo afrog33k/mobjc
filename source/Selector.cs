@@ -43,7 +43,8 @@ namespace MObjc
 				throw new ArgumentException(name + " is not a known selector");
 		}
 		
-		internal Selector(IntPtr selector)
+		/// <param name = "selector">The unmanaged SEL pointer.</param>
+		public Selector(IntPtr selector)
 		{
 			Contract.Requires(selector != IntPtr.Zero, "selector is nil");
 			
