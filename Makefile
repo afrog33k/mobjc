@@ -120,8 +120,8 @@ help:
 	@echo "INSTALL_DIR - where to put the dlls, defaults to $(INSTALL_DIR)/lib"
 	@echo "TEST1 - full name of an nunit TestFixture class"
 	@echo " "
-	@echo "Here's an example:"	
-	@echo "sudo make RELEASE=1 install"	
+	@echo "Here's an example:"
+	@echo "sudo make RELEASE=1 install"
 
 pc_file := $(PACKAGE_DIR)/mobjc.pc
 install: libs
