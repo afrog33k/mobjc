@@ -43,7 +43,12 @@ namespace MObjc
 			{
 				if (!ms_canInit)
 					throw new InvalidOperationException("mobjc was used, but CanInit is false");
-					
+				
+				// This will force AppKit and Foundation to load if they have not already been loaded
+				// (normally the static NSApplication ctor in mcocoa will take care of this, but some
+				// apps may want to create NSObjects before that).
+				Unused.Value = NSAvailableWindowDepths();
+				
 				NSObject pool = new NSObject(NSObject.AllocAndInitInstance("NSAutoreleasePool"));
 				
 				DoInit();
@@ -381,9 +386,12 @@ namespace MObjc
 		#endregion
 		
 		#region P/Invokes
+		[DllImport("/System/Library/Frameworks/AppKit.framework/AppKit")]
+		private static extern IntPtr NSAvailableWindowDepths();
+		
 		[DllImport("mobjc-glue.dylib")]
 		private extern static IntPtr CreateClass(IntPtr superClass, string name, ref IntPtr exception);
-
+		
 		[DllImport("mobjc-glue.dylib")]
 		private extern static void RegisterClass(IntPtr klass, ref IntPtr exception);
 		
