@@ -182,6 +182,9 @@ namespace MObjc
 						
 						else if (info.GetParameters().Length >= 2 && info.Name.Contains("_"))
 							DoAddMethod(name, info, info.Name.Replace('_', ':') + ":", klass, superClass);
+						
+						else
+							DoAddMethod(name, info, info.Name, klass, superClass);
 					}
 				}
 			}
