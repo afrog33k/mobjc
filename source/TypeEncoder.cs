@@ -34,8 +34,10 @@ namespace MObjc
 		[ThreadModel(ThreadModel.SingleThread)]
 		public static void Register(Type type, string name)
 		{
+#if DEBUG
 			Contract.Assert(!ms_inUse, "Register was called after the TypeEncode began to be used");
-			
+#endif
+						
 			ms_structs.Add(name, type);		// this is the only ms_structs mutator and is only called by Registrar so we don't have to worry about synchronization
 		}
 		
@@ -43,7 +45,9 @@ namespace MObjc
 		{
 			Contract.Requires(!string.IsNullOrEmpty(name), "name is null or empty");
 			
+#if DEBUG
 			ms_inUse = true;
+#endif
 			return ms_structs.TryGetValue(name, out type);
 		}
 		
@@ -51,8 +55,10 @@ namespace MObjc
 		{
 			Contract.Requires(type != null, "type is null");
 			
+#if DEBUG
 			ms_inUse = true;
-
+#endif
+			
 			if (type == typeof(bool))
 				return "c";
 			
@@ -130,7 +136,9 @@ namespace MObjc
 		#endregion
 		
 		#region Fields
+#if DEBUG
 		private static bool ms_inUse;
+#endif
 		private static Dictionary<string, Type> ms_structs = new Dictionary<string, Type>();
 		#endregion
 	}

@@ -25,6 +25,7 @@ namespace MObjc.Helpers
 {
 	/// <summary>Used with <see cref = "ThreadModelAttribute">ThreadModelAttribute</see> to specify the thread
 	/// safety of a type or member.</summary>
+	[Serializable]
 	public enum ThreadModel
 	{
 		/// <summary>The code may run safely only under the main thread (this is the default for

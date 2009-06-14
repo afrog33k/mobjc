@@ -120,8 +120,12 @@ internal sealed class DebugController : NSObject
 			menuItem.Call("setTitle:", text);
 			enabled = true;
 		}
+		else if (respondsToSelector(selector))
+		{
+			return true;
+		}
 #endif
-
+		
 		return enabled;
 	}
 	
