@@ -619,3 +619,281 @@ make help mentions he clean target.
 
 
 ------------------------------------------------------------------------
+r77 | jesjones@mindspring.com | 2009-04-28 20:50:42 -0700 (Tue, 28 Apr 2009) | 14 lines
+
+Index: Makefile
+* Incremented version number.
+
+Index: README
+* Unit tests are now run with make test instead of make check.
+
+Index: CHANGE_LOG
+Index: CHANGES
+* Updated.
+
+Index: gen_version.sh
+* Write a blank line instead of a line with a space.
+
+
+------------------------------------------------------------------------
+r78 | jesjones@mindspring.com | 2009-04-30 07:10:13 -0700 (Thu, 30 Apr 2009) | 9 lines
+
+Index: cocoa-pack
+* Fall back to using a symbolic link if the hard link fails (e.g. if mono and the app
+   are on different volumes).
+   
+Index: source/NSObjectString.cs
+Index: source/helpers/PtrArray.cs
+Index: source/PtrArray.cs
+* Moved PtrArray into helpers.
+
+------------------------------------------------------------------------
+r79 | jesjones@mindspring.com | 2009-05-07 08:24:29 -0700 (Thu, 07 May 2009) | 28 lines
+
+Index: source/NSObjectString.cs
+Index: source/InvalidCallException.cs
+Index: source/Registrar.cs
+Index: source/MethodSignature.cs
+Index: source/CocoaException.cs
+Index: source/Ffi.cs
+Index: source/Class.cs
+Index: source/NSObject.cs
+Index: source/RegisterAttribute.cs
+Index: source/helpers/PtrArray.cs
+Index: source/helpers/WeakList.cs
+Index: source/helpers/Unused.cs
+Index: source/helpers/Contract.cs
+Index: source/Managed.cs
+Index: source/NSObjectMethods.cs
+Index: source/ExportClassAttribute.cs
+Index: source/DirectCalls.cs
+Index: source/Native.cs
+Index: source/ObjectExtensions.cs
+Index: source/TypeEncoder.cs
+Index: source/Selector.cs
+* Documented the threading model supported by the code using a custom
+   attribute.
+   
+Index: source/helpers/ThreadModel.cs
+* Added.
+
+
+------------------------------------------------------------------------
+r80 | jesjones@mindspring.com | 2009-05-07 22:30:07 -0700 (Thu, 07 May 2009) | 3 lines
+
+Updated the ThreadModel class.
+
+
+------------------------------------------------------------------------
+r81 | jesjones@mindspring.com | 2009-05-08 17:27:02 -0700 (Fri, 08 May 2009) | 3 lines
+
+More thread model work.
+
+
+------------------------------------------------------------------------
+r82 | jesjones@mindspring.com | 2009-05-08 19:54:35 -0700 (Fri, 08 May 2009) | 3 lines
+
+More thread model work.
+
+
+------------------------------------------------------------------------
+r83 | jesjones@mindspring.com | 2009-05-09 09:54:22 -0700 (Sat, 09 May 2009) | 3 lines
+
+Yet another ThreadModel revision.
+
+
+------------------------------------------------------------------------
+r84 | jesjones@mindspring.com | 2009-05-19 18:51:33 -0700 (Tue, 19 May 2009) | 3 lines
+
+Whitespace.
+
+
+------------------------------------------------------------------------
+r85 | jesjones@mindspring.com | 2009-05-19 21:16:35 -0700 (Tue, 19 May 2009) | 13 lines
+
+Index: source/NSObject.cs
+Index: source/Selector.cs
+Index: source/Native.cs
+Index: source/Registrar.cs
+Index: test/ManagedTypes.cs
+Index: test/InstanceTests.cs
+* Fixed a crashing bug when a subclass of a subclass of NSObject overrides OnDealloc.
+
+Index: source/NSObjectMethods.cs
+* ms_class is now inited in the static NSObject ctor.
+
+Index: source/Managed.cs
+* Replaced LogHandler with Action<Exception>.
+------------------------------------------------------------------------
+r86 | jesjones@mindspring.com | 2009-05-21 15:52:51 -0700 (Thu, 21 May 2009) | 5 lines
+
+Index: source/ExportClassAttribute.cs
+Index: source/RegisterAttribute.cs
+* Rewrote some comments.
+
+
+------------------------------------------------------------------------
+r87 | jesjones@mindspring.com | 2009-05-23 11:33:07 -0700 (Sat, 23 May 2009) | 3 lines
+
+Index: source/NSObjectMethods.cs
+* copy and mutableCopy methods were broken.
+
+------------------------------------------------------------------------
+r88 | jesjones@mindspring.com | 2009-05-27 10:34:17 -0700 (Wed, 27 May 2009) | 9 lines
+
+Index: cocoa-pack
+* Use the current name of the app bundle for the link file instead of the
+   build time application name.
+* Now works if the app name has spaces.
+
+Index: source/Registrar.cs
+* Added a special error message for attempts to override dealloc.
+
+
+------------------------------------------------------------------------
+r89 | jesjones@mindspring.com | 2009-06-06 08:18:32 -0700 (Sat, 06 Jun 2009) | 11 lines
+
+Index: source/Selector.cs
+Index: source/Native.cs
+Index: source/ObjectExtensions.cs
+Index: source/IBOutlet.cs
+Index: source/ExportClassAttribute.cs
+* Working on documentation.
+
+Index: Makefile
+* Use -doc flag with gmcs.
+* Added a docs target to generate html docs using (for now unreleased) mmmdoc tool.
+
+------------------------------------------------------------------------
+r90 | jesjones@mindspring.com | 2009-06-06 08:21:49 -0700 (Sat, 06 Jun 2009) | 3 lines
+
+Removed DisableRuleAttribute and the smoke target.
+
+
+------------------------------------------------------------------------
+r91 | jesjones@mindspring.com | 2009-06-06 10:42:05 -0700 (Sat, 06 Jun 2009) | 14 lines
+
+Index: source/CocoaException.cs
+* Made the ctors internal.
+
+Index: gen_direct.py
+Index: glue/DirectCalls.m
+Index: source/DirectCalls.cs
+* Writes an /// <exclude> comment.
+* Writes a ThreadModel.Concurrent attribute.
+
+Index: source/ExportClassAttribute.cs
+Index: source/Class.cs
+* More documentation.
+
+
+------------------------------------------------------------------------
+r92 | jesjones@mindspring.com | 2009-06-06 10:51:08 -0700 (Sat, 06 Jun 2009) | 7 lines
+
+Index: source/InvalidCallException.cs
+* Made the ctors internal.
+
+Index: source/IBOutlet.cs
+* More documentation.
+
+
+------------------------------------------------------------------------
+r93 | jesjones@mindspring.com | 2009-06-06 12:27:50 -0700 (Sat, 06 Jun 2009) | 24 lines
+
+Index: source/Registrar.cs
+Index: test/ArgTests.cs
+Index: test/ExceptionTests.cs
+Index: test/ReturnTests.cs
+Index: test/DerivedTest.cs
+Index: test/ExportTests.cs
+Index: test/NativeCallTests.cs
+Index: test/InstanceTests.cs
+Index: test/TimingTest.cs
+Index: sample/Program.cs
+Index: test/MemoryTests.cs
+* Replaced AllocNative with AllocAndInitInstance.
+* Added AllocInstance.
+
+Index: source/Native.cs
+Index: source/NSObjectMethods.cs
+Index: source/ExportClassAttribute.cs
+Index: source/Managed.cs
+Index: source/InvalidCallException.cs
+Index: source/CocoaException.cs
+Index: source/NSObject.cs
+* More documentation.
+
+
+------------------------------------------------------------------------
+r94 | jesjones@mindspring.com | 2009-06-06 17:00:32 -0700 (Sat, 06 Jun 2009) | 3 lines
+
+Finished first pass at xml documentation.
+
+
+------------------------------------------------------------------------
+r96 | jesjones@mindspring.com | 2009-06-06 21:48:00 -0700 (Sat, 06 Jun 2009) | 3 lines
+
+Index: Makefile
+* Added links to the wiki to the generated html docs.
+
+------------------------------------------------------------------------
+r97 | jesjones@mindspring.com | 2009-06-06 21:52:02 -0700 (Sat, 06 Jun 2009) | 3 lines
+
+Index: source/Selector.cs
+* Made the Selector(IntPtr) ctor public again.
+
+------------------------------------------------------------------------
+r103 | jesjones@mindspring.com | 2009-06-07 15:16:30 -0700 (Sun, 07 Jun 2009) | 6 lines
+
+Index: README
+* Added a link to the wiki.
+
+Index: Makefile
+* Whitespace.
+
+------------------------------------------------------------------------
+r104 | jesjones@mindspring.com | 2009-06-14 08:38:01 -0700 (Sun, 14 Jun 2009) | 6 lines
+
+Index: source/Registrar.cs
+Index: test/RegistrationTests.cs
+* Registrar forces appkit and foundation to load (this avoids registration problems
+   when trying to create mcocoa objects before NSApplication is created).
+   
+
+------------------------------------------------------------------------
+r105 | jesjones@mindspring.com | 2009-06-14 09:12:02 -0700 (Sun, 14 Jun 2009) | 4 lines
+
+Lower case non-nullary method names with no underscores are now
+registered with objective-c as is.
+
+
+------------------------------------------------------------------------
+r107 | jesjones@mindspring.com | 2009-06-14 09:36:07 -0700 (Sun, 14 Jun 2009) | 10 lines
+
+Index: sample/DebugController.cs
+* validateMenuItem uses respondsToSelector to enable the other menu items.
+
+Index: source/TypeEncoder.cs
+* Fixed a warning in release.
+
+Index: source/helpers/ThreadModel.cs
+* Added [Serializable] to the enum.
+
+
+------------------------------------------------------------------------
+r108 | jesjones@mindspring.com | 2009-06-14 19:49:32 -0700 (Sun, 14 Jun 2009) | 13 lines
+
+Index: source/NSObject.cs
+* Added debug SaveStackTraces property which, when enabled, records
+stack traces for all NSObjects.
+
+Index: source/NSObjectString.cs
+* New "S" format specifier will now print stack traces (if they are enabled).
+
+Index: source/CocoaException.cs
+Index: source/Managed.cs
+* Fixed some leaky strings when marshaling exceptions.
+
+
+
+------------------------------------------------------------------------

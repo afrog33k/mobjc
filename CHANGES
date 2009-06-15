@@ -1,3 +1,30 @@
+-- Version 0.7.0.0 (r108) ----
+
+* Renamed AllocNative AllocAndInitInstance. Added AllocInstance.
+* Added a debug NSObject.SaveStackTraces property which, when set, records
+   stack traces for all NSObjects.
+* NSObject.ToString now takes a "S" format specifier which will print the stack
+   traces if they are enabled.
+* Lower case non-nullary method names with no underscores are now registered
+   with objective-c (and the name is used as is).
+* Made some cocoa-pack fixes:
+   - The launch script now falls back to a symbolic link if the hard link cannot be
+   created (e.g. if mono and the app are on different volumes).
+   - The link created by the launch script is now named after the bundle name
+   instead of the build time app name.
+   - The launch script now works if the app name contains spaces.
+* Registrar forces appkit and foundation to load (this avoids registration problems
+   when trying to create mcocoa objects before NSApplication is created).
+* Fixed a crasher when a subclass of a subclass of NSObject overrides OnDealloc.
+* Added a better error message for attempts to override dealloc.
+* Fixed some leaky strings when marshaling exceptions.
+* copy and mutableCopy methods were broken.
+* Made the CocoaException and InvalidCallException ctors internal.
+* Added xml documentation.
+* Documented the threading semantics of types and methods using a new
+   ThreadModelAttribute (which the next version of gendarme will recognize).
+* Removed the Smokey DisableRuleAttribute.
+
 -- Version 0.6.0.0 (r76) ----
 
 * Did some work on the cocoa-pack script:
