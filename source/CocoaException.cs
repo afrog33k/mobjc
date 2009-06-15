@@ -93,6 +93,7 @@ namespace MObjc
 				{
 					IntPtr keyBuffer = Marshal.StringToHGlobalAuto(".NET exception");
 					NSObject key = (NSObject) new Class("NSString").Call("alloc").Call("initWithUTF8String:", keyBuffer);					
+					key.autorelease();
 					Marshal.FreeHGlobal(keyBuffer);
 					
 					NSObject data = (NSObject) userInfo.Call("objectForKey:", key);

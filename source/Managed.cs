@@ -150,9 +150,14 @@ namespace MObjc
 				NSObject name = (NSObject) new Class("NSString").Call("alloc").Call("initWithUTF8String:", nameBuffer);
 				NSObject reason = (NSObject) new Class("NSString").Call("alloc").Call("initWithUTF8String:", reasonBuffer);			
 				NSObject userInfo = (NSObject) new Class("NSMutableDictionary").Call("alloc").Call("init");
+				name.autorelease();
+				reason.autorelease();
+				userInfo.autorelease();
 				
 				// Add the original System.Exception to userInfo.
 				NSObject key = (NSObject) new Class("NSString").Call("alloc").Call("initWithUTF8String:", keyBuffer);
+				key.autorelease();
+				
 				try
 				{
 					using (MemoryStream stream = new MemoryStream())

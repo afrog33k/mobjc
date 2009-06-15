@@ -40,6 +40,7 @@ namespace MObjc
 		/// <remarks>The format specifier may be:
 		/// <list>
 		/// <item><description>{0} or {0:G} returns something like "MyView : NSView (imp = 0xA08E7468)".</description></item>
+		/// <item><description>{0:S} is like G but includes stack traces if they are enabled.</description></item>
 		/// <item><description>{0:D} returns the result of calling the description method.</description></item>
 		/// <item><description>{0:I} returns the instance methods. </description></item>
 		/// <item><description>{0:C} returns the class methods. </description></item>
@@ -66,6 +67,10 @@ namespace MObjc
 					case null:
 					case "G":
 						DoGetDefaultString(builder);
+						break;
+					
+					case "S":
+						DoGetStackTraceString(builder);
 						break;
 					
 					case "I":
@@ -134,6 +139,23 @@ namespace MObjc
 			
 			if (m_deallocated)
 				builder.Append(" [deallocated]");
+		}
+		
+		private void DoGetStackTraceString(StringBuilder builder)
+		{
+			DoGetDefaultString(builder);
+			
+#if DEBUG
+			if (!m_deallocated && StackTrace != null)
+			{
+				builder.AppendLine();
+				foreach (string trace in StackTrace)
+				{
+					builder.Append("    ");
+					builder.AppendLine(trace);
+				}
+			}
+#endif
 		}
 		
 		private void DoGetClassMethodsString(StringBuilder builder, bool includePrivate)

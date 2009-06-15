@@ -58,6 +58,14 @@ namespace MObjc
 			}
 		}
 		
+#if DEBUG
+		/// <summary>Debug method to enable recording stack traces for all NSObjects.</summary>
+		/// <remarks>ToString(&quot;S&quot;) will print the traces.</remarks>
+		public static bool SaveStackTraces {get; set;}
+		
+		private string[] StackTrace {get; set;}
+#endif
+		
 		/// <summary>Constructs a managed object which is associated with an unmanaged object.</summary>
 		/// <remarks>In general multiple NSObject instances can be associated with the same unmanaged object.
 		/// The exception is that only one <see cref = "ExportClassAttribute">ExportClassAttribute</see> object can be associated with an
@@ -83,6 +91,23 @@ namespace MObjc
 				if (exception != IntPtr.Zero)
 					CocoaException.Raise(exception);
 				
+#if DEBUG
+				if (SaveStackTraces)
+				{
+					var stack = new System.Diagnostics.StackTrace(1);
+					StackTrace = new string[stack.FrameCount];
+					for (int i = 0; i < stack.FrameCount; ++i)	// TODO: provide a MaxStackDepth method?
+					{
+						StackFrame frame = stack.GetFrame(i);
+						
+						if (!string.IsNullOrEmpty(frame.GetFileName()))
+							StackTrace[i] = string.Format("{0}|{1} {2}:{3}", frame.GetMethod().DeclaringType, frame.GetMethod(), frame.GetFileName(), frame.GetFileLineNumber());
+						else
+							StackTrace[i] = string.Format("{0}|{1}", frame.GetMethod().DeclaringType, frame.GetMethod());
+					}
+				}
+#endif
+
 				lock (ms_instancesLock)
 				{
 					bool exported;
