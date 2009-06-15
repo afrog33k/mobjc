@@ -1,4 +1,5 @@
 #!/bin/bash
+# Used to create AssemblyVersion.cs files.
 # Usage: ./gen_version.sh 1.3.57.0 source/internal/AssemblyVersion.cs
 VERSION="$1"
 FILE="$2"
