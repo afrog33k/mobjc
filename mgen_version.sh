@@ -1,6 +1,8 @@
 #!/bin/bash
 # Used to create AssemblyVersion.cs files.
-# Usage: ./gen_version.sh 1.3.57.0 source/internal/AssemblyVersion.cs
+# Note that this script is installed into /usr/local/bin by the install make target.
+#
+# Usage: mgen_version.sh 1.3.57.0 source/AssemblyVersion.cs
 VERSION="$1"
 FILE="$2"
 

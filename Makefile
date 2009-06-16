@@ -28,7 +28,7 @@ dummy2 := $(shell if [[ "$(CSC_FLAGS)" != `cat bin/csc_flags 2> /dev/null` ]]; t
 dummy3 := $(shell if [[ "$(GCC_FLAGS)" != `cat bin/gcc_flags 2> /dev/null` ]]; then echo "$(GCC_FLAGS)" > bin/gcc_flags; fi)
 
 base_version := 0.7.xxx.0										# major.minor.build.revision
-version := $(shell ./get_version.sh $(base_version) build_num)	# this will increment the build number stored in build_num
+version := $(shell ./mget_version.sh $(base_version) build_num)	# this will increment the build number stored in build_num
 version := $(strip $(version))
 export version
 
@@ -65,7 +65,7 @@ run-app: libs
 # ------------------
 # Binary targets 
 bin/mobjc.dll: keys bin/csc_flags source/*.cs source/helpers/*.cs
-	@./gen_version.sh $(version) source/AssemblyVersion.cs
+	@./mgen_version.sh $(version) source/AssemblyVersion.cs
 	$(CSC) -out:bin/mobjc.dll $(CSC_FLAGS) -doc:bin/docs.xml -keyfile:keys -target:library source/*.cs source/helpers/*.cs
 
 bin/mobjc-glue-ppc.dylib: bin/gcc_flags glue/*.m
@@ -129,6 +129,8 @@ install: libs
 	install -d "$(INSTALL_DIR)/bin"
 	install -d "$(INSTALL_DIR)/lib"
 	install "cocoa-pack" "$(INSTALL_DIR)/bin"
+	install "mgen_version.sh" "$(INSTALL_DIR)/bin"
+	install "mget_version.sh" "$(INSTALL_DIR)/bin"
 	install "bin/mobjc-glue.dylib" "$(INSTALL_DIR)/lib"
 	install "bin/mobjc.dll" "$(INSTALL_DIR)/lib"
 ifndef RELEASE
@@ -158,6 +160,8 @@ endif
 
 uninstall:
 	-rm "$(INSTALL_DIR)/bin/cocoa-pack"
+	-rm "$(INSTALL_DIR)/bin/mgen_version.sh"
+	-rm "$(INSTALL_DIR)/bin/mget_version.sh"
 	-rm "$(INSTALL_DIR)/lib/mobjc-glue.dylib"
 	-rm "$(INSTALL_DIR)/lib/mobjc.dll"
 	-rm "$(INSTALL_DIR)/lib/mobjc.dll.mdb"
@@ -165,5 +169,5 @@ uninstall:
 	
 tar:
 	tar --create --compress --exclude \*/.svn --exclude \*/.svn/\* --file=mobjc-$(version).tar.gz \
-		CHANGES CHANGE_LOG MIT.X11 Makefile README cocoa-pack gen_direct.py gendarme.ignore gen_version.sh get_version.sh glue sample source test 
+		CHANGES CHANGE_LOG MIT.X11 Makefile README cocoa-pack gen_direct.py gendarme.ignore mgen_version.sh mget_version.sh glue sample source test 
 

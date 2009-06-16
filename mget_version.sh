@@ -12,7 +12,9 @@
 # The script returns the result of replacing the xxx in the template with the
 # build number.
 #
-# Usage: ./get_version.sh 0.3.xxx.0 build_num
+# Note that this script is installed into /usr/local/bin by the install make target.
+#
+# Usage: mget_version.sh 0.3.xxx.0 build_num
 BASE_VERSION="$1"
 FILE="$2"
 
