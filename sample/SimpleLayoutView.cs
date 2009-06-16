@@ -71,7 +71,7 @@ internal sealed class SimpleLayoutView : NSView
 	// Changing frame (which is what happens when the window is resized) should cause relayout.
 	public void setFrameSize(NSSize size)
 	{
-		SuperCall("setFrameSize:", size);
+		SuperCall(NSView.Class, "setFrameSize:", size);
 		DoLayout();
 	}
 	#endregion

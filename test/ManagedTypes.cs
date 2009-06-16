@@ -81,7 +81,7 @@ public class Subclass1 : NSObject
 		return result;
 	}
 		
-	public static Subclass1 make(int v) 
+	public static Subclass1 make(int v)
 	{
 		Subclass1 result = (Subclass1) new Class("Subclass1").Call("alloc").Call("init");
 		result.autorelease();
@@ -95,7 +95,7 @@ public class Subclass1 : NSObject
 	{
 		m_data = new IBOutlet<NSString>(this, "myData");
 	}
-		
+	
 	[Register]
 	public NSString concat(NSString lhs, NSString rhs)
 	{
@@ -233,7 +233,7 @@ public class PrettyData : NSObject
 		result.autorelease();
 		return result;
 	}
-		
+	
 	protected PrettyData(IntPtr instance) : base(instance)
 	{
 	}
@@ -251,7 +251,7 @@ public class PrettyData : NSObject
 		NSObject str = (NSObject) nsString.Call("alloc");
 		str = (NSObject) str.Call("initWithUTF8String:", Marshal.StringToHGlobalAuto("pretty: "));
 		
-		NSObject ss = (NSObject) SuperCall("description");
+		NSObject ss = (NSObject) SuperCall(new Class("NSConcreteData"), "description");
 		str.Call("appendString:", ss);
 		
 		return str;
@@ -274,6 +274,22 @@ public class MyBase : NSObject
 			
 		BaseDead = true;
 		base.OnDealloc();
+	}
+	
+	public int badAccumulate(int nesting)
+	{
+		if (nesting > 2)
+			throw new InvalidOperationException("MyBase.badAccumulate is recursing");
+		
+		return SuperCall(new Class("NSSimpleCString"), "badAccumulate:", nesting + 1).To<int>();	// we have no super method named badAccumulate
+	}
+	
+	public int accumulate(int nesting)
+	{
+		if (nesting > 2)
+			throw new InvalidOperationException("MyBase.accumulate is recursing");
+		
+		return 2;
 	}
 	
 	[Register]
@@ -312,6 +328,14 @@ public class MyDerived : MyBase
 	{
 		Dead = true;
 		base.OnDealloc();
+	}
+	
+	public new int accumulate(int nesting)
+	{
+		if (nesting > 2)
+			throw new InvalidOperationException("MyDerived.accumulate is recursing");
+		
+		return 3 + SuperCall(new Class("MyBase"), "accumulate:", nesting + 1).To<int>();
 	}
 	
 	[Register]
@@ -355,6 +379,14 @@ public class MyDerived : MyBase
 	}
 }
 
+[ExportClass("DerivedSquared", "MyDerived")]
+public class DerivedSquared : MyDerived
+{
+	protected DerivedSquared(IntPtr instance) : base(instance)
+	{
+	}
+}
+
 // -----------------------------------------------
 
 [ExportClass("Item", "NSObject")]
@@ -387,7 +419,7 @@ public class Media : File
 	
 	public new int value()
 	{
-		return 2 + SuperCall("value").To<int>();
+		return 2 + SuperCall(new Class("File"), "value").To<int>();
 	}
 }
 

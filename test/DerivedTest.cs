@@ -76,7 +76,97 @@ public class DerivedTest
 		klass = new Class("PrettyData");
 		Assert.AreEqual("PrettyData", klass.Name);
 	}
-
+	
+	[Test]
+	public void SuperCall1()
+	{
+		try
+		{
+			MyBase a = NSObject.AllocAndInitInstance("MyBase").To<MyBase>();
+			
+			int result = a.accumulate(0);
+			Assert.AreEqual(2, result);
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine("SuperCall1 failed:");
+			Console.WriteLine("{0}", e);
+		}
+	}
+	
+	[Test]
+	public void SuperCall2()
+	{
+		try
+		{
+			MyDerived b = NSObject.AllocAndInitInstance("MyDerived").To<MyDerived>();
+			
+			int result = b.accumulate(0);
+			Assert.AreEqual(5, result);
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine("SuperCall2 failed:");
+			Console.WriteLine("{0}", e);
+		}
+	}
+	
+	[Test]
+	public void SuperCall3()
+	{
+		try
+		{
+			DerivedSquared c = NSObject.AllocAndInitInstance("DerivedSquared").To<DerivedSquared>();
+			
+			int result = c.accumulate(0);
+			Assert.AreEqual(5, result);
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine("SuperCall3 failed:");
+			Console.WriteLine("{0}", e);
+		}
+	}
+	
+	[Test]
+	public void SuperCall4()
+	{
+		try
+		{
+			MyBase a = NSObject.AllocAndInitInstance("MyBase").To<MyBase>();
+			
+			a.SuperCall(NSObject.Class, "accumulate:");
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine("SuperCall4 failed:");
+			Console.WriteLine("{0}", e);
+		}
+	}
+	
+	[Test]
+	public void BadSuperCall()
+	{
+		try
+		{
+			MyBase a = NSObject.AllocAndInitInstance("MyBase").To<MyBase>();
+			a.badAccumulate(0);
+			Assert.Fail("badAccumulate should have thrown an exception");
+		}
+		catch (InvalidCallException i)
+		{
+			if (!i.Message.Contains("NSSimpleCString"))
+				Assert.Fail("Expected 'NSSimpleCString' in '{0}", i.Message);
+			
+			if (!i.Message.Contains("badAccumulate"))
+				Assert.Fail("Expected 'badAccumulate' in '{0}", i.Message);
+		}
+		catch (Exception e)
+		{
+			Assert.Fail("badAccumulate should have thrown an InvalidCallException, not a {0}", e.GetType());
+		}
+	}
+	
 	[Test]
 	[ExpectedException(typeof(ArgumentException))]
 	public void ManagedStringIsNotRegistere()

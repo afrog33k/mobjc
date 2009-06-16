@@ -294,20 +294,22 @@ namespace MObjc
 			return result;
 		}
 		
-		/// <summary>Dynamic call to an exported type's base class method.</summary>
-		/// <param name = "name">A method name, e.g. "setFrame:display:".</param>
+		/// <summary>Dynamic call to an exported type&apos;s base class method.</summary>
+		/// <param name = "baseClass">The class for the type (or a descendent of the type) containing the method you want to call.</param>
+		/// <param name = "name">A method name, e.g. &quot;setFrame:display:&quot;.</param>
 		/// <param name = "args">The arguments to pass to the method. If the arity or argument types
 		/// don't match the unmaanaged code an exception will be thrown.</param>
-		public object SuperCall(string name, params object[] args)
+		public object SuperCall(Class baseClass, string name, params object[] args)
 		{
-			Contract.Requires(name != null, "name is null");
+			Contract.Requires(baseClass != null, "baseClass is null");
+			Contract.Requires(!string.IsNullOrEmpty(name), "name is null or empty");
 			Contract.Requires(!m_deallocated, "ref count is zero");
 			
 			object result = IntPtr.Zero;
 			
 			if (m_instance != IntPtr.Zero)
 			{
-				Native native = new Native(m_instance, new Selector(name), class_().BaseClass);
+				Native native = new Native(m_instance, new Selector(name), baseClass);
 				native.SetArgs(args);
 				result = native.Invoke();
 			}
