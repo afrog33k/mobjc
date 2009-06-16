@@ -897,3 +897,35 @@ Index: source/Managed.cs
 
 
 ------------------------------------------------------------------------
+r110 | jesjones@mindspring.com | 2009-06-15 12:50:34 -0700 (Mon, 15 Jun 2009) | 7 lines
+
+Index: CHANGES
+Index: CHANGE_LOG
+* Updated.
+
+Index: Makefile
+* Incremented version number.
+
+------------------------------------------------------------------------
+r111 | jesjones@mindspring.com | 2009-06-15 13:00:24 -0700 (Mon, 15 Jun 2009) | 4 lines
+
+Index: get_version.sh
+Index: gen_version.sh
+* Added some comments.
+
+------------------------------------------------------------------------
+r112 | jesjones@mindspring.com | 2009-06-15 21:51:37 -0700 (Mon, 15 Jun 2009) | 12 lines
+
+Index: gen_version.sh
+Index: mgen_version.sh
+* Renamed gen_version.sh mgen_version.sh.
+
+Index: get_version.sh
+Index: mget_version.sh
+* Renamed get_version.sh mget_version.sh.
+
+Index: Makefile
+* Incremented version number.
+* mgen_version.sh and mget_version.sh are now installed to /usr/local/bin.
+
+------------------------------------------------------------------------

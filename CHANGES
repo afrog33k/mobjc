@@ -1,4 +1,4 @@
--- Version 0.7.0.0 (r108) ----
+-- Version 0.7.0.0 (r112) ----
 
 * Renamed AllocNative AllocAndInitInstance. Added AllocInstance.
 * Added a debug NSObject.SaveStackTraces property which, when set, records
@@ -24,6 +24,9 @@
 * Documented the threading semantics of types and methods using a new
    ThreadModelAttribute (which the next version of gendarme will recognize).
 * Removed the Smokey DisableRuleAttribute.
+* Renamed gen_version.sh mgen_version.sh.
+* Renamed get_version.sh mget_version.sh.
+* mgen_version.sh and mget_version.sh are now installed to /usr/local/bin.
 
 -- Version 0.6.0.0 (r76) ----
 
