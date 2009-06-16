@@ -26,7 +26,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 public class ManagedString : NSString
-{		
+{
 	public ManagedString(IntPtr value) : base(value)
 	{
 	}
@@ -41,7 +41,7 @@ public class ManagedPretty : PrettyData
 	public ManagedPretty(IntPtr instance) : base(instance)
 	{
 	}
-		
+	
 	public void shouldNotBeRegistered()
 	{
 	}
@@ -79,17 +79,17 @@ public class DerivedTest
 
 	[Test]
 	[ExpectedException(typeof(ArgumentException))]
-	public void ManagedStringIsNotRegistere() 
+	public void ManagedStringIsNotRegistere()
 	{
 		new Class("ManagedString");
 	}
-
+	
 	[Test]
 	[ExpectedException(typeof(ArgumentException))]
-	public void ManagedPrettyIsNotRegistere() 
+	public void ManagedPrettyIsNotRegistere()
 	{
 		new Class("ManagedPretty");
 	}
-
+	
 	private NSObject m_pool;
 }
