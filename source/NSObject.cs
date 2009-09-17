@@ -298,7 +298,7 @@ namespace MObjc
 		/// <param name = "baseClass">The class for the type (or a descendent of the type) containing the method you want to call.</param>
 		/// <param name = "name">A method name, e.g. &quot;setFrame:display:&quot;.</param>
 		/// <param name = "args">The arguments to pass to the method. If the arity or argument types
-		/// don't match the unmaanaged code an exception will be thrown.</param>
+		/// don't match the unmanaged code an exception will be thrown.</param>
 		public object SuperCall(Class baseClass, string name, params object[] args)
 		{
 			Contract.Requires(baseClass != null, "baseClass is null");

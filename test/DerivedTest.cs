@@ -135,13 +135,21 @@ public class DerivedTest
 		{
 			MyBase a = NSObject.AllocAndInitInstance("MyBase").To<MyBase>();
 			
-			a.SuperCall(NSObject.Class, "accumulate:");
+			a.SuperCall(NSObject.Class, "accumulate:", 5);
+			Assert.Fail("SuperCall should have thrown an exception");
 		}
-		catch (Exception e)
+		catch (InvalidCallException)
 		{
-			Console.WriteLine("SuperCall4 failed:");
-			Console.WriteLine("{0}", e);
 		}
+	}
+	
+	[Test]
+	public void SuperCall5()
+	{
+		MyDerived a = NSObject.AllocAndInitInstance("MyDerived").To<MyDerived>();
+		
+		int result = a.SuperCall(MyBase.Class, "accumulate:", 5).To<int>();
+		Assert.AreEqual(2, result);
 	}
 	
 	[Test]
