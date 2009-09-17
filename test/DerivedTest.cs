@@ -138,8 +138,9 @@ public class DerivedTest
 			a.SuperCall(NSObject.Class, "accumulate:", 5);
 			Assert.Fail("SuperCall should have thrown an exception");
 		}
-		catch (InvalidCallException)
+		catch (InvalidCallException e)
 		{
+			Assert.AreEqual("Couldn't find a method for NSObject.accumulate:", e.Message);
 		}
 	}
 	
@@ -148,7 +149,7 @@ public class DerivedTest
 	{
 		MyDerived a = NSObject.AllocAndInitInstance("MyDerived").To<MyDerived>();
 		
-		int result = a.SuperCall(MyBase.Class, "accumulate:", 5).To<int>();
+		int result = a.SuperCall(new Class("MyBase"), "accumulate:", 1).To<int>();
 		Assert.AreEqual(2, result);
 	}
 	
