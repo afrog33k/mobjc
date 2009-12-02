@@ -40,7 +40,7 @@ ffi_lib := ffi
 
 # ------------------
 # Primary targets
-all: bin/tests.dll bin/sample.exe
+all: bin/tests.dll app
 
 libs: bin/mobjc.dll bin/mobjc-glue.dylib
 
