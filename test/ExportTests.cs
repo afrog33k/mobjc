@@ -64,6 +64,18 @@ public class ExportTests
 	}
 	
 	[Test]
+	public void StaticNewTest()
+	{
+		Class klass = new Class("Subclass1");
+		Subclass1 instance = klass.Call("makeDefault").To<Subclass1>();
+		
+		instance.Call("initValue");
+		
+		int value = (int) instance.Call("getValue");
+		Assert.AreEqual(100, value);
+	}
+	
+	[Test]
 	public void CreateTest()
 	{
 		NSObject instance = (NSObject) new Class("Subclass1").Call("alloc").Call("init");

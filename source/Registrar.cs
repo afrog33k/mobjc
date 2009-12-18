@@ -160,7 +160,8 @@ namespace MObjc
 				}
 			}
 			
-			foreach (MethodInfo info in type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)) 
+			BindingFlags flags = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
+			foreach (MethodInfo info in type.GetMethods(flags)) 
 			{
 				if (!info.IsSpecialName && info.DeclaringType.Name != "NSObject")
 				{
@@ -208,6 +209,9 @@ namespace MObjc
 				string encoding = DoGetEncoding(info);
 				Managed method = new Managed(info, encoding);
 				mimp = method.Call;
+				
+				if (info.IsStatic)
+					klass = object_getClass(klass);
 				
 				IntPtr cif = DoCreateCif(info);
 				result = AddMethod(superClass, klass, (IntPtr) selector, encoding, mimp, cif);
@@ -400,6 +404,9 @@ namespace MObjc
 		
 		[DllImport("mobjc-glue.dylib")]
 		private extern static int AddMethod(IntPtr superClass, IntPtr klass, IntPtr selector, string sig, ManagedImp imp, IntPtr cif);
+		
+		[DllImport("/usr/lib/libobjc.dylib")]
+		private extern static IntPtr object_getClass(IntPtr obj);
 		
 		[DllImport("/usr/lib/libobjc.dylib")]		// use IntPtr for size because size_t has the same size as a pointer
 		private extern static byte class_addIvar(IntPtr cls, string name, IntPtr size, byte alignment, string encoding);
