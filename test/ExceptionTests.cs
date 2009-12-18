@@ -48,7 +48,7 @@ public class ExceptionTests
 	[SetUp]
 	public void Setup()
 	{
-		GC.Collect(); 				
+		GC.Collect();
 		GC.WaitForPendingFinalizers();
 	}
 	
@@ -82,7 +82,7 @@ public class ExceptionTests
 		}
 		catch (TargetInvocationException e)
 		{
-			Assert.IsTrue(e.Message.Contains("Exception has been thrown by the target of an Objective-C method call"));
+			Assert.IsTrue(e.Message.Contains("Exception has been thrown by the (managed) target of an Objective-C method call"));
 			Assert.IsNotNull(e.InnerException);
 			
 			ArgumentException ae = e.InnerException as ArgumentException;

@@ -113,7 +113,7 @@ namespace MObjc
 							BinaryFormatter formatter = new BinaryFormatter();
 							Exception e = (Exception) formatter.Deserialize(stream);
 							
-							throw new TargetInvocationException("Exception has been thrown by the target of an Objective-C method call.", e);	// yes TargetInvocationException sucks, but it preserves the original stack crawl...
+							throw new TargetInvocationException("Exception has been thrown by the (managed) target of an Objective-C method call.", e);	// yes TargetInvocationException sucks, but it preserves the original stack crawl...
 						}
 					}
 				}

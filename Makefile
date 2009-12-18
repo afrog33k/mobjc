@@ -10,7 +10,7 @@ GENDARME ?= /usr/local/bin/gendarme
 ifdef RELEASE
 	# Note that -debug+ just generates an mdb file.
 	CSC_FLAGS ?= -checked+ -debug+ -optimize+ -warn:4 -d:TRACE -d:CONTRACTS_PRECONDITIONS
-	GCC_FLAGS ?= -Wall -O3
+	GCC_FLAGS ?= -Wall -O3 
 else
 	CSC_FLAGS ?= -checked+ -debug+ -warn:4 -warnaserror+ -d:DEBUG -d:TRACE -d:CONTRACTS_FULL
 	GCC_FLAGS ?= -ggdb -Wall -Werror -D DEBUG
@@ -94,20 +94,22 @@ gendarme: bin/mobjc.dll
 	
 clean:
 	-rm -rf bin/Sample.app
-	-rm  bin/TestResult.xml
-	-rm  bin/docs.xml
-	-rm  bin/*.exe
-	-rm  bin/*.dylib
+	-rm  -f bin/TestResult.xml
+	-rm  -f bin/docs.xml
+	-rm  -f bin/*.exe
+	-rm  -f bin/*.dylib
 	-rm -rf bin/*.dSYM
-	-rm  bin/*.dll
-	-rm  bin/*.mdb
+	-rm  -f bin/*.dll
+	-rm  -f bin/*.mdb
+	-rm  -f bin/csc_flags
+	-rm  -f bin/gcc_flags
 	
 distclean:
 	-rm -rf bin
 	-rm -rf docs
-	-rm build_num
-	-rm keys
-	-rm source/AssemblyVersion.cs
+	-rm -f build_num
+	-rm -f keys
+	-rm -f source/AssemblyVersion.cs
 	
 help:
 	@echo "mobjc version $(version)"

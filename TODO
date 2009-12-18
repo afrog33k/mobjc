@@ -3,19 +3,20 @@ https://home.comcast.net/~jesse98/public/mobjc_docs/namespaces.html
 
 set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-console.exe -fixture=BaseClassTests -nologo bin/tests.dll
 
-* Need to always generate response files.
-* Should be able to call arbitrary .net code from native code.
+* Add -f to all the make clean targets (everywhere).
+* Might want to say that ExportClass can be used with non-sealed classes.
+* May want to allow static methods to be registered.
 * Experiment with using the native GC:
 	- mono doesn't seem to be able to p/invoke dll's compiled with -fobjc-gc-only...
 	  need to try this again when mono stops using boehm
 	- compile the native glue with -fobjc-gc-only
 	- provide Register and Unregister methods that take an id and stick it in a collection
 	- will need a mutex on native side
-	- get rid of auto pools
+	- get rid of auto pools (use a define to toggle these on and off)
 	- get rid of NSObject::Create
 	- get rid of the doRetain ctors
 	- get rid of retaincount
-	- nsobject should probably not be disposable	IList
+	- nsobject should probably not be disposable
 	- look at memory unit tests
 	- look at app memory test
 
@@ -24,7 +25,7 @@ set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-cons
 	
 	void InitGC()
 	{
-		s_objects = [[NSCountedSet alloc] initWithCapacity:100];	StringBuilder
+		s_objects = [[NSCountedSet alloc] initWithCapacity:100];
 		s_lock = [[NSLock alloc] init];
 	}
 	
@@ -41,6 +42,9 @@ set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-cons
 		[s_objects removeObject:object];
 		[s_lock unlock];
 	}
+
+* Need to always generate response files.
+* Should be able to call arbitrary .net code from native code.
 * Might be nice to have some Smokey rules:
 	- if managed class inherits from a managed class, attr and c# classes have to have 
 	  the same base
