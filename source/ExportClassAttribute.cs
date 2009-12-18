@@ -27,7 +27,7 @@ namespace MObjc
 	/// <summary>Identifies the managed classes which can also be used as (new) Objective-C classes.</summary>
 	/// <example>Here's an example of how you might use this attribute with a custom view:
 	/// <code>
-	/// // The outlets should be setup using Interface Builder.
+	/// // The outlets should be setup using Interface Builder. The class need not be sealed.
 	/// [ExportClass(&quot;MyView&quot;, &quot;NSView&quot;, Outlets = &quot;label1 label2&quot;)]
 	/// internal sealed class MyView : NSView
 	/// {
