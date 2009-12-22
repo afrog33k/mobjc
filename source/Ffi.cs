@@ -53,7 +53,7 @@ namespace MObjc
 		{
 			if (atypes[atypes.Length - 1] != IntPtr.Zero)
 				throw new ArgumentException("atypes should be null terminated");
-				
+			
 			IntPtr cif = AllocCif(atypes.Length - 1, rtype, atypes.ToIntPtr());
 			
 			if (cif.ToInt32() == 1)
@@ -295,7 +295,7 @@ namespace MObjc
 		private static void DoFillBuffer(IntPtr buffer, object value, string encoding)
 		{
 			Type type = value != null ? value.GetType() : null;
-			switch (encoding)	
+			switch (encoding)
 			{
 				case "c":
 					if (type == typeof(bool))
@@ -399,6 +399,24 @@ namespace MObjc
 					}
 					break;
 					
+				case "@?":
+					if (value == null)
+					{
+						Marshal.WriteIntPtr(buffer, IntPtr.Zero);
+					}
+					else
+					{
+						ExtendedBlock block = value as ExtendedBlock;
+						if (block != null)
+							Marshal.WriteIntPtr(buffer, (IntPtr) block.block);
+						else
+							if (value.GetType() == typeof(IntPtr))
+								Marshal.WriteIntPtr(buffer, (IntPtr) value);
+							else
+								throw new InvalidCallException(string.Format("Expected an ExtendedBlock or IntPtr but got a {0}.", type));
+					}
+					break;
+					
 				case "#":
 					Class k = value as Class;
 					if (k != null)
@@ -493,7 +511,7 @@ namespace MObjc
 		private static IntPtr DoGetFfiType(string encoding)
 		{
 			char code = DoGetCode(encoding);
-		
+			
 			if (code == '\x0')
 			{
 				char t = DoGetEncodingType(encoding);
@@ -542,7 +560,7 @@ namespace MObjc
 			int index = 0;
 			while (index < pencoding.Length)
 			{
-				if (pencoding[index] == '{')	
+				if (pencoding[index] == '{')
 				{
 					int i = pencoding.IndexOf('=', index);
 					int j = pencoding.IndexOf('}', index);
@@ -599,6 +617,7 @@ namespace MObjc
 					break;
 				
 				case "@":
+				case "@?":
 				case "#":
 				case ":":
 					code = 'p';
@@ -622,7 +641,7 @@ namespace MObjc
 		{
 			IntPtr buffer;
 			
-			switch (encoding)	
+			switch (encoding)
 			{
 				case "c":
 				case "C":
@@ -660,6 +679,7 @@ namespace MObjc
 					break;
 					
 				case "@":
+				case "@?":
 				case "#":
 				case ":":
 					buffer = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(IntPtr)));
@@ -696,7 +716,7 @@ namespace MObjc
 			
 			return buffer;
 		}
-		#endregion	
+		#endregion
 		
 		#region P/Invokes
 		[DllImport("mobjc-glue.dylib")]
@@ -710,9 +730,6 @@ namespace MObjc
 		
 		[DllImport("mobjc-glue.dylib")]
 		internal extern static void FfiCall(IntPtr cif, IntPtr imp, IntPtr result, IntPtr args, ref IntPtr exception);
-
-//		[DllImport("mobjc-glue.dylib")]
-//		internal extern static void FreeStructType(IntPtr type);
 		#endregion
 		
 		#region Fields

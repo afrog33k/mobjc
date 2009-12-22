@@ -27,7 +27,7 @@ using System.Reflection;
 
 namespace MObjc
 {
-	// http://developer.apple.com/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/chapter_7_section_1.html
+	// http://developer.apple.com/mac/library/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html#//apple_ref/doc/uid/TP40008048-CH100-SW1
 	[ThreadModel(ThreadModel.Concurrent)]
 	internal static class TypeEncoder
 	{
@@ -37,7 +37,7 @@ namespace MObjc
 #if DEBUG
 			Contract.Assert(!ms_inUse, "Register was called after the TypeEncode began to be used");
 #endif
-						
+			
 			ms_structs.Add(name, type);		// this is the only ms_structs mutator and is only called by Registrar so we don't have to worry about synchronization
 		}
 		
@@ -103,6 +103,9 @@ namespace MObjc
 				
 			else if (type == typeof(Selector))
 				return ":";
+				
+			else if (type == typeof(ExtendedBlock))
+				return "@?";
 				
 			else if (type == typeof(NSObject) || type.IsSubclassOf(typeof(NSObject)))
 				return "@";

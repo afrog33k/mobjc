@@ -122,7 +122,7 @@ namespace MObjc
 					if (exported)
 					{
 						if (ms_instances.ContainsKey(instance))
-							throw new InvalidOperationException(type + " is being constructed twice with the same id.");
+							throw new InvalidOperationException(type + " is being constructed twice with the same id, try using the Lookup method.");
 						
 						ms_instances.Add(instance, this);
 					}

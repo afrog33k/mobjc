@@ -3,8 +3,37 @@ https://home.comcast.net/~jesse98/public/mobjc_docs/namespaces.html
 
 set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-console.exe -fixture=BaseClassTests -nologo bin/tests.dll
 
-* May want to allow static methods to be registered:
-	- happens if the method is decorated with RegisterAttribute or is lower case
+			Action<IntPtr, IntPtr, IntPtr> thunk = (IntPtr lhs, IntPtr rhs, IntPtr ctxt) =>
+				function(NSObject.Lookup(lhs), NSObject.Lookup(rhs), ctxt);
+			
+			IntPtr fp = Marshal.GetFunctionPointerForDelegate(thunk);
+			NSArray result = Call("sortedArrayUsingFunction:context:", fp, context).To<NSArray>();
+
+			else if (type == typeof(Delegate))
+				return "?";				// @? (for a block) is also a possibility...
+				
+* Add support for blocks:
+	- can a typed function pointer be used in place of a varargs function pointer?
+	  think this will work for intel but not ppc
+	- will need a thunk for the block* arg
+	- maybe the native code can create the block? and users are responsible for hanging onto
+	  the delegate? need to copy and then autorelease them
+	- might need a Block type so stuff like sheets can be handled
+-(BasicBlock)printLater:(NSString*)someObject;
+{
+	return [[^ {
+		NSLog(@"%@: %@", 
+			logLevel,
+			someObject
+		);
+	} copy] autorelease];
+}
+	- can test with NSArray::indexOfObjectPassingTest
+	- probably need a native call to get a _NSConcreteStackBlock isa pointer
+	- will need an invoke method
+	- need to store blocks somehow to prevent the function pointer from being GCed
+	   how does this work with stuff like sheets?
+	- do we need copy/dispose?
 * Experiment with using the native GC:
 	- mono doesn't seem to be able to p/invoke dll's compiled with -fobjc-gc-only...
 	  need to try this again when mono stops using boehm

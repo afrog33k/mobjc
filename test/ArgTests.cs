@@ -22,6 +22,7 @@
 using NUnit.Framework;
 using MObjc;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -188,6 +189,26 @@ public class ArgTests
 		NSObject s = new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hello")).To<NSObject>();
 		NSObject t = new Class("NSString").Call("stringWithString:", (IntPtr) s).To<NSObject>();
 		Assert.AreEqual("hello", t.description());
+	}
+	
+	private delegate void Enumerator(IntPtr context, IntPtr line, ref byte stop);
+	
+	[Test]
+	public void Block()
+	{
+		NSObject s = new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hello\nthere")).To<NSObject>();
+		
+		var lines = new List<string>();
+		Enumerator e = (IntPtr context, IntPtr line, ref byte stop) =>
+		{
+			lines.Add(new NSObject(line).Call("description").ToString());
+		};
+		var block = new ExtendedBlock(e);
+		s.Call("enumerateLinesUsingBlock:", block);
+		
+		Assert.AreEqual(2, lines.Count);
+		Assert.AreEqual("hello", lines[0]);
+		Assert.AreEqual("there", lines[1]);
 	}
 	
 	[Test]
