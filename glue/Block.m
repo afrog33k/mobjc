@@ -23,8 +23,11 @@
 
 void* CreateBlock(void* callback)
 {
+	id block = NULL;
+	
+#if NS_BLOCKS_AVAILABLE
 	// Make a dummy block, copy it onto the heap, and autorelease it.
-	id block = [[^ {return 0;} copy] autorelease];
+	block = [[^ {return 0;} copy] autorelease];
 	
 	// Swap out the invoke function pointer.
 	// TODO: This is pretty evil, but according to Apple's ABI docs it
@@ -32,6 +35,20 @@ void* CreateBlock(void* callback)
 	assert(sizeof(int) == sizeof(void*));
 	int* p = (int*) block;		// 0 = isa, 1 = flags, 2 = reserved, 3 = invoke, for details see http://clang.llvm.org/docs/BlockLanguageSpec.txt
 	p[3] = (int) callback;
+#endif
 	
 	return block;
+}
+
+BOOL BlocksAreAvailable()
+{
+	BOOL has = NO;
+	
+#if NS_BLOCKS_AVAILABLE
+	// True iff we were compiled against Snow Leopard or later and we are
+	// running on Snow Leopard or later.
+	has = NSFoundationVersionNumber > NSFoundationVersionNumber10_5_6;
+#endif
+
+	return has;
 }

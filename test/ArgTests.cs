@@ -196,19 +196,22 @@ public class ArgTests
 	[Test]
 	public void Block()
 	{
-		NSObject s = new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hello\nthere")).To<NSObject>();
-		
-		var lines = new List<string>();
-		Enumerator e = (IntPtr context, IntPtr line, ref byte stop) =>
+		if (ExtendedBlock.HasBlocks())
 		{
-			lines.Add(new NSObject(line).Call("description").ToString());
-		};
-		var block = new ExtendedBlock(e);
-		s.Call("enumerateLinesUsingBlock:", block);
-		
-		Assert.AreEqual(2, lines.Count);
-		Assert.AreEqual("hello", lines[0]);
-		Assert.AreEqual("there", lines[1]);
+			NSObject s = new Class("NSString").Call("stringWithUTF8String:", Marshal.StringToHGlobalAuto("hello\nthere")).To<NSObject>();
+			
+			var lines = new List<string>();
+			Enumerator e = (IntPtr context, IntPtr line, ref byte stop) =>
+			{
+				lines.Add(new NSObject(line).Call("description").ToString());
+			};
+			var block = new ExtendedBlock(e);
+			s.Call("enumerateLinesUsingBlock:", block);
+			
+			Assert.AreEqual(2, lines.Count);
+			Assert.AreEqual("hello", lines[0]);
+			Assert.AreEqual("there", lines[1]);
+		}
 	}
 	
 	[Test]

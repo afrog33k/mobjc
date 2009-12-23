@@ -406,6 +406,9 @@ namespace MObjc
 					}
 					else
 					{
+						if (!ExtendedBlock.HasBlocks())
+							throw new InvalidCallException("Objective-C blocks are not supported on this version of the OS.");
+						
 						ExtendedBlock block = value as ExtendedBlock;
 						if (block != null)
 							Marshal.WriteIntPtr(buffer, (IntPtr) block.block);

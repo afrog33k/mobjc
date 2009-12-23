@@ -41,12 +41,22 @@ namespace MObjc
 			this.block = NSObject.Lookup(CreateBlock(fp));
 		}
 		
+		/// <summary>Returns true if the library was compiled against Snow Leopard
+		/// or later and the app is running on Snow Leopard or later.</summary>
+		public static bool HasBlocks()
+		{
+			return BlocksAreAvailable() != 0;
+		}
+		
 		public readonly Delegate callback;	// need to keep this around so that it isn't GCed
 		public readonly NSObject block;
 		
 		#region Private Methods
 		[DllImport("mobjc-glue.dylib")]
 		private extern static IntPtr CreateBlock(IntPtr callback);
+		
+		[DllImport("mobjc-glue.dylib")]
+		private extern static byte BlocksAreAvailable();
 		#endregion
 	}
 }
