@@ -21,15 +21,78 @@
 
 using MObjc.Helpers;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace MObjc
 {
+	/// <summary>Lightweight object used to ensure that a reference to the delegate
+	/// used by an Objective-C block does not disappear too early.</summary>
+	[ThreadModel(ThreadModel.Concurrent)]
+	public sealed class BlockCookie
+	{
+		/// <remarks>Name is used for debugging.</remarks>
+		public BlockCookie(string name, Delegate callback)
+		{
+			Contract.Requires(!string.IsNullOrEmpty(name), "name is null or empty");
+			
+			Name = name;
+			Block = new ExtendedBlock(callback);
+			
+			lock (ms_lock)
+			{
+				ms_cookies.Add(this);
+			}
+		}
+		
+		public string Name {get; private set;}
+		
+		public ExtendedBlock Block {get; private set;}
+		
+		/// <summary>Call this after the native code is done with the block.</summary>
+		/// <remarks>For example, when using a sheet this would be called in the
+		/// completion handler.</remarks>
+		public void Free()
+		{
+			// Users may not bother getting rid of the reference to the cookie, but it's
+			// important that we do get rid of the reference to the delegate so that the
+			// object it is bound to can be GCed.
+			Block = null;
+			
+			lock (ms_lock)
+			{
+				ms_cookies.Remove(this);
+			}
+		}
+		
+		/// <summary>mcocoa calls this on app exit to verify that BlockCookies are all
+		/// properly freed.</summary>
+		/// <remarks>Returns null if all cookies have been freed.</remarks>
+		public static string[] InUse()
+		{
+			string[] names = null;
+			
+			lock (ms_lock)
+			{
+				if (ms_cookies.Count > 0)
+					names = (from cookie in ms_cookies select cookie.Name).ToArray();
+			}
+			
+			return names;
+		}
+		
+		#region Fields
+		private static object ms_lock = new object();
+			private static HashSet<BlockCookie> ms_cookies = new HashSet<BlockCookie>();
+		#endregion
+	}
+	
 	/// <summary>Wrapper for an Objective-C block.</summary>
 	/// <remarks>The block is added to the autorelease pool, but its lifetime can be
 	/// extended by calling retain.</remarks>
 	[ThreadModel(ThreadModel.Concurrent)]
-	public class ExtendedBlock
+	public sealed class ExtendedBlock
 	{
 		/// <remarks>The first argument of the delegate must be an IntPtr for the
 		/// (normally implicit) block argument.</remarks>
