@@ -20,6 +20,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using MObjc;
+using MObjc.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -138,9 +139,13 @@ internal sealed class DebugController : NSObject
 		GC.Collect();
 		GC.WaitForPendingFinalizers();
 		
+		// Get our pid.
+		string pid = Process.GetCurrentProcess().Id.ToString();
+	
 		// Get the result of running top.
 		ProcessStartInfo info = new ProcessStartInfo();
-		info.Arguments = "-l 1 -P 'PID   COMMAND            RSIZE     VSIZE' -p '^aaaa ^bbbbbbbbbbbb $jjjjjjjjjj $llllllllll'";;
+		info.Arguments = "-l 1 -stats pid,command,rsize,vsize -pid " + pid;		// top has changed a lot in Snow Leopard...
+//		info.Arguments = "-l 1 -P 'PID   COMMAND            RSIZE     VSIZE' -p '^aaaa ^bbbbbbbbbbbb $jjjjjjjjjj $llllllllll'";;
 		info.FileName = "top";
 		info.RedirectStandardOutput = true;
 		info.UseShellExecute = false;
@@ -153,24 +158,21 @@ internal sealed class DebugController : NSObject
 		if (process.ExitCode < 0 || process.ExitCode > 1)
 			throw new ApplicationException("top failed with error " + process.ExitCode + ".");
 		
-		// Get our pid.
-		string pid = Process.GetCurrentProcess().Id.ToString();
-	
-		// Find the line in the top output that starts with our pid.
+		// Find the line in the top output that starts with our pid. The line will be
+		// formatted like this:
+		// 4327   ntpd             708K+  2378M+
 		while (!process.StandardOutput.EndOfStream)
 		{
 			string line = process.StandardOutput.ReadLine();
-			if (line.StartsWith(pid + " "))
+			if (line.StartsWith(pid))
 			{
-				string[] parts = line.Split(new char[]{' '}, StringSplitOptions.RemoveEmptyEntries);
+				string[] parts = line.Split(new char[]{' ', '\t'}, StringSplitOptions.RemoveEmptyEntries);
 				
 				if (parts.Length == 4)
 				{
-					const double OneMeg = 1024.0*1024.0;	
-					
 					Console.WriteLine("timestamp: {0:hh:mm}", DateTime.Now);
-					Console.WriteLine("resident bytes: {0:0.000}M", long.Parse(parts[2])/OneMeg);
-					Console.WriteLine("virtual bytes: {0:0.000}M", long.Parse(parts[3])/OneMeg);
+					Console.WriteLine("resident bytes: {0:0.000}M", DoParseBytes(parts[2]));
+					Console.WriteLine("virtual bytes: {0:0.000}M", DoParseBytes(parts[3]));
 					Console.WriteLine("managed bytes: {0:0.000}M", GC.GetTotalMemory(false)/OneMeg);
 					Console.WriteLine("NSObject count: {0}", NSObject.Snapshot().Length);
 					Console.WriteLine(" ");
@@ -182,6 +184,26 @@ internal sealed class DebugController : NSObject
 		}
 		
 		Console.WriteLine("Couldn't find our pid: {0}.", pid);
+	}
+	
+	private const double OneKilo = 1024.0;
+	private const double OneMeg = OneKilo*OneKilo;
+		
+	private double DoParseBytes(string str)
+	{
+		Contract.Requires(!string.IsNullOrEmpty(str), "string is empty or null");
+		
+		if (str[str.Length - 1] == '+' || str[str.Length - 1] == '-')
+			str = str.Substring(0, str.Length - 1);
+			
+		if (str[str.Length - 1] == 'M')
+			return long.Parse(str.Substring(0, str.Length - 1));
+		
+		else if (str[str.Length - 1] == 'K')
+			return long.Parse(str.Substring(0, str.Length - 1))/OneKilo;
+		
+		else
+			return long.Parse(str)/OneMeg;
 	}
 	
 	private void DoDumpStatsThread(object instance)

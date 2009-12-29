@@ -30,6 +30,11 @@ internal class NSView : NSObject
 	{
 	}
 	
+	public static new Class Class
+	{
+		get {return ms_class;}
+	}
+	
 	public NSRect Bounds
 	{
 		get
@@ -62,4 +67,6 @@ internal class NSView : NSObject
 	{
 		Call("removeFromSuperview");
 	}
+	
+	private static Class ms_class = new Class("NSView");
 }

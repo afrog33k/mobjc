@@ -102,3 +102,10 @@ T: MObjc.Native/StackFrame
 R: Gendarme.Rules.Performance.AvoidUnneededUnboxingRule
 M: System.Void MObjc.Ffi::DoFillBuffer(System.IntPtr,System.Object,System.String)
 M: /Users/jessejones/Source/mobjc/source/Ffi.cs(?299)
+
+R: Gendarme.Rules.Performance.AvoidMethodWithLargeMaximumStackSize
+M: System.Void MObjc.Ffi::DoFillBuffer(System.IntPtr,System.Object,System.String)
+
+R: Gendarme.Rules.Performance.AvoidReturningArraysOnPropertiesRule
+M: System.String[] MObjc.NSObject::get_StackTrace()
+

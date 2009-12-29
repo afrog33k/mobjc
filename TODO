@@ -3,9 +3,23 @@ https://home.comcast.net/~jesse98/public/mobjc_docs/namespaces.html
 
 set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-console.exe -fixture=BaseClassTests -nologo bin/tests.dll
 
+* Release checklist:
+	- make sure everything is checked in
+	- use svn log -r 1:HEAD > CHANGE_LOG
+	- update CHANGES file
+	- update version number
+	- remove build_num file
+	- build debug 
+	- install
+	- upload new html docs
+	- update README and wiki		SymGetSymFromAddr64	+		successfully
+	- upload a new version to googlecode
+	- send an announcement
+	- make sure everything is checked in
 * Experiment with using the native GC:
 	- mono doesn't seem to be able to p/invoke dll's compiled with -fobjc-gc-only...
-	  need to try this again when mono stops using boehm
+	  note that when testing this mobjc should be uninstalled or mono will load the
+	  installed lib
 	- compile the native glue with -fobjc-gc-only
 	- provide Register and Unregister methods that take an id and stick it in a collection
 	- will need a mutex on native side
@@ -62,8 +76,8 @@ set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-cons
 	- run gendarme
 	- make sure tests work in debug
 	- make sure app works in debug
-	- make RELEASE=1 test
-	- make RELEASE=1 app
+	- make RELEASE=1 check
+	- make RELEASE=1 run-app
 	- make sure app memory test is OK
 	- review tar target
 	- make sure everything is checked in
