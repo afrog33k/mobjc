@@ -4,16 +4,6 @@ https://home.comcast.net/~jesse98/public/mobjc_docs/namespaces.html
 set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-console.exe -fixture=BaseClassTests -nologo bin/tests.dll
 
 * Release checklist:
-	- make sure everything is checked in
-	- use svn log -r 1:HEAD > CHANGE_LOG
-	- update CHANGES file
-	- update version number
-	- remove build_num file
-	- build debug 
-	- install
-	- upload new html docs
-	- update README and wiki		SymGetSymFromAddr64	+		successfully
-	- upload a new version to googlecode
 	- send an announcement
 	- make sure everything is checked in
 * Experiment with using the native GC:

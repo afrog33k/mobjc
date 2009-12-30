@@ -10,7 +10,7 @@ GENDARME ?= /usr/local/bin/gendarme
 ifdef RELEASE
 	# Note that -debug+ just generates an mdb file.
 	CSC_FLAGS ?= -checked+ -debug+ -optimize+ -warn:4 -d:TRACE -d:CONTRACTS_PRECONDITIONS
-	GCC_FLAGS ?= -Wall -O3 
+	GCC_FLAGS ?= -Wall -O3
 else
 	CSC_FLAGS ?= -checked+ -debug+ -warn:4 -warnaserror+ -d:DEBUG -d:TRACE -d:CONTRACTS_FULL
 	GCC_FLAGS ?= -ggdb -Wall -Werror -D DEBUG
@@ -27,7 +27,7 @@ dummy1 := $(shell mkdir bin 2> /dev/null)
 dummy2 := $(shell if [[ "$(CSC_FLAGS)" != `cat bin/csc_flags 2> /dev/null` ]]; then echo "$(CSC_FLAGS)" > bin/csc_flags; fi)
 dummy3 := $(shell if [[ "$(GCC_FLAGS)" != `cat bin/gcc_flags 2> /dev/null` ]]; then echo "$(GCC_FLAGS)" > bin/gcc_flags; fi)
 
-base_version := 0.7.xxx.0										# major.minor.build.revision
+base_version := 0.8.xxx.0										# major.minor.build.revision
 version := $(shell ./mget_version.sh $(base_version) build_num)	# this will increment the build number stored in build_num
 version := $(strip $(version))
 export version

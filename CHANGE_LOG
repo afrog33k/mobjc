@@ -929,3 +929,125 @@ Index: Makefile
 * mgen_version.sh and mget_version.sh are now installed to /usr/local/bin.
 
 ------------------------------------------------------------------------
+r113 | jesjones@mindspring.com | 2009-06-15 21:53:37 -0700 (Mon, 15 Jun 2009) | 4 lines
+
+Index: CHANGE_LOG
+Index: CHANGES
+* Updated.
+
+------------------------------------------------------------------------
+r114 | jesjones@mindspring.com | 2009-06-16 11:07:00 -0700 (Tue, 16 Jun 2009) | 3 lines
+
+Whitespace.
+
+
+------------------------------------------------------------------------
+r115 | jesjones@mindspring.com | 2009-06-16 12:24:01 -0700 (Tue, 16 Jun 2009) | 3 lines
+
+Whitespace.
+
+
+------------------------------------------------------------------------
+r116 | jesjones@mindspring.com | 2009-06-16 14:12:48 -0700 (Tue, 16 Jun 2009) | 10 lines
+
+Index: source/NSObject.cs
+Index: sample/SimpleLayoutView.cs
+Index: test/ManagedTypes.cs
+Index: test/DerivedTest.cs
+* SuperCall now takes the base class so that it can call the correct method.
+
+Index: source/Native.cs
+* The exception message used when a method cannot be found was not properly
+   including the type name.
+
+------------------------------------------------------------------------
+r117 | jesjones@mindspring.com | 2009-06-22 16:06:35 -0700 (Mon, 22 Jun 2009) | 3 lines
+
+Updated TODO.
+
+
+------------------------------------------------------------------------
+r118 | jesjones@mindspring.com | 2009-09-16 23:28:20 -0700 (Wed, 16 Sep 2009) | 6 lines
+
+Index: test/DerivedTest.cs
+* Fixed one of the SuperCall tests and added another SuperCall test.
+
+Index: source/NSObject.cs
+* Fixed a typo in a comment.
+
+------------------------------------------------------------------------
+r119 | jesjones@mindspring.com | 2009-09-16 23:56:46 -0700 (Wed, 16 Sep 2009) | 6 lines
+
+Index: test/DerivedTest.cs
+* Fixed the SuperCall test for real this time.
+
+Index: Makefile
+* Renamed test check, test1 check1, and tar dist. Added distclean.
+
+------------------------------------------------------------------------
+r120 | jesjones@mindspring.com | 2009-12-01 20:40:31 -0800 (Tue, 01 Dec 2009) | 3 lines
+
+Fixed the all target so that it builds the sample properly.
+
+
+------------------------------------------------------------------------
+r121 | jesjones@mindspring.com | 2009-12-18 08:26:35 -0800 (Fri, 18 Dec 2009) | 9 lines
+
+Index: source/CocoaException.cs
+Index: test/ExceptionTests.cs
+* Made an exception message a bit clearer.
+
+Index: Makefile
+* Added -f option to some rm commands in the clean target so that we don't get messages
+when trying to remove items which aren't there.
+
+
+------------------------------------------------------------------------
+r122 | jesjones@mindspring.com | 2009-12-18 08:28:20 -0800 (Fri, 18 Dec 2009) | 4 lines
+
+Added a comment to ExportClass mentioning that the class need
+not be sealed.
+
+
+------------------------------------------------------------------------
+r123 | jesjones@mindspring.com | 2009-12-18 08:43:30 -0800 (Fri, 18 Dec 2009) | 5 lines
+
+Static methods can now be registered with custom types. This works just like regular methods:
+the static method is registered if it starts with a lower case letter or if the method (instead of
+just the type) is decorated with RegisterAttribute.
+
+
+------------------------------------------------------------------------
+r124 | jesjones@mindspring.com | 2009-12-22 07:54:44 -0800 (Tue, 22 Dec 2009) | 3 lines
+
+* Added support for Objective-C blocks (on Intel only).
+ 
+
+------------------------------------------------------------------------
+r125 | jesjones@mindspring.com | 2009-12-22 17:22:06 -0800 (Tue, 22 Dec 2009) | 4 lines
+
+* Protected the block code in the glue with NS_BLOCKS_AVAILABLE so that it compiles under Leopard.
+* Added ExtendedBlock.HasBlocks so user code can test to see whether blocks are available.
+* Ffi will now throw if a block is used, but HasBlocks returns false.
+
+------------------------------------------------------------------------
+r126 | jesjones@mindspring.com | 2009-12-23 19:55:30 -0800 (Wed, 23 Dec 2009) | 3 lines
+
+Added a new BlockCookie class to make using blocks with long lifetimes easier
+and to help catch users not using blocks correctly.
+ 
+------------------------------------------------------------------------
+r127 | jesjones@mindspring.com | 2009-12-28 16:51:10 -0800 (Mon, 28 Dec 2009) | 11 lines
+
+Index: sample/DebugController.cs
+* Fixed the top call so that it works on snow leopard.
+
+Index: sample/NSView.cs
+* Added a Class property.
+* Fixed window resize so that it calls the correct super call.
+
+Index: gendarme.ignore
+* Disabled a few defects.
+
+
+------------------------------------------------------------------------

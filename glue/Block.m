@@ -30,8 +30,9 @@ void* CreateBlock(void* callback)
 	block = [[^ {return 0;} copy] autorelease];
 	
 	// Swap out the invoke function pointer.
-	// TODO: This is pretty evil, but according to Apple's ABI docs it
-	// should work on IA-32 but probably not on ppc...
+	// This is pretty evil, but according to Apple's ABI docs it should work
+	// on IA-32 but probably not on ppc. But Snow Leopard doesn't work
+	// on ppc anyway so it should be a moot point.
 	assert(sizeof(int) == sizeof(void*));
 	int* p = (int*) block;		// 0 = isa, 1 = flags, 2 = reserved, 3 = invoke, for details see http://clang.llvm.org/docs/BlockLanguageSpec.txt
 	p[3] = (int) callback;

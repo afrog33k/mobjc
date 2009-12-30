@@ -1,3 +1,18 @@
+-- Version 0.8.0.0 (r127) ----
+
+* Added support for Objective-C blocks.
+* Static methods can now be registered with custom types. This works just like regular 
+  methods: the static method is registered if it starts with a lower case letter or if the 
+  method (instead of just the type) is decorated with RegisterAttribute.
+* SuperCall now takes a (super) class argument.
+* The exception message used when a method cannot be found was not properly
+   including the type name.
+* Renamed test check, test1 check1, and tar dist. Added distclean.
+* Fixed the all target so that it builds the sample properly.
+* Added -f option to some rm commands in the clean target so that we don't get messages
+  when trying to remove items which aren't there.
+* Fixed the top call in the sample app so that it works on snow leopard.
+
 -- Version 0.7.0.0 (r112) ----
 
 * Renamed AllocNative AllocAndInitInstance. Added AllocInstance.

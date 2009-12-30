@@ -1,7 +1,7 @@
 BUILDING
 
 Navigate to the mobjc directory with a terminal and type
-`make` to make the libraries and the application. Type `make test`
+`make` to make the libraries and the application. Type `make check`
 to run the unit tests and `make run-app` to run the sample Cocoa app.
 
 INSTALLING
