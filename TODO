@@ -4,15 +4,6 @@ https://home.comcast.net/~jesse98/public/mobjc_docs/namespaces.html
 set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-console.exe -fixture=BaseClassTests -nologo bin/tests.dll
 
 * Does -fobjc-gc-only imply -m64?
-* Release checklist:
-	- send an announcement
-	- make sure everything is checked in
-* Use:
-	/// <summary>This namespace contains the top level classes as well as some utility classes.</summary>
-	internal class NamespaceDoc
-	{
-	}
-* Use the spell checking option with mmmdoc.
 * Experiment with using the native GC:
 	- mono doesn't seem to be able to p/invoke dll's compiled with -fobjc-gc-only...
 	  note that when testing this mobjc should be uninstalled or mono will load the

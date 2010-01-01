@@ -7,7 +7,7 @@ Ffi
 ivar
 mcocoa			cocoa
 mobjc
-namespaces	space
+namespace	space
 nullary
 pre
 stderr
