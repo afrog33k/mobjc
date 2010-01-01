@@ -1,0 +1,16 @@
+# Used by mmmdoc to spellcheck the help comments.
+alloc
+arity
+autorelease
+descendent
+Ffi
+ivar
+mcocoa			cocoa
+mobjc
+namespaces	space
+nullary
+pre
+stderr
+struct
+typeof
+

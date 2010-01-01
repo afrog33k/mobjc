@@ -30,7 +30,7 @@ namespace MObjc
 	/// type when it needs to create a managed object to wrap an unmanaged object. When
 	/// used on a method of an exported type the Objective-C method name can be customized.
 	///
-	/// <para/>Note that it's rarely neccesary for users to use this attribute: mcocoa already
+	/// <para/>Note that it's rarely necessary for users to use this attribute: mcocoa already
 	/// provides class and struct wrappers and mobjc will automatically register lower-case
 	/// methods in exported classes (the Objective-C name is the same as the managed name except 
 	/// that underscores are replaced with colons and a colon is appended if the

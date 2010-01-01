@@ -66,7 +66,7 @@ namespace MObjc
 			}
 		}
 		
-		/// <summary>mcocoa calls this on app exit to verify that BlockCookies are all
+		/// <summary>mcocoa calls this on application exit to verify that BlockCookies are all
 		/// properly freed.</summary>
 		/// <remarks>Returns null if all cookies have been freed.</remarks>
 		public static string[] InUse()
@@ -105,7 +105,7 @@ namespace MObjc
 		}
 		
 		/// <summary>Returns true if the library was compiled against Snow Leopard
-		/// or later and the app is running on Snow Leopard or later.</summary>
+		/// or later and the application is running on Snow Leopard or later.</summary>
 		public static bool HasBlocks()
 		{
 			return BlocksAreAvailable() != 0;

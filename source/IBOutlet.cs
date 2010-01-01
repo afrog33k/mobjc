@@ -26,7 +26,7 @@ using System.Diagnostics;
 namespace MObjc
 {
 	/// <summary>Wrapper around the <see cref = "NSObject">NSObject</see> indexer.</summary>
-	/// <remarks>This allows you to get and set the native instance values asscociated
+	/// <remarks>This allows you to get and set the native instance values associated
 	/// with the class. Note that these normally map to the same names as those set within
 	/// Interface Builder. Also it's usually easiest to just use the <see cref = "NSObject">NSObject</see> indexer.</remarks>
 	public sealed class IBOutlet<T> : IEquatable<IBOutlet<T>> where T : NSObject
