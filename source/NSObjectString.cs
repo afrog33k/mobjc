@@ -49,7 +49,7 @@ namespace MObjc
 		/// </list>
 		/// A "P" can be appended to the C, I, and V formats to force private members 
 		/// (those starting with an underscore) to be included.</remarks>
-		public string ToString(string format, IFormatProvider provider)
+		public virtual string ToString(string format, IFormatProvider provider)
 		{
 			if (provider != null)
 			{
