@@ -110,12 +110,13 @@ else:
 	# link if possible because it means that our process name will be something
 	# reasonable instead of "mono".
 	vars = ""
-	for entry in options.append_var:
-		i = entry.find(':')
-		name = entry[0:i]
-		value = entry[i+1:]
-		vars += 'export %s="$%s:%s"\n' % (name, name, value)
-		
+	if options.append_var:
+		for entry in options.append_var:
+			i = entry.find(':')
+			name = entry[0:i]
+			value = entry[i+1:]
+			vars += 'export %s="$%s:%s"\n' % (name, name, value)
+	
 	script = """#!/bin/sh
 APP_PATH=`echo \x240 | awk '{split(\x240,patharr,\"/\"); idx=1; while(patharr[idx+3] != \"\") { if (patharr[idx] != \"/\") {printf(\"%s/\", patharr[idx]); idx++ }} }'`
 NAME=`basename \"$APP_PATH\" .app`
