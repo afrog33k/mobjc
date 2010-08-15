@@ -3,10 +3,14 @@ https://home.comcast.net/~jesse98/public/mobjc_docs/namespaces.html
 
 set args /Library/Frameworks/Mono.framework/Versions/1.9/lib/mono/2.0/nunit-console.exe -fixture=BaseClassTests -nologo bin/tests.dll
 
-* Laucnher script needs to quote the $@
+* Launcher script needs to quote the $@
+* Would be nice if the launcher script worked when run without write access. Maybe could
+   add a default mono link?
+* Do we still need --desktop?
 * Experiment with using the native GC:
 	- can't load a -fobjc-gc-only dll into a non-gc app
 	- can load a -fobjc-gc dll into a non-gc app (like mono), but don't think it will use the gc
+	  but maybe it will if objc_startCollectorThread is called (see the cocoa fundamentals)
 	- note that when testing this mobjc should be uninstalled or mono will load the
 	  installed lib
 	- compile the native glue with -fobjc-gc-only

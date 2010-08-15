@@ -27,12 +27,13 @@ def copyTree(src, dst):
 
 parser = OptionParser()
 parser.add_option("--app", 											help="path to the bundle which will be created")
+parser.add_option("--append-var",	action="append", 			help="appends a value onto an environment variable")
 parser.add_option("--exe", 			 								help="path to the executable assembly")
-parser.add_option("--mono-flags",	default="", 			help="flags to use with mono")
+parser.add_option("--mono-flags",	default="", 					help="flags to use with mono")
 parser.add_option("--plist", 		 									help="path to the Info.plist to copy")
-parser.add_option("--resources", 	action="append", 		help="files to copy into the resources dir")
+parser.add_option("--resources", 		action="append", 			help="files to copy into the resources dir")
 parser.add_option("--vars", 		 									help="{name}s to expand in the plist")
-parser.add_option("--usage", 		action="store_true", default=False,	help="prints usage info and exit")
+parser.add_option("--usage", 			action="store_true", default=False,	help="prints usage info and exit")
 
 (options, args) = parser.parse_args()
 
@@ -40,6 +41,7 @@ if options.usage:
 	print "Typical usage looks like this:"
 	print "python cocoa-pack --app=bin/CoolApp.app --mono-flags=--debug --exe=bin/cool-app.exe --plist=Info.plist --resources=English.lproj:MainMenu.nib,Document.nib --vars=VERSION:0.1,APP_NAME:CoolApp"
 	print "--resources may appear multiple times and the localization dir is optional"
+	print "--append-var may appear multiple times and should be written like --append-var=PATH:/some/path"
 	
 else:
 	appName = os.path.splitext(os.path.basename(options.app))[0]	# doesn't include .nib
@@ -107,6 +109,13 @@ else:
 	# run mono from its normal location or nibs won't load. Also we want to use a hard
 	# link if possible because it means that our process name will be something
 	# reasonable instead of "mono".
+	vars = ""
+	for entry in options.append_var:
+		i = entry.find(':')
+		name = entry[0:i]
+		value = entry[i+1:]
+		vars += 'export %s="$%s:%s"\n' % (name, name, value)
+		
 	script = """#!/bin/sh
 APP_PATH=`echo \x240 | awk '{split(\x240,patharr,\"/\"); idx=1; while(patharr[idx+3] != \"\") { if (patharr[idx] != \"/\") {printf(\"%s/\", patharr[idx]); idx++ }} }'`
 NAME=`basename \"$APP_PATH\" .app`
@@ -118,11 +127,13 @@ if !(ln \x60which mono\x60 \"$NAME\"); then
 fi
 
 cd ../Resources
+$(vars)
 \"../MacOS/$NAME\" $(mono-flags) $(exe-name).exe $@
 """
 	script = script.replace("$(app-name)", appName)
 	script = script.replace("$(mono-flags)", options.mono_flags)
 	script = script.replace("$(exe-name)", exeName)
+	script = script.replace("$(vars)", vars)
 	
 	file = open(macOSPath + "/launcher", "w")
 	file.write(script)
