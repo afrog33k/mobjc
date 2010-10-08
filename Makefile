@@ -64,9 +64,11 @@ run-app: libs
 
 # ------------------
 # Binary targets 
+# TODO: disabled -doc (mono 2.8 seems to have a compiler bug that prevents this from being used)
 bin/mobjc.dll: keys bin/csc_flags source/*.cs source/helpers/*.cs
 	@./mgen_version.sh $(version) source/AssemblyVersion.cs
-	$(CSC) -out:bin/mobjc.dll $(CSC_FLAGS) -doc:bin/docs.xml -keyfile:keys -target:library source/*.cs source/helpers/*.cs
+	$(CSC) -out:bin/mobjc.dll $(CSC_FLAGS) -keyfile:keys -target:library source/*.cs source/helpers/*.cs
+#	$(CSC) -out:bin/mobjc.dll $(CSC_FLAGS) -doc:bin/docs.xml -keyfile:keys -target:library source/*.cs source/helpers/*.cs
 
 bin/mobjc-glue-ppc.dylib: bin/gcc_flags glue/*.m
 	$(GCC) -o bin/mobjc-glue-ppc.dylib $(GCC_FLAGS) -arch ppc -framework Foundation -dynamiclib -l$(ffi_lib) -I $(ffi_include) glue/*.m
