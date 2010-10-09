@@ -1,4 +1,4 @@
-// Copyright (C) 2008 Jesse Jones
+// Copyright (C) 2008-2010 Jesse Jones
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -484,6 +484,14 @@ namespace MObjc
 		protected virtual void OnDealloc()
 		{
 			m_deallocated = true;
+		}
+		
+		// mono 2.8 no longer calls the static NSObject ctor when a Class ctor is called.
+		// This screws Class up because it winds up using objc_getClass before we can
+		// register types. So, we provide this method for Class to call to force the static
+		// ctor to execute.
+		protected static void OnForceInit()
+		{
 		}
 		#endregion
 		

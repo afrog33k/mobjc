@@ -76,7 +76,7 @@ namespace MObjc
 		public static bool CanInit
 		{
 			get {return ms_canInit;}
-			set {ms_canInit = value; ms_nil = new NSObject(IntPtr.Zero); Contract.Assert(ms_nil != null);}
+			set {ms_canInit = value;}
 		}
 		
 		[ThreadModel(ThreadModel.Concurrent)]
@@ -418,10 +418,6 @@ namespace MObjc
 		private static Dictionary<Type, string> ms_classNames = new Dictionary<Type, string>();
 		private static List<ManagedImp> ms_imps = new List<ManagedImp>();
 		private static bool ms_inited;
-		
-		// There were apparently some subtle changes to the way that static ctors run in mono 2.8. 
-		// This is used to ensure that we call Registrar.Init before trying to construct Class objects.
-		private static NSObject ms_nil;
 		#endregion
 	}
 }

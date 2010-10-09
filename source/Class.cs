@@ -88,6 +88,7 @@ namespace MObjc
 		{
 			Contract.Requires(!string.IsNullOrEmpty(name), "name is null or empty");
 			
+			OnForceInit();
 			IntPtr klass = objc_getClass(name);
 			
 			if (klass == IntPtr.Zero)
