@@ -188,7 +188,7 @@ if !(ln \x60which mono\x60 \"$NAME\"); then
 fi
 
 MONO_FRAMEWORK_PATH=/Library/Frameworks/Mono.framework/Versions/Current
-export DYLD_FALLBACK_LIBRARY_PATH="$MONO_FRAMEWORK_PATH/lib:$DYLD_FALLBACK_LIBRARY_PATH:/usr/local/lib"
+export DYLD_FALLBACK_LIBRARY_PATH="$MONO_FRAMEWORK_PATH/lib:$DYLD_FALLBACK_LIBRARY_PATH:/usr/lib:/usr/local/lib"
 export PATH="$MONO_FRAMEWORK_PATH/bin:$PATH"
 
 cd ../Resources
